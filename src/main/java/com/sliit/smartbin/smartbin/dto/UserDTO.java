@@ -14,6 +14,7 @@ public class UserDTO {
     private String password;
     private String phone;
     private String address;
+    private String region;
     private User.UserRole role;
 }
 

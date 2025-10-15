@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authority Dashboard - SmartBin</title>
+    <title>Waste Management Dashboard - SmartBin</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -13,373 +16,918 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-content {
-            max-width: 1200px;
-            margin: 0 auto;
+        .header {
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 0 0 16px 16px;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
-        }
-
-        .btn-logout {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .welcome-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .welcome-card h1 {
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .welcome-card p {
             color: #666;
         }
 
-        .dashboard-grid {
+        .notification-icon {
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .notification-icon:hover {
+            color: #3498db;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .main-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
-        .dashboard-card {
+        .metric-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .dashboard-card .icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .dashboard-card h3 {
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .dashboard-card p {
-            color: #666;
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .overview-section, .bin-status-section, .alerts-section {
-            margin-top: 3rem;
-        }
-        
-        .overview-section h2, .bin-status-section h2, .alerts-section h2 {
-            color: #333;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        
-        .overview-grid, .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
             gap: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.8);
         }
-        
-        .overview-card, .status-card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.12);
         }
-        
-        .overview-number, .status-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+
+        .metric-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
         }
-        
-        .overview-number {
-            color: #4facfe;
+
+        .metric-content {
+            flex: 1;
         }
-        
-        .overview-label, .status-label {
+
+        .metric-label {
             color: #666;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
             font-weight: 500;
         }
-        
-        .status-empty .status-number {
-            color: #28a745;
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1;
         }
-        
-        .status-partial .status-number {
-            color: #ffc107;
-        }
-        
-        .status-full .status-number {
-            color: #dc3545;
-        }
-        
-        .status-overdue .status-number {
-            color: #dc3545;
-        }
-        
-        .alerts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+
+        .actions-section {
+            display: flex;
             gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
         }
-        
-        .alert-card {
+
+        .action-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-height: 60px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.secondary {
             background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #dc3545;
+            color: #2c3e50;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        
-        .alert-header {
+
+        .action-btn.secondary:hover {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .map-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+        }
+
+        .map-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
-        
-        .alert-qr {
-            font-weight: bold;
-            color: #dc3545;
+
+        .map-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
         }
-        
-        .alert-location {
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .alert-details {
-            margin-bottom: 1rem;
-        }
-        
-        .alert-info {
+
+        .legend {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
         }
-        
-        .info-label {
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .alert-actions {
+
+        .legend-item {
             display: flex;
+            align-items: center;
             gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
-        
-        .btn-small {
-            padding: 0.5rem 1rem;
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .legend-dot.normal { background: #27ae60; }
+        .legend-dot.nearing { background: #f39c12; }
+        .legend-dot.overdue { background: #e74c3c; }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
             font-size: 0.9rem;
         }
-        
-        .btn-alert {
-            background: #dc3545;
+
+        .refresh-icon {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .map-container {
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .map-controls {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            border-radius: 6px;
+            padding: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .status-bar {
+            background: white;
+            padding: 1rem 2rem;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .alert-banner {
+            background: #e74c3c;
+            color: white;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: flash 1s infinite;
+        }
+
+        @keyframes flash {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .bin-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 0.5rem;
+        }
+
+        .bin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .bin-item:last-child {
+            border-bottom: none;
+        }
+
+        .bin-info {
+            flex: 1;
+        }
+
+        .bin-qr {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .bin-location {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .bin-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-full {
+            background: #e74c3c;
             color: white;
         }
-        
-        .btn-dispatch {
-            background: #28a745;
+
+        .status-overdue {
+            background: #c0392b;
             color: white;
+        }
+
+        .status-partial {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-empty {
+            background: #27ae60;
+            color: white;
+        }
+
+        .checkbox {
+            margin-right: 0.5rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #27ae60;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-section {
+                flex-direction: column;
+            }
+            
+            .legend {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="logo">🏛️ SmartBin - Authority Portal</div>
-            <div class="user-info">
-                <span th:text="${user.name}">Authority</span>
-                <a href="/logout" class="btn-logout">Logout</a>
-            </div>
+    <!-- Header -->
+    <div class="header">
+        <h1>Waste Management Dashboard</h1>
+        <div class="user-info">
+            <div class="notification-icon">🔔</div>
+            <span class="user-name" th:text="${user.name}">Waste Manager</span>
+            <div class="user-icon">W</div>
         </div>
-    </nav>
+    </div>
 
-    <div class="container">
-        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <!-- Alert Banner for Overdue Bins -->
+    <div th:if="${overdueBins != null and !overdueBins.empty}" class="alert-banner">
+        ⚠️ <span th:text="${overdueBins.size()}">0</span> bins are overdue and require immediate attention!
+    </div>
 
-        <div class="welcome-card">
-            <h1>Welcome, <span th:text="${user.name}">Authority</span>!</h1>
-            <p>Monitor and manage the entire waste management system.</p>
-        </div>
-
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="icon">📊</div>
-                <h3>System Overview</h3>
-                <p>View comprehensive analytics and system performance.</p>
-                <a href="/authority/bins" class="btn">View System</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">🚛</div>
-                <h3>Dispatch Collectors</h3>
-                <p>Assign routes and dispatch collectors for collection trips.</p>
-                <a href="/authority/dispatch" class="btn">Dispatch</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">🗺️</div>
-                <h3>Route Management</h3>
-                <p>Configure and optimize collection routes.</p>
-                <a href="/authority/routes" class="btn">Manage Routes</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">👥</div>
-                <h3>Manage Collectors</h3>
-                <p>Manage collectors and assign them to regions.</p>
-                <a href="/authority/collectors" class="btn">Manage</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">📈</div>
-                <h3>Generate Reports</h3>
-                <p>Generate detailed reports and insights.</p>
-                <a href="/authority/reports" class="btn">Reports</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">⚠️</div>
-                <h3>Bin Alerts</h3>
-                <p th:text="'Alerted bins: ' + ${alertedBins.size()}">Alerted bins: 0</p>
-                <a href="/authority/bins" class="btn">View Alerts</a>
-            </div>
-        </div>
-        
-        <div class="overview-section">
-            <h2>System Overview</h2>
-            <div class="overview-grid">
-                <div class="overview-card">
-                    <div class="overview-number" th:text="${systemOverview.totalBins}">10</div>
-                    <div class="overview-label">Total Bins</div>
+    <div class="main-container">
+        <!-- Key Metrics Section -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); color: #1976d2;">🗑️</div>
+                <div class="metric-content">
+                    <div class="metric-label">Total Bins</div>
+                    <div class="metric-value" th:text="${systemOverview.totalBins}">32</div>
                 </div>
-                <div class="overview-card">
-                    <div class="overview-number" th:text="${systemOverview.totalCollections}">15</div>
-                    <div class="overview-label">Total Collections</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); color: #f57c00;">📊</div>
+                <div class="metric-content">
+                    <div class="metric-label">Average Full %</div>
+                    <div class="metric-value" th:text="${binStatusReport.averageFillLevel} + '%'">66%</div>
                 </div>
-                <div class="overview-card">
-                    <div class="overview-number" th:text="${systemOverview.totalRoutes}">5</div>
-                    <div class="overview-label">Total Routes</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); color: #d32f2f;">⚠️</div>
+                <div class="metric-content">
+                    <div class="metric-label">Overdue Bins</div>
+                    <div class="metric-value" th:text="${binStatusReport.overdueBins}">4</div>
                 </div>
-                <div class="overview-card">
-                    <div class="overview-number" th:text="${systemOverview.activeCollectors}">3</div>
-                    <div class="overview-label">Active Collectors</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); color: #388e3c;">🕐</div>
+                <div class="metric-content">
+                    <div class="metric-label">Last Collection</div>
+                    <div class="metric-value" th:text="${systemOverview.lastCollectionTime}">0h ago</div>
                 </div>
             </div>
         </div>
-        
-        <div class="bin-status-section">
-            <h2>Bin Status Summary</h2>
-            <div class="status-grid">
-                <div class="status-card status-empty">
-                    <div class="status-number" th:text="${binStatusReport.emptyBins}">3</div>
-                    <div class="status-label">Empty Bins</div>
-                </div>
-                <div class="status-card status-partial">
-                    <div class="status-number" th:text="${binStatusReport.partialBins}">4</div>
-                    <div class="status-label">Partial Bins</div>
-                </div>
-                <div class="status-card status-full">
-                    <div class="status-number" th:text="${binStatusReport.fullBins}">2</div>
-                    <div class="status-label">Full Bins</div>
-                </div>
-                <div class="status-card status-overdue">
-                    <div class="status-number" th:text="${binStatusReport.overdueBins}">1</div>
-                    <div class="status-label">Overdue Bins</div>
-                </div>
-            </div>
+
+        <!-- Quick Actions Section -->
+        <div class="actions-section">
+            <a href="/authority/dispatch" class="action-btn">
+                🚛 Dispatch Collector
+            </a>
+            <a href="/authority/reports" class="action-btn secondary">
+                📄 Generate Report
+            </a>
+            <a href="/authority/manage-collectors" class="action-btn secondary">
+                👥 Manage Collectors
+            </a>
         </div>
-        
-        <div class="alerts-section" th:if="${overdueBins != null and !overdueBins.empty}">
-            <h2>⚠️ Overdue Bins Alert</h2>
-            <div class="alerts-grid">
-                <div class="alert-card" th:each="bin : ${overdueBins}">
-                    <div class="alert-header">
-                        <span class="alert-qr" th:text="${bin.qrCode}">QR001</span>
-                        <span class="alert-location" th:text="${bin.location}">Colombo Fort</span>
+
+        <!-- Bin Monitoring Map Section -->
+        <div class="map-section">
+            <div class="map-header">
+                <h2 class="map-title">Bin Monitoring Map</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-dot normal"></div>
+                        <span>Normal</span>
                     </div>
-                    <div class="alert-details">
-                        <div class="alert-info">
-                            <span class="info-label">Fill Level:</span>
-                            <span th:text="${bin.fillLevel} + '%'">95%</span>
-                        </div>
-                        <div class="alert-info">
-                            <span class="info-label">Last Emptied:</span>
-                            <span th:text="${#temporals.format(bin.lastEmptied, 'MMM dd, yyyy HH:mm')}">Dec 14, 2024 10:00</span>
-                        </div>
+                    <div class="legend-item">
+                        <div class="legend-dot nearing"></div>
+                        <span>Nearing Full</span>
                     </div>
-                    <div class="alert-actions">
-                        <a th:href="@{/authority/bin/{id}/alert(id=${bin.id})}" class="btn btn-small btn-alert">Set Alert</a>
-                        <a th:href="@{/authority/dispatch}" class="btn btn-small btn-dispatch">Dispatch</a>
+                    <div class="legend-item">
+                        <div class="legend-dot overdue"></div>
+                        <span>Overdue (>48hrs)</span>
                     </div>
+                    <div class="auto-refresh">
+                        <span class="refresh-icon">🔄</span>
+                        <span>Auto-refresh: 30s</span>
+                    </div>
+                </div>
+            </div>
+            <div class="map-container" id="binMap">
+                <div class="map-placeholder">
+                    Interactive Map Loading...
+                </div>
+                <div class="map-controls">
+                    <button onclick="refreshMap()" style="background: none; border: none; cursor: pointer;">🗺️</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="live-indicator">
+            <div class="live-dot"></div>
+            <span>Live Updates Active</span>
+        </div>
+        <div>
+            Last updated: <span id="lastUpdated" th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2025-01-15 16:03:23</span>
+        </div>
+    </div>
+
+
+
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Global variables
+        let map;
+        let binMarkers = [];
+        let refreshInterval;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            startAutoRefresh();
+            updateLastUpdatedTime();
+        });
+
+        // Map functionality
+        function initializeMap() {
+            // Initialize Leaflet map
+            map = L.map('binMap').setView([6.9271, 79.8612], 11); // Colombo coordinates
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add bin markers
+            addBinMarkers();
+        }
+
+        function addBinMarkers() {
+            // Clear existing markers
+            binMarkers.forEach(marker => map.removeLayer(marker));
+            binMarkers = [];
+
+            // Sample bin data - replace with actual data from server
+            const bins = [
+                {id: 1, lat: 6.9271, lng: 79.8612, status: 'normal', qrCode: 'QR001', fillLevel: 45},
+                {id: 2, lat: 6.9200, lng: 79.8500, status: 'nearing', qrCode: 'QR002', fillLevel: 75},
+                {id: 3, lat: 6.9400, lng: 79.8700, status: 'overdue', qrCode: 'QR003', fillLevel: 95},
+                {id: 4, lat: 6.9100, lng: 79.8400, status: 'normal', qrCode: 'QR004', fillLevel: 30},
+                {id: 5, lat: 6.9500, lng: 79.8800, status: 'nearing', qrCode: 'QR005', fillLevel: 80}
+            ];
+
+            bins.forEach(bin => {
+                const color = getBinColor(bin.status);
+                const marker = L.circleMarker([bin.lat, bin.lng], {
+                    radius: 8,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+
+                marker.bindPopup(`
+                    <div>
+                        <strong>${bin.qrCode}</strong><br>
+                        Fill Level: ${bin.fillLevel}%<br>
+                        Status: ${bin.status.toUpperCase()}
+                    </div>
+                `);
+
+                binMarkers.push(marker);
+            });
+        }
+
+        function getBinColor(status) {
+            switch(status) {
+                case 'normal': return '#3498db';
+                case 'nearing': return '#f39c12';
+                case 'overdue': return '#e74c3c';
+                default: return '#95a5a6';
+            }
+        }
+
+        function refreshMap() {
+            addBinMarkers();
+            showNotification('Map refreshed successfully!', 'success');
+        }
+        
+        // Store route polyline globally
+        let routePolyline = null;
+        
+        /**
+         * Draw optimized route on the map
+         */
+        function drawOptimizedRoute(routeCoordinates) {
+            // Remove existing route if any
+            if (routePolyline) {
+                map.removeLayer(routePolyline);
+            }
+            
+            // Create array of LatLng points
+            const latLngs = routeCoordinates.map(coord => [coord.lat, coord.lng]);
+            
+            // Draw polyline
+            routePolyline = L.polyline(latLngs, {
+                color: '#2c3e50',
+                weight: 3,
+                opacity: 0.8,
+                dashArray: '10, 5'
+            }).addTo(map);
+            
+            // Add numbered markers for route sequence
+            routeCoordinates.forEach((coord, index) => {
+                const marker = L.marker([coord.lat, coord.lng], {
+                    icon: L.divIcon({
+                        className: 'route-marker',
+                        html: `<div style="background: #2c3e50; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`,
+                        iconSize: [28, 28]
+                    })
+                }).addTo(map);
+                
+                marker.bindPopup(`
+                    <div>
+                        <strong>Stop ${index + 1}</strong><br>
+                        <strong>${coord.qrCode}</strong><br>
+                        ${coord.location}
+                    </div>
+                `);
+                
+                binMarkers.push(marker);
+            });
+            
+            // Fit map to show entire route
+            if (latLngs.length > 0) {
+                map.fitBounds(latLngs, { padding: [50, 50] });
+            }
+        }
+
+        // Auto-refresh functionality
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                refreshMap();
+                updateBinStatus();
+                updateLastUpdatedTime();
+            }, 30000); // 30 seconds
+        }
+
+        // Real-time bin status updates
+        function updateBinStatus() {
+            fetch('/authority/api/bin-status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.binStatus) {
+                        updateMetrics(data.binStatus, data.systemOverview);
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to fetch bin status:', error);
+                });
+        }
+
+        function updateMetrics(binStatus, systemOverview) {
+            // Update metric cards
+            const totalBinsElement = document.querySelector('.metric-value');
+            if (totalBinsElement) {
+                totalBinsElement.textContent = systemOverview.totalBins || '0';
+            }
+
+            // Update other metrics
+            const metrics = document.querySelectorAll('.metric-value');
+            if (metrics.length >= 4) {
+                metrics[0].textContent = systemOverview.totalBins || '0';
+                metrics[1].textContent = (binStatus.averageFillLevel || 0) + '%';
+                metrics[2].textContent = binStatus.overdueBins || '0';
+                metrics[3].textContent = systemOverview.lastCollectionTime || 'N/A';
+            }
+
+            // Update map markers with new data
+            updateMapMarkers(binStatus);
+        }
+
+        function updateMapMarkers(binStatus) {
+            // Clear existing markers
+            binMarkers.forEach(marker => map.removeLayer(marker));
+            binMarkers = [];
+
+            // Fetch actual bin data from server
+            fetch('/authority/api/bins')
+                .then(response => response.json())
+                .then(bins => {
+                    bins.forEach(bin => {
+                        const status = getBinStatusFromFillLevel(bin.fillLevel, bin.lastEmptied);
+                        const color = getBinColor(status);
+                        
+                        const marker = L.circleMarker([bin.latitude, bin.longitude], {
+                            radius: 8,
+                            fillColor: color,
+                            color: '#fff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(map);
+
+                        marker.bindPopup(`
+                            <div>
+                                <strong>${bin.qrCode}</strong><br>
+                                Fill Level: ${bin.fillLevel}%<br>
+                                Status: ${status.toUpperCase()}<br>
+                                Location: ${bin.location}
+                            </div>
+                        `);
+
+                        binMarkers.push(marker);
+                    });
+                })
+                .catch(error => {
+                    console.error('Failed to fetch bin data:', error);
+                });
+        }
+
+        function getBinStatusFromFillLevel(fillLevel, lastEmptied) {
+            if (fillLevel >= 90) {
+                // Check if overdue (>48 hours)
+                const now = new Date();
+                const lastEmptiedDate = new Date(lastEmptied);
+                const hoursSinceEmptied = (now - lastEmptiedDate) / (1000 * 60 * 60);
+                
+                if (hoursSinceEmptied > 48) {
+                    return 'overdue';
+                }
+                return 'nearing';
+            } else if (fillLevel >= 50) {
+                return 'nearing';
+            } else {
+                return 'normal';
+            }
+        }
+
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            const timeString = now.toISOString().slice(0, 19).replace('T', ' ');
+            document.getElementById('lastUpdated').textContent = timeString;
+        }
+
+
+
+
+
+
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
 </body>
 </html>
 
