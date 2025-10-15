@@ -318,6 +318,35 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        /* Modal Form Enhancements */
+        #qrCode:focus {
+            border-color: #3498db !important;
+            background: white !important;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1) !important;
+        }
+
+        #notes:focus {
+            border-color: #9b59b6 !important;
+            background: white !important;
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1) !important;
+        }
+
+        button[type="button"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3) !important;
+        }
+
+        .modal-content {
+            border-radius: 16px !important;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+        }
         
         .bin-location {
             color: #666;
@@ -1038,68 +1067,114 @@
     
     <!-- Scan Bin QR Code Modal -->
     <div id="scanBinModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <span class="close" onclick="closeScanBinModal()">&times;</span>
-                <h2>📱 Scan Bin QR Code</h2>
-                <p>Enter or scan the QR code from the waste bin to report its fill level.</p>
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                <span class="close" onclick="closeScanBinModal()" style="color: white; font-size: 1.8rem;">&times;</span>
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem; display: flex; justify-content: center; align-items: center;">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">smartphone</span>
+                    </div>
+                    <h2 style="margin: 0; font-size: 1.3rem; font-weight: 600;">Scan Bin QR Code</h2>
+                    <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Enter or scan the QR code to report bin status</p>
+                </div>
             </div>
             
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 1.5rem; background: white;">
                 <form action="/resident/submit-disposal" method="post">
-                <div class="form-group">
-                    <label for="qrCode">Bin QR Code *</label>
-                    <div style="display: flex; gap: 0.75rem; align-items: stretch;">
-                        <input type="text" id="qrCode" name="qrCode" required 
-                               placeholder="e.g., BIN001" 
-                               pattern="BIN\d{3,4}"
-                               title="QR code must be in format: BIN followed by 3-4 digits"
-                               style="flex: 1;">
-                        <button type="button" onclick="startQRScanner()" class="btn btn-primary" 
-                                style="padding: 0.75rem 1.5rem; margin: 0; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem;">
-                            📷 Scan
+                
+                <!-- QR Code Input Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">qr_code_scanner</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Bin QR Code</h3>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div style="flex: 1; position: relative;">
+                            <input type="text" id="qrCode" name="qrCode" required 
+                                   placeholder="Enter QR code (e.g., BIN001)" 
+                                   pattern="BIN\d{3,4}"
+                                   title="QR code must be in format: BIN followed by 3-4 digits"
+                                   style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; transition: all 0.3s; background: #f8f9fa;">
+                            <small style="color: #6c757d; margin-top: 0.25rem; display: block; font-size: 0.75rem;">Format: BIN + numbers (e.g., BIN001, BIN1234)</small>
+                        </div>
+                        <button type="button" onclick="startQRScanner()" 
+                                style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; white-space: nowrap; font-size: 0.9rem; height: fit-content; margin-top: 0;">
+                            <span class="material-icons" style="font-size: 1rem;">camera_alt</span>
+                            Scan
                         </button>
                     </div>
-                    <small>Format: BIN + numbers (e.g., BIN001, BIN1234)</small>
                 </div>
                 
                 <!-- QR Scanner Video -->
                 <div id="qrScanner" style="display: none; margin-bottom: 1.5rem;">
-                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 1.25rem; border-radius: 12px; border: 1px solid #dee2e6; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="font-size: 1.5rem;">📷</span>
-                                <strong style="color: #2c3e50; font-size: 1rem;">QR Code Scanner</strong>
+                                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <span class="material-icons" style="color: white; font-size: 1.1rem;">camera_alt</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #2c3e50; font-size: 1rem;">QR Code Scanner</strong>
+                                    <p style="margin: 0; color: #6c757d; font-size: 0.8rem;">Point camera at QR code</p>
+                                </div>
                             </div>
                             <button type="button" onclick="stopQRScanner()" 
-                                    style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s;">
-                                ✕ Close
+                                    style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                                <span class="material-icons" style="font-size: 1rem;">close</span>
+                                Close
                             </button>
                         </div>
-                        <div id="qrVideo" style="width: 100%; max-width: 400px; margin: 0 auto; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
-                        <div id="scanResult" style="margin-top: 1rem; padding: 0.75rem; background: white; border-radius: 6px; display: none; text-align: center; font-weight: 500;"></div>
+                        <div id="qrVideo" style="width: 100%; max-width: 350px; margin: 0 auto; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.15);"></div>
+                        <div id="scanResult" style="margin-top: 1rem; padding: 0.75rem; background: white; border-radius: 8px; display: none; text-align: center; font-weight: 500; border: 2px solid #27ae60; color: #27ae60; font-size: 0.9rem;"></div>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="fillLevel">Fill Level (0-100%) *</label>
-                    <input type="range" id="fillLevel" name="fillLevel" 
-                           class="slider" min="0" max="100" value="50" 
-                           oninput="updateFillDisplay(this.value)">
-                    <div class="fill-display">
-                        <span id="fillLevelDisplay">50</span><span style="font-size: 1.5rem;">%</span>
+                <!-- Fill Level Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">straighten</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Fill Level</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <input type="range" id="fillLevel" name="fillLevel" 
+                               class="slider" min="0" max="100" value="50" 
+                               oninput="updateFillDisplay(this.value)"
+                               style="width: 100%; margin-bottom: 0.75rem;">
+                        <div class="fill-display" style="text-align: center; padding: 0.75rem; background: white; border-radius: 8px; border: 2px solid #e9ecef;">
+                            <span id="fillLevelDisplay" style="font-size: 2rem; font-weight: 700; color: #2c3e50;">50</span>
+                            <span style="font-size: 1.2rem; color: #6c757d; margin-left: 0.5rem;">%</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="notes">Additional Notes (Optional)</label>
-                    <textarea id="notes" name="notes" rows="3" 
-                              placeholder="Any additional observations about the bin..."></textarea>
+                <!-- Notes Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">note</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Additional Notes</h3>
+                        <span style="background: #e9ecef; color: #6c757d; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem;">Optional</span>
+                    </div>
+                    
+                    <textarea id="notes" name="notes" rows="2" 
+                              placeholder="Any additional observations about the bin condition..."
+                              style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; resize: vertical; transition: all 0.3s; background: #f8f9fa; font-family: inherit;"></textarea>
                 </div>
                 
-                    <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem; font-size: 1rem;">
-                        ✓ Submit Waste Disposal
-                    </button>
+                <!-- Submit Button -->
+                <button type="submit" 
+                        style="width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-icons" style="font-size: 1.1rem;">check_circle</span>
+                    Submit Waste Disposal Report
+                </button>
+                
                 </form>
             </div>
         </div>
@@ -1198,5 +1273,6 @@
     </script>
 </body>
 </html>
+
 
 
