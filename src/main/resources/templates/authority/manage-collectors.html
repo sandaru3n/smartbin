@@ -615,22 +615,22 @@
             <div class="stat-card">
                 <div class="stat-icon">👨‍💼</div>
                 <div class="stat-label">Total Collectors</div>
-                <div class="stat-value" id="totalCollectors">0</div>
+                <div class="stat-value" id="totalCollectors" th:text="${collectors != null ? collectors.size() : 0}">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">✅</div>
                 <div class="stat-label">Active Collectors</div>
-                <div class="stat-value" id="activeCollectors">0</div>
+                <div class="stat-value" id="activeCollectors">4</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🚛</div>
                 <div class="stat-label">On Route</div>
-                <div class="stat-value" id="busyCollectors">0</div>
+                <div class="stat-value" id="busyCollectors">3</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📍</div>
                 <div class="stat-label">Regions Covered</div>
-                <div class="stat-value" id="regionsCovered">0</div>
+                <div class="stat-value" id="regionsCovered">3</div>
             </div>
         </div>
 
@@ -638,7 +638,13 @@
         <div class="collectors-table-container">
             <div class="table-header">
                 <h2>Collectors List</h2>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background: #e3f2fd; color: #1976d2; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600;">
+                        <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">people</span>
+                        <span th:text="${collectors != null ? collectors.size() : 0}">0</span> Collectors Loaded
+                    </div>
                 <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search collectors..." onkeyup="filterTable()">
+                </div>
             </div>
 
             <table class="collectors-table" id="collectorsTable">
@@ -677,7 +683,7 @@
                         </td>
                         <td>
                             <div class="bin-assignments-cell" th:attr="data-collector-id=${collector.id}">
-                                <span style="color: #5f6368; font-size: 0.875rem;">No assignments</span>
+                                <span style="color: #5f6368; font-size: 0.875rem;">No active routes</span>
                             </div>
                         </td>
                         <td>
@@ -763,56 +769,286 @@
     <script>
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            updateStatistics();
+            try {
+                console.log('Page loaded - initializing...');
+                
+                // Set immediate default values to prevent stuck "Loading..."
+                setImmediateDefaults();
+                
+                // Don't call updateStatistics() - let server-side rendering handle total count
             checkEmptyState();
+                
+                // Calculate initial regions count from server-rendered data
+                updateInitialRegionsCount();
+                
             // Delay bin assignments loading to ensure DOM is ready
             setTimeout(() => {
-                loadBinAssignments();
+                    try {
+                        console.log('Starting data load after delay...');
+                        loadRealCollectorData();
                 updateCollectorStatus();
+                    } catch (error) {
+                        console.error('Error in delayed data load:', error);
+                        // Defaults are already set, so page will still be usable
+                    }
             }, 100);
+            } catch (error) {
+                console.error('Error in page initialization:', error);
+                // Try to set defaults even if initialization fails
+                try {
+                    setImmediateDefaults();
+                } catch (e) {
+                    console.error('Failed to set defaults:', e);
+                }
+            }
         });
-
-        function updateCollectorStatus() {
-            console.log('Updating collector status from assignments...');
+        
+        // Set immediate default values to prevent stuck "Loading..."
+        function setImmediateDefaults() {
+            console.log('Setting immediate defaults...');
+            document.getElementById('activeCollectors').textContent = '0';
+            document.getElementById('busyCollectors').textContent = '0';
+            document.getElementById('regionsCovered').textContent = '0';
+            console.log('Immediate defaults set');
+        }
+        
+        // Calculate initial regions count from server-rendered table
+        function updateInitialRegionsCount() {
+            const regions = new Set();
+            document.querySelectorAll('.region-badge').forEach(badge => {
+                const region = badge.textContent.trim();
+                if (region !== 'Not Assigned' && region !== '') {
+                    regions.add(region);
+                }
+            });
+            document.getElementById('regionsCovered').textContent = regions.size;
+        }
+        
+        // Load real collector data from database (routes, collections, etc.)
+        function loadRealCollectorData() {
+            console.log('Loading real collector data from database...');
             
-            // Load assignment history from database
-            fetch('/authority/api/assignments/all')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Loaded assignments for status update:', data);
+            fetch('/authority/api/collectors')
+                .then(response => {
+                    console.log('API Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(collectors => {
+                    console.log('Loaded collector data:', collectors);
                     
-                    // Group assignments by collector ID
-                    const assignmentsByCollector = {};
-                    data.forEach(assignment => {
-                        const collectorId = assignment.collectorId;
-                        if (!assignmentsByCollector[collectorId]) {
-                            assignmentsByCollector[collectorId] = [];
+                    if (!collectors || collectors.length === 0) {
+                        console.warn('No collectors data received from API');
+                        setDefaultStatistics();
+                        return;
+                    }
+                    
+                    collectors.forEach(collector => {
+                        const collectorId = collector.id;
+                        const cell = document.querySelector(`.bin-assignments-cell[data-collector-id="${collectorId}"]`);
+                        
+                        if (!cell) {
+                            console.warn('Cell not found for collector:', collectorId);
+                            return;
                         }
-                        assignmentsByCollector[collectorId].push(assignment);
+                        
+                        // Build display HTML
+                        let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+                        
+                        // Show route information
+                        if (collector.routes && collector.routes.length > 0) {
+                            const activeRoutes = collector.routes.filter(r => r.status === 'ASSIGNED' || r.status === 'IN_PROGRESS');
+                            const completedRoutes = collector.routes.filter(r => r.status === 'COMPLETED');
+                            
+                            html += '<div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">';
+                            
+                            // Show active routes
+                            activeRoutes.slice(0, 2).forEach(route => {
+                                const statusColor = route.status === 'IN_PROGRESS' ? '#ff9800' : '#4caf50';
+                                html += `
+                                    <span style="background: ${statusColor}20; color: ${statusColor}; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">
+                                        ${route.status === 'IN_PROGRESS' ? '🚛' : '📋'} ${route.name || route.routeName || 'Route'}
+                                    </span>
+                                `;
+                            });
+                            
+                            if (activeRoutes.length > 2) {
+                                html += `
+                                    <span style="background: #f1f3f4; color: #5f6368; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                        +${activeRoutes.length - 2} more
+                                    </span>
+                                `;
+                            }
+                            
+                            html += '</div>';
+                            
+                            // Show statistics
+                            html += `
+                                <div style="color: #5f6368; font-size: 0.75rem;">
+                                    <i class="fas fa-route"></i> ${collector.assignedRoutes || 0} assigned, ${collector.inProgressRoutes || 0} in progress
+                                </div>
+                            `;
+                            
+                            if (collector.todayCompletedRoutes > 0) {
+                                html += `
+                                    <div style="color: #4caf50; font-size: 0.75rem; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> ${collector.todayCompletedRoutes} completed today
+                                    </div>
+                                `;
+                            }
+                            
+                            if (collector.todayCollections > 0) {
+                                html += `
+                                    <div style="color: #1a73e8; font-size: 0.75rem;">
+                                        <i class="fas fa-trash-alt"></i> ${collector.todayCollections} bins collected today
+                                    </div>
+                                `;
+                            }
+                        } else {
+                            html += '<span style="color: #5f6368; font-size: 0.875rem;">No active routes</span>';
+                        }
+                        
+                        html += '</div>';
+                        cell.innerHTML = html;
                     });
                     
-                    // Update status badges
-                    document.querySelectorAll('.status-badge[data-collector-id]').forEach(badge => {
-                        const collectorId = parseInt(badge.getAttribute('data-collector-id'));
-                        const assignments = assignmentsByCollector[collectorId] || [];
+                    // Update statistics with real data
+                    updateStatisticsWithRealData(collectors);
+                })
+                .catch(error => {
+                    console.error('Failed to load collector data:', error);
+                    console.error('Error details:', error.message);
+                    // Set default statistics
+                    setDefaultStatistics();
+                    // Show "No active routes" in cells
+                    document.querySelectorAll('.bin-assignments-cell').forEach(cell => {
+                        cell.innerHTML = '<span style="color: #5f6368; font-size: 0.875rem;">No active routes</span>';
+                    });
+                });
+        }
+        
+        // Set default statistics when API fails
+        function setDefaultStatistics() {
+            console.log('Setting default statistics...');
+            document.getElementById('activeCollectors').textContent = '0';
+            document.getElementById('busyCollectors').textContent = '0';
+            // regionsCovered is already set by updateInitialRegionsCount()
+        }
+        
+        function updateStatisticsWithRealData(collectors) {
+            console.log('Updating statistics with real data...');
+            console.log('Total collectors received:', collectors.length);
+            
+            // Don't update totalCollectors - it's already set by server-side rendering
+            let activeCollectors = 0;  // Collectors with ASSIGNED or IN_PROGRESS routes
+            let busyCollectors = 0;     // Collectors with IN_PROGRESS routes (On Route)
+            const regions = new Set();
+            
+            collectors.forEach(collector => {
+                console.log(`Collector ${collector.name}:`, {
+                    routes: collector.routes ? collector.routes.length : 0,
+                    assignedRoutes: collector.assignedRoutes,
+                    inProgressRoutes: collector.inProgressRoutes,
+                    region: collector.region
+                });
+                
+                // Count collectors with any assigned routes (ASSIGNED or IN_PROGRESS)
+                let hasAnyAssignedRoute = false;
+                let hasInProgressRoute = false;
+                
+                if (collector.routes && collector.routes.length > 0) {
+                    // Check if collector has any ASSIGNED or IN_PROGRESS routes
+                    hasAnyAssignedRoute = collector.routes.some(r => 
+                        r.status === 'ASSIGNED' || r.status === 'IN_PROGRESS'
+                    );
+                    // Check if collector has any IN_PROGRESS routes
+                    hasInProgressRoute = collector.routes.some(r => 
+                        r.status === 'IN_PROGRESS'
+                    );
+                }
+                
+                // Alternative: Use the pre-calculated counts from API
+                if (collector.assignedRoutes > 0 || collector.inProgressRoutes > 0) {
+                    hasAnyAssignedRoute = true;
+                }
+                if (collector.inProgressRoutes > 0) {
+                    hasInProgressRoute = true;
+                }
+                
+                console.log(`  - Has assigned routes: ${hasAnyAssignedRoute}, Has in progress: ${hasInProgressRoute}`);
+                
+                // Count as active if they have any assigned routes
+                if (hasAnyAssignedRoute) {
+                    activeCollectors++;
+                    console.log(`  - Counted as ACTIVE (has assigned routes)`);
+                }
+                
+                // Count as busy if they have in-progress routes
+                if (hasInProgressRoute) {
+                    busyCollectors++;
+                    console.log(`  - Counted as BUSY (On Route - in progress)`);
+                }
+                
+                if (!hasAnyAssignedRoute) {
+                    console.log(`  - No assigned routes, not counted as active`);
+                }
+                
+                // Count regions
+                if (collector.region && collector.region !== 'No region assigned') {
+                    regions.add(collector.region);
+                }
+            });
+            
+            console.log('Final counts:', {
+                activeCollectors: activeCollectors,
+                busyCollectors: busyCollectors,
+                regions: regions.size
+            });
+            console.log('Active Collectors = collectors with ASSIGNED or IN_PROGRESS routes');
+            console.log('On Route = collectors with IN_PROGRESS routes');
+            
+            // Update the statistics
+            // Active Collectors = total collectors with any assigned routes
+            document.getElementById('activeCollectors').textContent = activeCollectors;
+            // On Route = collectors currently collecting
+            document.getElementById('busyCollectors').textContent = busyCollectors;
+            // Regions
+            document.getElementById('regionsCovered').textContent = regions.size;
+            
+            console.log('Statistics updated successfully!');
+        }
+
+        function updateCollectorStatus() {
+            console.log('Updating collector status from real route data...');
+            
+            // Use the real collector data from the API
+            fetch('/authority/api/collectors')
+                .then(response => response.json())
+                .then(collectors => {
+                    console.log('Loaded collectors for status update:', collectors);
+                    
+                    // Update status badges based on real route data
+                    collectors.forEach(collector => {
+                        const badge = document.querySelector(`.status-badge[data-collector-id="${collector.id}"]`);
+                        if (!badge) return;
                         
-                        // Determine status based on assignments
                         let status = 'Available';
                         let statusClass = 'status-available';
                         
-                        if (assignments.length > 0) {
-                            // Check if any assignments are IN_PROGRESS
-                            const inProgress = assignments.some(a => a.status === 'IN_PROGRESS');
-                            const assigned = assignments.some(a => a.status === 'ASSIGNED');
-                            const completed = assignments.filter(a => a.status === 'COMPLETED').length;
+                        // Check if collector has any routes
+                        if (collector.routes && collector.routes.length > 0) {
+                            const hasInProgress = collector.routes.some(r => r.status === 'IN_PROGRESS');
+                            const hasAssigned = collector.routes.some(r => r.status === 'ASSIGNED');
                             
-                            if (inProgress) {
+                            if (hasInProgress) {
                                 status = 'On Route';
                                 statusClass = 'status-busy';
-                            } else if (assigned) {
+                            } else if (hasAssigned) {
                                 status = 'Active';
                                 statusClass = 'status-active';
-                            } else if (completed > 0) {
+                            } else {
                                 status = 'Active';
                                 statusClass = 'status-active';
                             }
@@ -821,16 +1057,13 @@
                         badge.textContent = status;
                         badge.className = 'status-badge ' + statusClass;
                     });
-                    
-                    // Update statistics after status update
-                    updateStatisticsWithAssignments(assignmentsByCollector);
                 })
                 .catch(error => {
-                    console.error('Failed to load assignments for status:', error);
-                    // Default to "Active" if can't load
+                    console.error('Failed to load collector status:', error);
+                    // Default to "Available" if can't load
                     document.querySelectorAll('.status-badge[data-collector-id]').forEach(badge => {
-                        badge.textContent = 'Active';
-                        badge.className = 'status-badge status-active';
+                        badge.textContent = 'Available';
+                        badge.className = 'status-badge status-available';
                     });
                 });
         }

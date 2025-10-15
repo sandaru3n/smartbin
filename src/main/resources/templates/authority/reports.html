@@ -95,6 +95,68 @@
             margin: 0 auto;
         }
 
+        .analytics-dashboard {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .analytics-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .report-config {
             background: white;
             border-radius: 8px;
@@ -436,6 +498,64 @@
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
+        <!-- Real-time Analytics Dashboard -->
+        <div class="analytics-dashboard">
+            <h2>Real-time Analytics Dashboard</h2>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Collection Trends</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="collectionTrendsChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Collector Performance</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="collectorPerformanceChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Bin Status Distribution</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="binStatusChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Route Efficiency</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="routeEfficiencyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Report Configuration Section -->
         <div class="report-config">
             <h2 class="config-title">Report Configuration</h2>
@@ -672,6 +792,10 @@
             document.getElementById('region').value = 'all';
             document.getElementById('reportType').value = 'bin-status';
             
+            // Initialize analytics dashboard
+            initializeAnalyticsDashboard();
+            startRealTimeUpdates();
+            
             // Load default report
             loadDefaultReport();
             
@@ -684,6 +808,171 @@
             
             // Update metadata
             updateReportMetadata('bin-status', 'all', 'week');
+        });
+
+        // Real-time analytics dashboard
+        let analyticsInterval;
+        let collectionTrendsChart, collectorPerformanceChart, binStatusChart, routeEfficiencyChart;
+
+        function initializeAnalyticsDashboard() {
+            // Initialize Collection Trends Chart
+            const collectionCtx = document.getElementById('collectionTrendsChart').getContext('2d');
+            collectionTrendsChart = new Chart(collectionCtx, {
+                type: 'line',
+                data: {
+                    labels: ['6h ago', '5h ago', '4h ago', '3h ago', '2h ago', '1h ago', 'Now'],
+                    datasets: [{
+                        label: 'Collections',
+                        data: [12, 19, 15, 25, 22, 30, 28],
+                        borderColor: '#1a73e8',
+                        backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Initialize Collector Performance Chart
+            const collectorCtx = document.getElementById('collectorPerformanceChart').getContext('2d');
+            collectorPerformanceChart = new Chart(collectorCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['John D.', 'Jane S.', 'Mike J.', 'Sarah K.', 'David L.'],
+                    datasets: [{
+                        label: 'Collections Today',
+                        data: [15, 12, 18, 14, 16],
+                        backgroundColor: ['#4caf50', '#2196f3', '#ff9800', '#9c27b0', '#f44336']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Initialize Bin Status Chart
+            const binCtx = document.getElementById('binStatusChart').getContext('2d');
+            binStatusChart = new Chart(binCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Empty', 'Partial', 'Full', 'Overdue'],
+                    datasets: [{
+                        data: [45, 30, 20, 5],
+                        backgroundColor: ['#4caf50', '#ff9800', '#f44336', '#9e9e9e']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Initialize Route Efficiency Chart
+            const routeCtx = document.getElementById('routeEfficiencyChart').getContext('2d');
+            routeEfficiencyChart = new Chart(routeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Efficiency %',
+                        data: [85, 92, 78, 88, 95, 82, 90],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function startRealTimeUpdates() {
+            // Update analytics every 30 seconds
+            analyticsInterval = setInterval(() => {
+                updateAnalyticsData();
+            }, 30000);
+        }
+
+        function updateAnalyticsData() {
+            fetch('/authority/api/analytics')
+                .then(response => response.json())
+                .then(data => {
+                    // Update Collection Trends
+                    if (collectionTrendsChart && data.collectionTrends) {
+                        collectionTrendsChart.data.datasets[0].data = data.collectionTrends;
+                        collectionTrendsChart.update();
+                    }
+
+                    // Update Collector Performance
+                    if (collectorPerformanceChart && data.collectorPerformance) {
+                        collectorPerformanceChart.data.labels = data.collectorPerformance.labels;
+                        collectorPerformanceChart.data.datasets[0].data = data.collectorPerformance.data;
+                        collectorPerformanceChart.update();
+                    }
+
+                    // Update Bin Status
+                    if (binStatusChart && data.binStatus) {
+                        binStatusChart.data.datasets[0].data = data.binStatus;
+                        binStatusChart.update();
+                    }
+
+                    // Update Route Efficiency
+                    if (routeEfficiencyChart && data.routeEfficiency) {
+                        routeEfficiencyChart.data.datasets[0].data = data.routeEfficiency;
+                        routeEfficiencyChart.update();
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to update analytics:', error);
+                });
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (analyticsInterval) {
+                clearInterval(analyticsInterval);
+            }
         });
 
         // Form submission handling
