@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -103,13 +104,20 @@ public class AuthorityController {
             return "redirect:/authority/login";
         }
         
-        // Get full bins that need collection
-        List<Bin> fullBins = binService.findBinsByStatus(Bin.BinStatus.FULL);
-        model.addAttribute("fullBins", fullBins);
+        // Get all bins that need collection (full, overdue, or alerted bins)
+        List<Bin> allBins = binService.findAllBins();
+        List<Bin> fullBins = new ArrayList<>();
         
-        // Get overdue bins
-        List<Bin> overdueBins = binService.findOverdueBins();
-        model.addAttribute("overdueBins", overdueBins);
+        // Filter bins that need collection: FULL, OVERDUE, or have alerts
+        for (Bin bin : allBins) {
+            if (bin.getStatus() == Bin.BinStatus.FULL || 
+                bin.getStatus() == Bin.BinStatus.OVERDUE || 
+                bin.getAlertFlag()) {
+                fullBins.add(bin);
+            }
+        }
+        
+        model.addAttribute("fullBins", fullBins);
         
         // Get available collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
@@ -158,7 +166,17 @@ public class AuthorityController {
         
         try {
             @SuppressWarnings("unchecked")
-            List<Long> binIds = (List<Long>) request.get("binIds");
+            List<Object> binIdsObj = (List<Object>) request.get("binIds");
+            List<Long> binIds = new ArrayList<>();
+            for (Object binIdObj : binIdsObj) {
+                if (binIdObj instanceof Integer) {
+                    binIds.add(((Integer) binIdObj).longValue());
+                } else if (binIdObj instanceof Long) {
+                    binIds.add((Long) binIdObj);
+                } else {
+                    binIds.add(Long.valueOf(binIdObj.toString()));
+                }
+            }
             Long collectorId = Long.valueOf(request.get("collectorId").toString());
             
             User collector = userService.findById(collectorId)
@@ -197,19 +215,19 @@ public class AuthorityController {
         return "authority/routes";
     }
 
-    @GetMapping("/collectors")
+    @GetMapping("/manage-collectors")
     public String manageCollectors(HttpSession session, Model model) {
         User user = validateAuthorityUser(session);
         if (user == null) {
             return "redirect:/authority/login";
         }
         
+        // Get all collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
-        
         model.addAttribute("collectors", collectors);
         model.addAttribute("user", user);
         
-        return "authority/collectors";
+        return "authority/manage-collectors";
     }
 
     @PostMapping("/api/assign-collector")
@@ -225,19 +243,27 @@ public class AuthorityController {
             Long collectorId = Long.valueOf(request.get("collectorId").toString());
             String region = request.get("region").toString();
             
+            System.out.println("Assigning collector ID: " + collectorId + " to region: " + region);
+            
             User collector = userService.findById(collectorId)
                 .orElseThrow(() -> new RuntimeException("Collector not found"));
             
+            System.out.println("Found collector: " + collector.getName() + ", current region: " + collector.getRegion());
+            
             // Update collector region assignment
             collector.setRegion(region);
-            userService.updateUser(collector);
+            User updatedCollector = userService.updateUser(collector);
+            
+            System.out.println("Updated collector region to: " + updatedCollector.getRegion());
             
             // Send notification to collector
             notificationService.sendRegionAssignmentNotification(collector, region);
             
+            System.out.println("Sent notification to collector");
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Collector assigned to region successfully!");
+            response.put("message", "Collector " + collector.getName() + " assigned to " + region + " successfully!");
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -258,6 +284,7 @@ public class AuthorityController {
         model.addAttribute("user", user);
         return "authority/reports";
     }
+
 
     @GetMapping("/api/bin-status")
     @ResponseBody
@@ -313,6 +340,163 @@ public class AuthorityController {
             return ResponseEntity.ok(binData);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @PostMapping("/api/optimize-route")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> optimizeRoute(@RequestBody Map<String, Object> request,
+                                                             HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            @SuppressWarnings("unchecked")
+            List<Object> binIdsObj = (List<Object>) request.get("binIds");
+            List<Long> binIds = new ArrayList<>();
+            for (Object binIdObj : binIdsObj) {
+                if (binIdObj instanceof Integer) {
+                    binIds.add(((Integer) binIdObj).longValue());
+                } else if (binIdObj instanceof Long) {
+                    binIds.add((Long) binIdObj);
+                } else {
+                    binIds.add(Long.valueOf(binIdObj.toString()));
+                }
+            }
+            Long collectorId = Long.valueOf(request.get("collectorId").toString());
+            
+            if (binIds == null || binIds.isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "No bins selected for route optimization");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            User collector = userService.findById(collectorId)
+                .orElseThrow(() -> new RuntimeException("Collector not found"));
+            
+            // Optimize route using TSP algorithm
+            Route route = routeService.optimizeRoute(binIds, collector, user);
+            
+            // Send notification to collector
+            notificationService.sendRouteNotification(collector, route);
+            
+            // Prepare response with route details
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Route optimized and assigned successfully!");
+            response.put("routeId", route.getId());
+            response.put("routeName", route.getRouteName());
+            response.put("estimatedDuration", route.getEstimatedDurationMinutes());
+            response.put("totalDistance", route.getTotalDistanceKm());
+            response.put("numBins", binIds.size());
+            
+            // Add optimized route coordinates for map visualization
+            List<Map<String, Object>> routeCoordinates = new ArrayList<>();
+            for (Long binId : binIds) {
+                Optional<Bin> binOpt = binService.findById(binId);
+                if (binOpt.isPresent()) {
+                    Bin bin = binOpt.get();
+                    Map<String, Object> coord = new HashMap<>();
+                    coord.put("id", bin.getId());
+                    coord.put("lat", bin.getLatitude());
+                    coord.put("lng", bin.getLongitude());
+                    coord.put("qrCode", bin.getQrCode());
+                    coord.put("location", bin.getLocation());
+                    routeCoordinates.add(coord);
+                }
+            }
+            response.put("routeCoordinates", routeCoordinates);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to optimize route: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @GetMapping("/api/route/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRouteDetails(@PathVariable Long id,
+                                                              HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Optional<Route> routeOpt = routeService.findById(id);
+            if (routeOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Route route = routeOpt.get();
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", route.getId());
+            response.put("routeName", route.getRouteName());
+            response.put("status", route.getStatus());
+            response.put("collectorName", route.getCollector().getName());
+            response.put("estimatedDuration", route.getEstimatedDurationMinutes());
+            response.put("totalDistance", route.getTotalDistanceKm());
+            response.put("assignedDate", route.getAssignedDate());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @PostMapping("/api/reports/generate")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> generateReportData(@RequestBody Map<String, Object> request,
+                                                                  HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            String reportType = request.get("reportType").toString();
+            String region = request.get("region") != null ? request.get("region").toString() : null;
+            String dateRange = request.get("dateRange") != null ? request.get("dateRange").toString() : null;
+            
+            ReportDTO reportDTO = new ReportDTO();
+            reportDTO.setReportType(reportType);
+            
+            Map<String, Object> reportData;
+            
+            switch (reportType) {
+                case "collection":
+                    reportData = reportService.generateCollectionReport(reportDTO);
+                    break;
+                case "performance":
+                    reportData = reportService.generatePerformanceReport(reportDTO);
+                    break;
+                case "bin-status":
+                    reportData = reportService.generateBinStatusReport(reportDTO);
+                    break;
+                case "overdue":
+                    reportData = reportService.generateOverdueBinsReport(reportDTO);
+                    break;
+                default:
+                    reportData = reportService.generateSystemOverviewReport();
+            }
+            
+            // Add additional metadata
+            reportData.put("region", region);
+            reportData.put("dateRange", dateRange);
+            reportData.put("generatedAt", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            reportData.put("generatedBy", user.getName());
+            
+            return ResponseEntity.ok(reportData);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Failed to generate report: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

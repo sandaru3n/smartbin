@@ -16,42 +16,63 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #333;
+            min-height: 100vh;
         }
 
         .header {
             background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 0 0 16px 16px;
         }
 
         .header h1 {
             color: #2c3e50;
-            font-size: 1.8rem;
-            font-weight: 600;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1rem;
             color: #666;
         }
 
+        .notification-icon {
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .notification-icon:hover {
+            color: #3498db;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
         .user-icon {
-            width: 32px;
-            height: 32px;
-            background: #3498db;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .main-container {
@@ -62,29 +83,37 @@
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
         .metric-card {
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.12);
         }
 
         .metric-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
+            position: relative;
         }
 
         .metric-content {
@@ -93,58 +122,87 @@
 
         .metric-label {
             color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .metric-value {
-            font-size: 1.8rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: #2c3e50;
+            line-height: 1;
         }
 
         .actions-section {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
             flex-wrap: wrap;
         }
 
         .action-btn {
-            background: #2c3e50;
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-weight: 500;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-height: 60px;
         }
 
         .action-btn:hover {
-            background: #34495e;
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
         }
 
         .action-btn.secondary {
             background: white;
             color: #2c3e50;
             border: 2px solid #e9ecef;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
         .action-btn.secondary:hover {
             background: #f8f9fa;
             border-color: #dee2e6;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
         }
 
         .map-section {
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.8);
             margin-bottom: 2rem;
         }
 
@@ -152,19 +210,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .map-title {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             font-weight: 600;
             color: #2c3e50;
         }
 
         .legend {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .legend-item {
@@ -172,15 +231,17 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .legend-dot {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .legend-dot.normal { background: #3498db; }
+        .legend-dot.normal { background: #27ae60; }
         .legend-dot.nearing { background: #f39c12; }
         .legend-dot.overdue { background: #e74c3c; }
 
@@ -467,6 +528,7 @@
             background: #e74c3c;
         }
 
+
         @media (max-width: 768px) {
             .main-container {
                 padding: 1rem;
@@ -491,8 +553,9 @@
     <div class="header">
         <h1>Waste Management Dashboard</h1>
         <div class="user-info">
-            <span th:text="${user.name}">Authority User</span>
-            <div class="user-icon">👤</div>
+            <div class="notification-icon">🔔</div>
+            <span class="user-name" th:text="${user.name}">Waste Manager</span>
+            <div class="user-icon">W</div>
         </div>
     </div>
 
@@ -505,46 +568,46 @@
         <!-- Key Metrics Section -->
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-icon" style="background: #3498db;">🗑️</div>
+                <div class="metric-icon" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); color: #1976d2;">🗑️</div>
                 <div class="metric-content">
                     <div class="metric-label">Total Bins</div>
-                    <div class="metric-value" th:text="${systemOverview.totalBins}">1,247</div>
+                    <div class="metric-value" th:text="${systemOverview.totalBins}">32</div>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon" style="background: #f39c12;">📊</div>
+                <div class="metric-icon" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); color: #f57c00;">📊</div>
                 <div class="metric-content">
                     <div class="metric-label">Average Full %</div>
-                    <div class="metric-value" th:text="${binStatusReport.averageFillLevel} + '%'">67%</div>
+                    <div class="metric-value" th:text="${binStatusReport.averageFillLevel} + '%'">66%</div>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon" style="background: #e74c3c;">⚠️</div>
+                <div class="metric-icon" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); color: #d32f2f;">⚠️</div>
                 <div class="metric-content">
                     <div class="metric-label">Overdue Bins</div>
-                    <div class="metric-value" th:text="${binStatusReport.overdueBins}">23</div>
+                    <div class="metric-value" th:text="${binStatusReport.overdueBins}">4</div>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon" style="background: #27ae60;">🕐</div>
+                <div class="metric-icon" style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); color: #388e3c;">🕐</div>
                 <div class="metric-content">
                     <div class="metric-label">Last Collection</div>
-                    <div class="metric-value" th:text="${systemOverview.lastCollectionTime}">2h ago</div>
+                    <div class="metric-value" th:text="${systemOverview.lastCollectionTime}">0h ago</div>
                 </div>
             </div>
         </div>
 
         <!-- Quick Actions Section -->
         <div class="actions-section">
-            <button class="action-btn" onclick="openDispatchModal()">
+            <a href="/authority/dispatch" class="action-btn">
                 🚛 Dispatch Collector
-            </button>
-            <button class="action-btn secondary" onclick="openReportModal()">
+            </a>
+            <a href="/authority/reports" class="action-btn secondary">
                 📄 Generate Report
-            </button>
-            <button class="action-btn secondary" onclick="openManageCollectorsModal()">
+            </a>
+            <a href="/authority/manage-collectors" class="action-btn secondary">
                 👥 Manage Collectors
-            </button>
+            </a>
         </div>
 
         <!-- Bin Monitoring Map Section -->
@@ -592,120 +655,8 @@
         </div>
     </div>
 
-    <!-- Dispatch Modal -->
-    <div id="dispatchModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Dispatch Collector</h2>
-                <span class="close" onclick="closeDispatchModal()">&times;</span>
-            </div>
-            <form id="dispatchForm">
-                <div class="form-group">
-                    <label for="collectorSelect">Select Collector:</label>
-                    <select id="collectorSelect" required>
-                        <option value="">Choose a collector...</option>
-                        <option th:each="collector : ${collectors}" th:value="${collector.id}" th:text="${collector.name}">Collector Name</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Select Bins for Collection:</label>
-                    <div class="bin-list" id="binList">
-                        <div th:each="bin : ${fullBins}" class="bin-item">
-                            <input type="checkbox" class="checkbox" th:value="${bin.id}" th:id="'bin_' + ${bin.id}">
-                            <div class="bin-info">
-                                <div class="bin-qr" th:text="${bin.qrCode}">QR001</div>
-                                <div class="bin-location" th:text="${bin.location}">Colombo Fort</div>
-                            </div>
-                            <div class="bin-status status-full" th:text="${bin.status}">FULL</div>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeDispatchModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success">Dispatch Route</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Report Generation Modal -->
-    <div id="reportModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Generate Report</h2>
-                <span class="close" onclick="closeReportModal()">&times;</span>
-            </div>
-            <form id="reportForm">
-                <div class="form-group">
-                    <label for="dateRange">Date Range:</label>
-                    <select id="dateRange" required>
-                        <option value="">Select date range</option>
-                        <option value="today">Today</option>
-                        <option value="week">This Week</option>
-                        <option value="month">This Month</option>
-                        <option value="custom">Custom Range</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="region">Region:</label>
-                    <select id="region" required>
-                        <option value="">Select Region</option>
-                        <option value="north">North District</option>
-                        <option value="south">South District</option>
-                        <option value="east">East District</option>
-                        <option value="west">West District</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="reportType">Report Type:</label>
-                    <select id="reportType" required>
-                        <option value="">Select Report Type</option>
-                        <option value="collection">Collection Report</option>
-                        <option value="performance">Performance Report</option>
-                        <option value="bin-status">Bin Status Report</option>
-                        <option value="overdue">Overdue Bins Report</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeReportModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success">📊 Generate Report</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Manage Collectors Modal -->
-    <div id="manageCollectorsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Manage Collectors</h2>
-                <span class="close" onclick="closeManageCollectorsModal()">&times;</span>
-            </div>
-            <form id="manageCollectorsForm">
-                <div class="form-group">
-                    <label for="collectorSelectManage">Select Collector:</label>
-                    <select id="collectorSelectManage" required>
-                        <option value="">Choose a collector...</option>
-                        <option th:each="collector : ${collectors}" th:value="${collector.id}" th:text="${collector.name}">Collector Name</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="regionAssign">Assign to Region:</label>
-                    <select id="regionAssign" required>
-                        <option value="">Select Region</option>
-                        <option value="north">North District</option>
-                        <option value="south">South District</option>
-                        <option value="east">East District</option>
-                        <option value="west">West District</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeManageCollectorsModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success">Assign</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Notification -->
     <div id="notification" class="notification"></div>
@@ -785,6 +736,56 @@
         function refreshMap() {
             addBinMarkers();
             showNotification('Map refreshed successfully!', 'success');
+        }
+        
+        // Store route polyline globally
+        let routePolyline = null;
+        
+        /**
+         * Draw optimized route on the map
+         */
+        function drawOptimizedRoute(routeCoordinates) {
+            // Remove existing route if any
+            if (routePolyline) {
+                map.removeLayer(routePolyline);
+            }
+            
+            // Create array of LatLng points
+            const latLngs = routeCoordinates.map(coord => [coord.lat, coord.lng]);
+            
+            // Draw polyline
+            routePolyline = L.polyline(latLngs, {
+                color: '#2c3e50',
+                weight: 3,
+                opacity: 0.8,
+                dashArray: '10, 5'
+            }).addTo(map);
+            
+            // Add numbered markers for route sequence
+            routeCoordinates.forEach((coord, index) => {
+                const marker = L.marker([coord.lat, coord.lng], {
+                    icon: L.divIcon({
+                        className: 'route-marker',
+                        html: `<div style="background: #2c3e50; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`,
+                        iconSize: [28, 28]
+                    })
+                }).addTo(map);
+                
+                marker.bindPopup(`
+                    <div>
+                        <strong>Stop ${index + 1}</strong><br>
+                        <strong>${coord.qrCode}</strong><br>
+                        ${coord.location}
+                    </div>
+                `);
+                
+                binMarkers.push(marker);
+            });
+            
+            // Fit map to show entire route
+            if (latLngs.length > 0) {
+                map.fitBounds(latLngs, { padding: [50, 50] });
+            }
         }
 
         // Auto-refresh functionality
@@ -893,115 +894,11 @@
             document.getElementById('lastUpdated').textContent = timeString;
         }
 
-        // Modal functions
-        function openDispatchModal() {
-            document.getElementById('dispatchModal').style.display = 'block';
-        }
 
-        function closeDispatchModal() {
-            document.getElementById('dispatchModal').style.display = 'none';
-            document.getElementById('dispatchForm').reset();
-        }
 
-        function openReportModal() {
-            document.getElementById('reportModal').style.display = 'block';
-        }
 
-        function closeReportModal() {
-            document.getElementById('reportModal').style.display = 'none';
-            document.getElementById('reportForm').reset();
-        }
 
-        function openManageCollectorsModal() {
-            document.getElementById('manageCollectorsModal').style.display = 'block';
-        }
 
-        function closeManageCollectorsModal() {
-            document.getElementById('manageCollectorsModal').style.display = 'none';
-            document.getElementById('manageCollectorsForm').reset();
-        }
-
-        // Form submissions
-        document.getElementById('dispatchForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const collectorId = document.getElementById('collectorSelect').value;
-            const selectedBins = Array.from(document.querySelectorAll('#binList input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
-
-            if (selectedBins.length === 0) {
-                showNotification('Please select at least one bin for collection!', 'error');
-                return;
-            }
-
-            // Send dispatch request to API
-            fetch('/authority/api/dispatch', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    collectorId: collectorId,
-                    binIds: selectedBins
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(data.message, 'success');
-                    closeDispatchModal();
-                    // Refresh the dashboard
-                    updateBinStatus();
-                } else {
-                    showNotification(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showNotification('Failed to dispatch route: ' + error.message, 'error');
-            });
-        });
-
-        document.getElementById('reportForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const reportType = document.getElementById('reportType').value;
-            const region = document.getElementById('region').value;
-            const dateRange = document.getElementById('dateRange').value;
-
-            // Redirect to report page
-            window.location.href = `/authority/reports/${reportType}?region=${region}&range=${dateRange}`;
-        });
-
-        document.getElementById('manageCollectorsForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const collectorId = document.getElementById('collectorSelectManage').value;
-            const region = document.getElementById('regionAssign').value;
-
-            // Send assignment request to API
-            fetch('/authority/api/assign-collector', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    collectorId: collectorId,
-                    region: region
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(data.message, 'success');
-                    closeManageCollectorsModal();
-                } else {
-                    showNotification(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showNotification('Failed to assign collector: ' + error.message, 'error');
-            });
-        });
 
         // Notification system
         function showNotification(message, type = 'success') {
