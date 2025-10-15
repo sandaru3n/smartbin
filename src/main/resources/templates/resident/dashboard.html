@@ -242,25 +242,53 @@
         }
         
         .points-badge {
-            background: #27ae60;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 15px;
-            display: inline-block;
-            font-size: 1.2rem;
-            font-weight: bold;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5rem;
             box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .points-icon {
+            font-size: 3rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .points-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
         
         .points-badge .label {
-            font-size: 0.8rem;
-            opacity: 0.9;
+            font-size: 0.9rem;
+            opacity: 0.95;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
         
         .points-badge .value {
-            font-size: 2rem;
-            display: block;
-            margin-top: 0.3rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .points-subtext {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            margin-top: 0.25rem;
         }
         
         .quick-actions {
@@ -542,6 +570,17 @@
                 margin: 5% auto;
                 max-width: 100% !important;
             }
+            
+            .points-badge {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .points-icon {
+                width: 70px;
+                height: 70px;
+            }
         }
     </style>
 </head>
@@ -569,8 +608,14 @@
             
             <div style="margin-top: 1.5rem;">
                 <div class="points-badge">
-                    <span class="label">♻️ Your Recycling Points</span>
-                    <span class="value" th:text="${recyclingPoints}">0</span>
+                    <div class="points-icon">
+                        <span class="material-icons" style="font-size: 3rem;">recycling</span>
+                    </div>
+                    <div class="points-info">
+                        <span class="label">Your Recycling Points</span>
+                        <span class="value" th:text="${recyclingPoints}">0.0</span>
+                        <span class="points-subtext">Keep recycling to earn more!</span>
+                    </div>
                 </div>
             </div>
         </div>
