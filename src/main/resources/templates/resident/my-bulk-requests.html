@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bulk Requests - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header .material-icons {
+            font-size: 2.5rem;
+            color: #e91e63;
+        }
+
+        .new-request-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
+            color: #e91e63;
+            border: 2px solid #f8bbd9;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .new-request-btn:hover {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+        }
+
+        /* Filters */
+        .filters {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-group select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon .material-icons {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .stat-content h3 {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-content p {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        /* Requests Grid */
+        .requests-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .request-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .request-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+        }
+
+        .request-id {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .request-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-PENDING { background: #fff3cd; color: #856404; }
+        .status-APPROVED { background: #d1ecf1; color: #0c5460; }
+        .status-PAYMENT_PENDING { background: #f8d7da; color: #721c24; }
+        .status-PAYMENT_COMPLETED { background: #d4edda; color: #155724; }
+        .status-COLLECTOR_ASSIGNED { background: #d1ecf1; color: #0c5460; }
+        .status-SCHEDULED { background: #cce5ff; color: #004085; }
+        .status-IN_PROGRESS { background: #fff3cd; color: #856404; }
+        .status-COMPLETED { background: #d4edda; color: #155724; }
+        .status-CANCELLED { background: #f8d7da; color: #721c24; }
+
+        .request-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-icon .material-icons {
+            font-size: 1.2rem;
+            color: #e91e63;
+        }
+
+        .detail-content h4 {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-content p {
+            font-size: 1rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e91e63 0%, #f48fb1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #c2185b 0%, #e91e63 100%);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 2px solid #e9ecef;
+            color: #2c3e50;
+        }
+
+        .btn-outline:hover {
+            border-color: #e91e63;
+            color: #e91e63;
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 12px;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .empty-state .material-icons {
+            font-size: 5rem;
+            color: #e9ecef;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .request-details {
+                grid-template-columns: 1fr;
+            }
+
+            .request-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>
+                    <span class="material-icons">list_alt</span>
+                    My Bulk Collection Requests
+                </h1>
+                <a href="/resident/bulk-request" class="new-request-btn">
+                    <span class="material-icons">add</span>
+                    New Request
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                    <span class="material-icons">pending</span>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Requests</h3>
+                    <p th:text="${bulkRequests.size()}">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
+                    <span class="material-icons">hourglass_empty</span>
+                </div>
+                <div class="stat-content">
+                    <h3>Pending</h3>
+                    <p id="pendingCount">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                    <span class="material-icons">check_circle</span>
+                </div>
+                <div class="stat-content">
+                    <h3>Completed</h3>
+                    <p id="completedCount">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);">
+                    <span class="material-icons">payments</span>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Spent</h3>
+                    <p id="totalSpent">LKR 0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <span class="material-icons" style="color: #666;">filter_list</span>
+                <select id="statusFilter" onchange="filterRequests()">
+                    <option value="">All Statuses</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="PAYMENT_PENDING">Payment Pending</option>
+                    <option value="PAYMENT_COMPLETED">Payment Completed</option>
+                    <option value="SCHEDULED">Scheduled</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="material-icons" style="color: #666;">category</span>
+                <select id="categoryFilter" onchange="filterRequests()">
+                    <option value="">All Categories</option>
+                    <option value="FURNITURE">Furniture</option>
+                    <option value="APPLIANCES">Appliances</option>
+                    <option value="ELECTRONICS">Electronics</option>
+                    <option value="MATTRESS">Mattress</option>
+                    <option value="CONSTRUCTION">Construction Waste</option>
+                    <option value="YARD">Yard Waste</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Requests List -->
+        <div class="requests-grid" id="requestsGrid">
+            <div th:if="${bulkRequests.empty}" class="empty-state">
+                <span class="material-icons">inbox</span>
+                <h3>No Bulk Collection Requests Yet</h3>
+                <p>You haven't made any bulk collection requests. Start by creating your first request!</p>
+                <a href="/resident/bulk-request" class="new-request-btn">
+                    <span class="material-icons">add</span>
+                    Create First Request
+                </a>
+            </div>
+
+            <div th:each="request : ${bulkRequests}" class="request-card" th:attr="data-status=${request.status}, data-category=${request.category}">
+                <div class="request-header">
+                    <div>
+                        <div class="request-id" th:text="${request.requestId}">BULK-123456</div>
+                        <div class="request-date" th:text="'Requested on ' + ${#temporals.format(request.createdAt, 'MMM dd, yyyy HH:mm')}">Requested on Jan 15, 2025 14:30</div>
+                    </div>
+                    <span class="status-badge" th:classappend="'status-' + ${request.status}" th:text="${request.status.displayName}">Pending</span>
+                </div>
+
+                <div class="request-details">
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <span class="material-icons">category</span>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Category</h4>
+                            <p th:text="${request.category.displayName}">Furniture</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <span class="material-icons">location_on</span>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Pickup Address</h4>
+                            <p th:text="${request.city}">Colombo</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <span class="material-icons">payments</span>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Total Amount</h4>
+                            <p th:text="'LKR ' + ${#numbers.formatDecimal(request.totalAmount, 1, 2)}">LKR 4,200.00</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item" th:if="${request.scheduledDate != null}">
+                        <div class="detail-icon">
+                            <span class="material-icons">event</span>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Scheduled Date</h4>
+                            <p th:text="${#temporals.format(request.scheduledDate, 'MMM dd, yyyy')}">Jan 20, 2025</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="request-actions">
+                    <button class="action-btn btn-outline" onclick="viewDetails(this)" th:attr="data-request-id=${request.id}">
+                        <span class="material-icons">visibility</span>
+                        View Details
+                    </button>
+                    
+                    <button th:if="${request.paymentStatus.name() == 'PENDING'}" class="action-btn btn-primary" th:attr="data-request-id=${request.id}" onclick="proceedToPayment(this)">
+                        <span class="material-icons">payment</span>
+                        Pay Now
+                    </button>
+                    
+                    <button th:if="${request.status.name() == 'PENDING' || request.status.name() == 'PAYMENT_PENDING'}" class="action-btn btn-secondary" th:attr="data-request-id=${request.id}" onclick="cancelRequest(this)">
+                        <span class="material-icons">cancel</span>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Calculate stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateStats();
+        });
+
+        function calculateStats() {
+            const cards = document.querySelectorAll('.request-card');
+            let pending = 0;
+            let completed = 0;
+            let totalSpent = 0;
+
+            cards.forEach(card => {
+                const status = card.getAttribute('data-status');
+                const amountText = card.querySelector('.detail-content p').textContent;
+                const amount = parseFloat(amountText.replace('LKR ', '').replace(',', ''));
+
+                if (status.includes('PENDING')) {
+                    pending++;
+                } else if (status === 'COMPLETED') {
+                    completed++;
+                    totalSpent += amount;
+                }
+            });
+
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalSpent').textContent = 'LKR ' + totalSpent.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        function filterRequests() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const cards = document.querySelectorAll('.request-card');
+
+            cards.forEach(card => {
+                const status = card.getAttribute('data-status');
+                const category = card.getAttribute('data-category');
+                
+                const statusMatch = !statusFilter || status === statusFilter;
+                const categoryMatch = !categoryFilter || category === categoryFilter;
+                
+                if (statusMatch && categoryMatch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function viewDetails(button) {
+            const requestId = button.getAttribute('data-request-id');
+            window.location.href = '/resident/bulk-request/' + requestId + '/details';
+        }
+
+        function proceedToPayment(button) {
+            const requestId = button.getAttribute('data-request-id');
+            if (confirm('Proceed to payment?')) {
+                window.location.href = '/resident/bulk-request/' + requestId + '/payment';
+            }
+        }
+
+        function cancelRequest(button) {
+            const requestId = button.getAttribute('data-request-id');
+            if (confirm('Are you sure you want to cancel this request?')) {
+                fetch('/resident/bulk-request/' + requestId + '/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Request cancelled successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to cancel request');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -347,6 +347,14 @@
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
         }
+
+        /* Bulk Request Button Hover Effects */
+        button[onclick="proceedToPayment()"]:hover {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%) !important;
+            border-color: #f48fb1 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3) !important;
+        }
         
         .bin-location {
             color: #666;
@@ -464,9 +472,27 @@
         
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 1rem;
             margin-top: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .quick-actions {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
         }
         
         .action-btn {
@@ -557,6 +583,27 @@
         
         .action-history:hover .icon {
             color: white;
+        }
+
+        .action-bulk {
+            background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
+            border-color: #f8bbd9;
+            color: #e91e63;
+        }
+
+        .action-bulk:hover {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border-color: #f48fb1;
+            color: #e91e63;
+            transform: translateY(-2px);
+        }
+
+        .action-bulk:hover .icon .material-icons {
+            color: #e91e63;
+        }
+
+        .action-bulk .icon .material-icons {
+            color: #e91e63;
         }
         
         .btn {
@@ -971,6 +1018,12 @@
                     </div>
                     My Recycling History
                 </a>
+                <a href="/resident/bulk-request" class="action-btn action-bulk">
+                    <div class="icon">
+                        <span class="material-icons">shopping_cart</span>
+                    </div>
+                    Bulk Collection Request
+                </a>
             </div>
         </div>
 
@@ -1180,6 +1233,273 @@
         </div>
     </div>
     
+    <!-- Bulk Request Modal -->
+    <div id="bulkRequestModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%); color: #e91e63; border-radius: 12px 12px 0 0; padding: 1.5rem; border: 2px solid #f8bbd9;">
+                <span class="close" onclick="closeBulkRequestModal()" style="color: #e91e63; font-size: 1.8rem;">&times;</span>
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem; display: flex; justify-content: center; align-items: center;">
+                        <span class="material-icons" style="color: #e91e63; font-size: 2.5rem;">shopping_cart</span>
+                    </div>
+                    <h2 style="margin: 0; font-size: 1.3rem; font-weight: 600;">Bulk Collection Request</h2>
+                    <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Request special collection for bulky waste items</p>
+                </div>
+            </div>
+            
+            <div class="modal-body" style="padding: 1.5rem; background: white;">
+                <form id="bulkRequestForm">
+                
+                <!-- Item Details Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">shopping_bag</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Item Details</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">Category *</label>
+                            <select id="itemCategory" name="category" required style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                                <option value="">Select item category</option>
+                                <option value="furniture">Furniture (Sofas, Tables, Chairs)</option>
+                                <option value="appliances">Appliances (TV, Refrigerator, Washing Machine)</option>
+                                <option value="electronics">Electronics (Computer, Printer, Mobile)</option>
+                                <option value="mattress">Mattress & Bedding</option>
+                                <option value="construction">Construction Waste</option>
+                                <option value="yard">Yard Waste (Branches, Leaves)</option>
+                                <option value="other">Other Large Items</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">Description *</label>
+                            <textarea id="itemDescription" name="description" required rows="3" 
+                                      placeholder="Describe your items in detail (size, weight, condition)..."
+                                      style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; resize: vertical; background: white; font-family: inherit;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pickup Address Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">location_on</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Pickup Address</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">Street Address *</label>
+                            <input type="text" id="streetAddress" name="streetAddress" required 
+                                   placeholder="Enter your street address"
+                                   style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">City *</label>
+                                <input type="text" id="city" name="city" required 
+                                       placeholder="City"
+                                       style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">ZIP Code *</label>
+                                <input type="text" id="zipCode" name="zipCode" required 
+                                       placeholder="ZIP"
+                                       style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pickup Location Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">place</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Pickup Location</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="background: #e9ecef; height: 200px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 0.75rem;">
+                            <span class="material-icons" style="font-size: 3rem; color: #3498db;">place</span>
+                            <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9rem; text-align: center;">Tap to set exact pickup point</p>
+                            <button type="button" onclick="getCurrentLocation()" style="position: absolute; bottom: 0.5rem; right: 0.5rem; width: 40px; height: 40px; border-radius: 50%; background: #3498db; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-icons" style="font-size: 1.2rem;">my_location</span>
+                            </button>
+                        </div>
+                        <p style="margin: 0; color: #666; font-size: 0.8rem; display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="width: 6px; height: 6px; background: #3498db; border-radius: 50%;"></span>
+                            Drag the pin to mark the exact pickup location
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Upload Photos Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">photo_camera</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Upload Photos</h3>
+                        <span style="background: #e9ecef; color: #6c757d; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem;">Optional</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                            <button type="button" onclick="capturePhoto()" style="border: 2px dashed #3498db; background: white; border-radius: 8px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s;">
+                                <span class="material-icons" style="font-size: 2rem; color: #3498db;">photo_camera</span>
+                                <span style="color: #3498db; font-weight: 500;">Camera</span>
+                            </button>
+                            <button type="button" onclick="selectFromGallery()" style="border: 2px dashed #3498db; background: white; border-radius: 8px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s;">
+                                <span class="material-icons" style="font-size: 2rem; color: #3498db;">photo_library</span>
+                                <span style="color: #3498db; font-weight: 500;">Gallery</span>
+                            </button>
+                        </div>
+                        
+                        <div id="photoPreview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                            <!-- Photo previews will be added here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fee Estimation -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                            <span class="material-icons" style="color: #27ae60; font-size: 1.2rem;">calculate</span>
+                            <h4 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Estimated Fee</h4>
+                        </div>
+                        <div id="feeEstimate" style="text-align: center; padding: 0.75rem; background: white; border-radius: 8px; border: 2px solid #27ae60;">
+                            <span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹0.00</span>
+                            <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Select category to see estimated cost</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="button" onclick="proceedToPayment()" 
+                        style="width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%); color: #e91e63; border: 2px solid #f8bbd9; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-icons" style="font-size: 1.1rem;">payment</span>
+                    Submit Request
+                </button>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                <span class="close" onclick="closePaymentModal()" style="color: white; font-size: 1.8rem;">&times;</span>
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem; display: flex; justify-content: center; align-items: center;">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">payment</span>
+                    </div>
+                    <h2 style="margin: 0; font-size: 1.3rem; font-weight: 600;">Payment</h2>
+                    <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Complete your bulk collection request</p>
+                </div>
+            </div>
+            
+            <div class="modal-body" style="padding: 1.5rem; background: white;">
+                <!-- Amount to Pay -->
+                <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 2px solid #e9ecef; margin-bottom: 1.5rem; text-align: center;">
+                    <h3 style="margin: 0 0 0.5rem 0; color: #2c3e50; font-size: 1rem; font-weight: 500;">Amount to Pay</h3>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: #27ae60; margin-bottom: 0.25rem;" id="totalAmount">₹125.00</div>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Collection Fee</p>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0 0 1rem 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Select Payment Method</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="card" style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #3498db;">credit_card</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">Credit/Debit Card</div>
+                                <div style="font-size: 0.8rem; color: #666;">Visa, Mastercard, RuPay</div>
+                            </div>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="wallet" style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #3498db;">account_balance_wallet</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">Digital Wallet</div>
+                                <div style="font-size: 0.8rem; color: #666;">Paytm, PhonePe, Google Pay</div>
+                            </div>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #27ae60; border-radius: 8px; cursor: pointer; transition: all 0.3s; background: #f8fff9;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="upi" checked style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #27ae60;">smartphone</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">UPI</div>
+                                <div style="font-size: 0.8rem; color: #666;">Pay using UPI ID</div>
+                            </div>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="netbanking" style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #3498db;">account_balance</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">Net Banking</div>
+                                <div style="font-size: 0.8rem; color: #666;">All major banks</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Security Message -->
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-icons" style="font-size: 1.2rem; color: #27ae60;">security</span>
+                        <p style="margin: 0; color: #666; font-size: 0.8rem;">Your payment is secured with 256-bit SSL encryption. We don't store your payment details.</p>
+                    </div>
+                </div>
+                
+                <!-- Payment Summary -->
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 1rem 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Payment Summary</h4>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Service Fee:</span>
+                        <span id="serviceFee">₹100.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Processing Fee:</span>
+                        <span id="processingFee">₹20.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                        <span style="color: #666;">Tax (GST):</span>
+                        <span id="taxAmount">₹5.00</span>
+                    </div>
+                    <hr style="border: none; border-top: 1px solid #dee2e6; margin: 0.75rem 0;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: #2c3e50;">
+                        <span>Total Amount:</span>
+                        <span id="paymentTotal">₹125.00</span>
+                    </div>
+                </div>
+                
+                <!-- Pay Button -->
+                <button type="button" onclick="processPayment()" 
+                        style="width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-icons" style="font-size: 1.1rem;">lock</span>
+                    Pay ₹125.00
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <!-- QR Code Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     
@@ -1283,7 +1603,228 @@
         // Initialize fill level display color on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateFillDisplay(50); // Initialize with default value
+            
+            // Initialize bulk request form
+            initializeBulkRequest();
         });
+
+        // Bulk Request System
+        const bulkRequestData = {
+            categories: {
+                furniture: { basePrice: 150, name: 'Furniture' },
+                appliances: { basePrice: 200, name: 'Appliances' },
+                electronics: { basePrice: 100, name: 'Electronics' },
+                mattress: { basePrice: 120, name: 'Mattress' },
+                construction: { basePrice: 300, name: 'Construction Waste' },
+                yard: { basePrice: 80, name: 'Yard Waste' },
+                other: { basePrice: 100, name: 'Other Large Items' }
+            },
+            processingFee: 20,
+            taxRate: 0.05 // 5% GST
+        };
+
+        function initializeBulkRequest() {
+            // Add event listeners
+            document.getElementById('itemCategory').addEventListener('change', updateFeeEstimate);
+            
+            // Initialize with mock address data
+            document.getElementById('streetAddress').value = '456 University Ave';
+            document.getElementById('city').value = 'College Town';
+            document.getElementById('zipCode').value = '12345';
+        }
+
+        function openBulkRequestModal() {
+            document.getElementById('bulkRequestModal').style.display = 'block';
+        }
+
+        function closeBulkRequestModal() {
+            document.getElementById('bulkRequestModal').style.display = 'none';
+            // Reset form
+            document.getElementById('bulkRequestForm').reset();
+            document.getElementById('feeEstimate').innerHTML = '<span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹0.00</span><p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Select category to see estimated cost</p>';
+            document.getElementById('photoPreview').innerHTML = '';
+        }
+
+        function updateFeeEstimate() {
+            const category = document.getElementById('itemCategory').value;
+            const feeEstimate = document.getElementById('feeEstimate');
+            
+            if (category && bulkRequestData.categories[category]) {
+                const basePrice = bulkRequestData.categories[category].basePrice;
+                const processingFee = bulkRequestData.processingFee;
+                const tax = (basePrice + processingFee) * bulkRequestData.taxRate;
+                const total = basePrice + processingFee + tax;
+                
+                feeEstimate.innerHTML = `
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹${total.toFixed(2)}</span>
+                    <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Base: ₹${basePrice} + Processing: ₹${processingFee} + Tax: ₹${tax.toFixed(2)}</p>
+                `;
+            } else {
+                feeEstimate.innerHTML = '<span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹0.00</span><p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Select category to see estimated cost</p>';
+            }
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        alert(`Location captured!\nLatitude: ${position.coords.latitude.toFixed(6)}\nLongitude: ${position.coords.longitude.toFixed(6)}`);
+                    },
+                    function(error) {
+                        alert('Unable to get current location. Please set location manually.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function capturePhoto() {
+            alert('Camera feature would open here. In a real implementation, this would access the device camera.');
+            // Mock photo addition
+            addPhotoPreview('camera');
+        }
+
+        function selectFromGallery() {
+            alert('Gallery feature would open here. In a real implementation, this would access the device gallery.');
+            // Mock photo addition
+            addPhotoPreview('gallery');
+        }
+
+        function addPhotoPreview(source) {
+            const photoPreview = document.getElementById('photoPreview');
+            const photoCount = photoPreview.children.length;
+            
+            if (photoCount < 3) {
+                const photoDiv = document.createElement('div');
+                photoDiv.style.cssText = 'background: #e9ecef; border-radius: 8px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;';
+                photoDiv.innerHTML = `
+                    <span class="material-icons" style="font-size: 2rem; color: #666;">photo</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 0.25rem;">Photo ${photoCount + 1}</span>
+                    <button onclick="removePhoto(this)" style="position: absolute; top: 0.25rem; right: 0.25rem; width: 20px; height: 20px; border-radius: 50%; background: #e74c3c; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">×</button>
+                `;
+                photoPreview.appendChild(photoDiv);
+            } else {
+                alert('Maximum 3 photos allowed.');
+            }
+        }
+
+        function removePhoto(button) {
+            button.parentElement.remove();
+        }
+
+        function proceedToPayment() {
+            // Validate form
+            const category = document.getElementById('itemCategory').value;
+            const description = document.getElementById('itemDescription').value;
+            const streetAddress = document.getElementById('streetAddress').value;
+            const city = document.getElementById('city').value;
+            const zipCode = document.getElementById('zipCode').value;
+            
+            if (!category || !description || !streetAddress || !city || !zipCode) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Calculate final fee
+            const basePrice = bulkRequestData.categories[category].basePrice;
+            const processingFee = bulkRequestData.processingFee;
+            const tax = (basePrice + processingFee) * bulkRequestData.taxRate;
+            const total = basePrice + processingFee + tax;
+            
+            // Update payment modal with calculated amounts
+            document.getElementById('totalAmount').textContent = `₹${total.toFixed(2)}`;
+            document.getElementById('serviceFee').textContent = `₹${basePrice.toFixed(2)}`;
+            document.getElementById('processingFee').textContent = `₹${processingFee.toFixed(2)}`;
+            document.getElementById('taxAmount').textContent = `₹${tax.toFixed(2)}`;
+            document.getElementById('paymentTotal').textContent = `₹${total.toFixed(2)}`;
+            
+            // Update pay button
+            const payButton = document.querySelector('#paymentModal button[onclick="processPayment()"]');
+            payButton.innerHTML = `<span class="material-icons" style="font-size: 1.1rem;">lock</span>Pay ₹${total.toFixed(2)}`;
+            
+            // Close bulk request modal and open payment modal
+            closeBulkRequestModal();
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function processPayment() {
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            
+            // Show loading state
+            const payButton = document.querySelector('#paymentModal button[onclick="processPayment()"]');
+            const originalText = payButton.innerHTML;
+            payButton.innerHTML = '<span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span>Processing...';
+            payButton.disabled = true;
+            
+            // Mock payment processing
+            setTimeout(() => {
+                // Simulate payment success (90% success rate)
+                if (Math.random() > 0.1) {
+                    // Payment successful
+                    alert('Payment successful! Your bulk collection request has been submitted.\n\nRequest ID: BULK-' + Math.random().toString(36).substr(2, 9).toUpperCase() + '\n\nA collector will be assigned and you will receive a confirmation SMS.');
+                    closePaymentModal();
+                    
+                    // In a real implementation, this would:
+                    // 1. Save the request to database
+                    // 2. Notify the authority
+                    // 3. Send confirmation to user
+                    // 4. Update user's request history
+                } else {
+                    // Payment failed
+                    alert('Payment failed. Please try again or use a different payment method.');
+                    payButton.innerHTML = originalText;
+                    payButton.disabled = false;
+                }
+            }, 2000);
+        }
+
+        // Payment method selection styling
+        document.addEventListener('change', function(e) {
+            if (e.target.name === 'paymentMethod') {
+                // Remove previous selection styling
+                document.querySelectorAll('.payment-method').forEach(method => {
+                    method.style.borderColor = '#e9ecef';
+                    method.style.backgroundColor = 'white';
+                });
+                
+                // Add selection styling to chosen method
+                const selectedMethod = e.target.closest('.payment-method');
+                selectedMethod.style.borderColor = '#27ae60';
+                selectedMethod.style.backgroundColor = '#f8fff9';
+            }
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const bulkModal = document.getElementById('bulkRequestModal');
+            const paymentModal = document.getElementById('paymentModal');
+            const scanModal = document.getElementById('scanBinModal');
+            
+            if (event.target == bulkModal) {
+                closeBulkRequestModal();
+            }
+            if (event.target == paymentModal) {
+                closePaymentModal();
+            }
+            if (event.target == scanModal) {
+                closeScanBinModal();
+            }
+        }
+
+        // Add spin animation for loading states
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
 
         // Auto-close alerts after 5 seconds
         setTimeout(function() {
