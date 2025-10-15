@@ -265,10 +265,17 @@
         
         .bin-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 2px solid #e9ecef;
+        }
+        
+        .bin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: #3498db;
         }
         
         .bin-header {
@@ -279,21 +286,22 @@
         }
         
         .bin-qr {
-            font-weight: bold;
-            color: #667eea;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
         }
         
         .bin-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
             text-transform: uppercase;
+            color: white;
         }
         
         .status-FULL {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #f39c12;
         }
         
         .status-PARTIAL {
@@ -302,19 +310,25 @@
         }
         
         .status-EMPTY {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #27ae60;
         }
         
         .status-OVERDUE {
-            background-color: #f5c6cb;
-            color: #721c24;
+            background-color: #e74c3c;
         }
         
         .bin-location {
             color: #666;
-            margin-bottom: 1rem;
-            font-weight: 500;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .bin-location .material-icons {
+            font-size: 18px;
+            color: #e74c3c;
         }
         
         .bin-fill {
@@ -323,27 +337,43 @@
         
         .fill-bar {
             background-color: #e9ecef;
-            border-radius: 10px;
+            border-radius: 6px;
             height: 20px;
             overflow: hidden;
         }
         
         .fill-level {
-            background: #3498db;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             transition: width 0.3s ease;
         }
         
+        .fill-level-low {
+            background: #27ae60;
+        }
+        
+        .fill-level-medium {
+            background: #f39c12;
+        }
+        
+        .fill-level-high {
+            background: #e74c3c;
+        }
+        
         .bin-type {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
             color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
         }
         
         .btn-small {
@@ -681,17 +711,46 @@
         }
         
         .activity-section h2 {
-            color: #333;
+            color: #2c3e50;
             margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title .material-icons {
+            color: #3498db;
         }
         
         .activity-card {
             background: white;
-            border-radius: 10px;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 1.5rem;
             margin-bottom: 1rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+        }
+        
+        .activity-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .activity-card .activity-header {
@@ -702,8 +761,8 @@
         }
         
         .activity-card .activity-type {
-            font-weight: bold;
-            color: #667eea;
+            font-weight: 600;
+            color: #2c3e50;
         }
         
         .activity-card .activity-date {
@@ -852,7 +911,10 @@
         
         <!-- Quick Actions Section -->
         <div style="margin-top: 2rem;">
-            <h2 style="color: #333; margin-bottom: 1rem;">Quick Actions</h2>
+            <h2 style="color: #2c3e50; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-icons" style="color: #3498db;">flash_on</span>
+                Quick Actions
+            </h2>
             <div class="quick-actions">
                 <a href="#" class="action-btn action-scan" onclick="openScanBinModal(); return false;">
                     <div class="icon">
@@ -881,21 +943,32 @@
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="icon">🗑️</div>
-                <h3>Total Bins</h3>
-                <p th:text="'Available bins: ' + ${nearbyBins.size()}">Available bins: 0</p>
-                <a href="/resident/bins" class="btn">View All Bins</a>
+        <!-- Total Bins Section -->
+        <div th:if="${nearbyBins != null and !nearbyBins.empty}" style="margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="color: #2c3e50; margin: 0; font-size: 1.3rem; font-weight: 600;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #3498db;">delete_outline</span>
+                    Nearby Bins
+                </h2>
+                <a href="/resident/search-bins" class="btn btn-primary" style="text-decoration: none; font-size: 0.9rem;">
+                    <span class="material-icons" style="font-size: 18px; vertical-align: middle;">search</span>
+                    Search More Bins
+                </a>
             </div>
         </div>
         
         <!-- Recent Activity Section -->
         <div class="activity-section" th:if="${!recentTransactions.empty || !recentDisposals.empty}">
-            <h2>Recent Activity</h2>
+            <h2 style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-icons" style="color: #3498db;">timeline</span>
+                Recent Activity
+            </h2>
             
             <div th:if="${!recentTransactions.empty}">
-                <h3 style="color: #667eea; margin-bottom: 1rem;">Recent Recycling Transactions</h3>
+                <h3 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 600;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #27ae60;">recycling</span>
+                    Recent Recycling Transactions
+                </h3>
                 <div th:each="transaction : ${recentTransactions}" class="activity-card">
                     <div class="activity-header">
                         <span class="activity-type" th:text="'♻️ ' + ${transaction.itemType}">Recycling</span>
@@ -910,7 +983,10 @@
             </div>
             
             <div th:if="${!recentDisposals.empty}" style="margin-top: 2rem;">
-                <h3 style="color: #667eea; margin-bottom: 1rem;">Recent Waste Disposals</h3>
+                <h3 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 600;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #e74c3c;">delete</span>
+                    Recent Waste Disposals
+                </h3>
                 <div th:each="disposal : ${recentDisposals}" class="activity-card">
                     <div class="activity-header">
                         <span class="activity-type" th:text="'🗑️ Bin: ' + ${disposal.bin.qrCode}">Disposal</span>
@@ -924,23 +1000,27 @@
             </div>
         </div>
         
-        <div class="nearby-bins-section" th:if="${nearbyBins != null and !nearbyBins.empty}">
-            <h2>Nearby Bins</h2>
+        <div th:if="${nearbyBins != null and !nearbyBins.empty}">
             <div class="bins-grid">
-                <div class="bin-card" th:each="bin : ${nearbyBins}">
+                <a th:href="@{/resident/bin/{id}(id=${bin.id})}" class="bin-card" th:each="bin : ${nearbyBins}" style="text-decoration: none; color: inherit;">
                     <div class="bin-header">
                         <span class="bin-qr" th:text="${bin.qrCode}">QR001</span>
                         <span class="bin-status" th:class="'status-' + ${bin.status}" th:text="${bin.status}">FULL</span>
                     </div>
-                    <div class="bin-location" th:text="${bin.location}">Colombo Fort</div>
-                    <div class="bin-fill">
-                        <div class="fill-bar">
-                            <div class="fill-level" th:style="'width: ' + ${bin.fillLevel} + '%'" th:text="${bin.fillLevel} + '%'">95%</div>
-                        </div>
+                    <div class="bin-location">
+                        <span class="material-icons">location_on</span>
+                        <span th:text="${bin.location}">Colombo Fort</span>
                     </div>
                     <div class="bin-type" th:text="${bin.binType}">STANDARD</div>
-                    <a th:href="@{/resident/bin/{id}(id=${bin.id})}" class="btn btn-small">View Details</a>
-                </div>
+                    <div class="bin-fill">
+                        <div class="fill-bar">
+                            <div class="fill-level" 
+                                 th:classappend="${bin.fillLevel < 50 ? 'fill-level-low' : (bin.fillLevel < 80 ? 'fill-level-medium' : 'fill-level-high')}"
+                                 th:style="'width: ' + ${bin.fillLevel} + '%'" 
+                                 th:text="${bin.fillLevel} + '%'">95%</div>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
@@ -1107,4 +1187,5 @@
     </script>
 </body>
 </html>
+
 
