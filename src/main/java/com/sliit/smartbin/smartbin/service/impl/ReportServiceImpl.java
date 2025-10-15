@@ -139,6 +139,12 @@ public class ReportServiceImpl implements ReportService {
             .filter(Bin::getAlertFlag)
             .count();
         
+        // Calculate average fill level
+        double averageFillLevel = allBins.stream()
+            .mapToInt(Bin::getFillLevel)
+            .average()
+            .orElse(0.0);
+        
         report.put("reportType", "Bin Status Report");
         report.put("totalBins", allBins.size());
         report.put("emptyBins", emptyBins);
@@ -146,6 +152,7 @@ public class ReportServiceImpl implements ReportService {
         report.put("fullBins", fullBins);
         report.put("overdueBins", overdueBins);
         report.put("alertedBins", alertedBins);
+        report.put("averageFillLevel", Math.round(averageFillLevel));
         report.put("generatedAt", LocalDateTime.now());
         
         return report;
@@ -235,6 +242,25 @@ public class ReportServiceImpl implements ReportService {
             .filter(user -> user.getRole() == User.UserRole.RESIDENT)
             .count();
         
+        // Calculate average fill level
+        List<Bin> allBins = binRepository.findAll();
+        double averageFillLevel = allBins.stream()
+            .mapToInt(Bin::getFillLevel)
+            .average()
+            .orElse(0.0);
+        
+        // Get last collection time
+        String lastCollectionTime = collectionRepository.findAll().stream()
+            .filter(c -> c.getStatus() == Collection.CollectionStatus.COMPLETED)
+            .max((c1, c2) -> c1.getCreatedAt().compareTo(c2.getCreatedAt()))
+            .map(c -> {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime collectionTime = c.getCreatedAt();
+                long hoursAgo = java.time.Duration.between(collectionTime, now).toHours();
+                return hoursAgo + "h ago";
+            })
+            .orElse("No collections");
+        
         report.put("reportType", "System Overview Report");
         report.put("totalBins", totalBins);
         report.put("totalCollections", totalCollections);
@@ -243,6 +269,8 @@ public class ReportServiceImpl implements ReportService {
         report.put("activeCollectors", activeCollectors);
         report.put("activeAuthorities", activeAuthorities);
         report.put("activeResidents", activeResidents);
+        report.put("averageFillLevel", Math.round(averageFillLevel));
+        report.put("lastCollectionTime", lastCollectionTime);
         report.put("generatedAt", LocalDateTime.now());
         
         return report;
