@@ -300,28 +300,92 @@
         
         .action-btn {
             background: white;
-            border: 2px solid #3498db;
+            border: 2px solid #e9ecef;
             border-radius: 12px;
             padding: 1.5rem;
             text-align: center;
             text-decoration: none;
-            color: #3498db;
-            font-weight: bold;
+            color: #2c3e50;
+            font-weight: 600;
             transition: all 0.3s;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
         
         .action-btn:hover {
-            background: #3498db;
-            color: white;
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
         }
         
         .action-btn .icon {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 0.5rem;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .action-btn .material-icons {
+            font-size: 3rem;
+        }
+        
+        /* Specific colors for each action */
+        .action-scan .icon {
+            color: #3498db;
+        }
+        
+        .action-scan:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .action-scan:hover .icon {
+            color: white;
+        }
+        
+        .action-recycle .icon {
+            color: #27ae60;
+        }
+        
+        .action-recycle:hover {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .action-recycle:hover .icon {
+            color: white;
+        }
+        
+        .action-search .icon {
+            color: #f39c12;
+        }
+        
+        .action-search:hover {
+            background: #f39c12;
+            color: white;
+            border-color: #f39c12;
+        }
+        
+        .action-search:hover .icon {
+            color: white;
+        }
+        
+        .action-history .icon {
+            color: #9b59b6;
+        }
+        
+        .action-history:hover {
+            background: #9b59b6;
+            color: white;
+            border-color: #9b59b6;
+        }
+        
+        .action-history:hover .icon {
+            color: white;
         }
         
         .btn {
@@ -624,20 +688,28 @@
         <div style="margin-top: 2rem;">
             <h2 style="color: #333; margin-bottom: 1rem;">Quick Actions</h2>
             <div class="quick-actions">
-                <a href="#" class="action-btn" onclick="openScanBinModal(); return false;">
-                    <span class="icon">📱</span>
+                <a href="#" class="action-btn action-scan" onclick="openScanBinModal(); return false;">
+                    <div class="icon">
+                        <span class="material-icons">qr_code_scanner</span>
+                    </div>
                     Scan Bin QR Code
                 </a>
-                <a href="/resident/recycling-units" class="action-btn">
-                    <span class="icon">♻️</span>
+                <a href="/resident/recycling-units" class="action-btn action-recycle">
+                    <div class="icon">
+                        <span class="material-icons">recycling</span>
+                    </div>
                     Find Recycling Units
                 </a>
-                <a href="/resident/search-bins" class="action-btn">
-                    <span class="icon">🔍</span>
+                <a href="/resident/search-bins" class="action-btn action-search">
+                    <div class="icon">
+                        <span class="material-icons">location_on</span>
+                    </div>
                     Search Nearby Bins
                 </a>
-                <a href="/resident/my-recycling" class="action-btn">
-                    <span class="icon">📊</span>
+                <a href="/resident/my-recycling" class="action-btn action-history">
+                    <div class="icon">
+                        <span class="material-icons">history</span>
+                    </div>
                     My Recycling History
                 </a>
             </div>
