@@ -110,6 +110,116 @@
         .dashboard-card:hover {
             transform: translateY(-5px);
         }
+        
+        .stats-grid {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            align-items: flex-start;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            flex: 1;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.75rem;
+            border: 2px solid transparent;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 2rem;
+        }
+        
+        .stat-card-icon .material-icons {
+            font-size: 2rem;
+        }
+        
+        .stat-card-content {
+            width: 100%;
+        }
+        
+        .stat-card-title {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .stat-card-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .stat-card-alerts {
+            border-color: #e74c3c;
+        }
+        
+        .stat-card-alerts:hover {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+        
+        .stat-card-alerts .stat-card-icon {
+            background: #fee;
+            color: #e74c3c;
+        }
+        
+        .stat-card-recycling {
+            border-color: #27ae60;
+        }
+        
+        .stat-card-recycling:hover {
+            border-color: #27ae60;
+            background: #f0fdf4;
+        }
+        
+        .stat-card-recycling .stat-card-icon {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+        
+        .stat-card-disposals {
+            border-color: #3498db;
+        }
+        
+        .stat-card-disposals:hover {
+            border-color: #3498db;
+            background: #eff6ff;
+        }
+        
+        .stat-card-disposals .stat-card-icon {
+            background: #e3f2fd;
+            color: #3498db;
+        }
 
         .dashboard-card .icon {
             font-size: 3rem;
@@ -628,11 +738,22 @@
             margin-top: 1rem;
         }
         
+        @media (max-width: 1200px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         @media (max-width: 768px) {
             .modal-content {
                 width: 95%;
                 margin: 5% auto;
                 max-width: 100% !important;
+            }
+            
+            .stats-grid {
+                flex-direction: column;
+                gap: 1rem;
             }
             
             .points-badge {
@@ -644,6 +765,19 @@
             .points-icon {
                 width: 70px;
                 height: 70px;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-card-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .stat-card-value {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -670,7 +804,7 @@
             <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
             <p>Manage your waste collection and contribute to a cleaner environment.</p>
             
-            <div style="margin-top: 1.5rem;">
+            <div class="stats-grid">
                 <div class="points-badge">
                     <div class="points-icon">
                         <span class="material-icons" style="font-size: 3rem;">recycling</span>
@@ -680,6 +814,38 @@
                         <span class="value" th:text="${recyclingPoints}">0.0</span>
                         <span class="points-subtext">Keep recycling to earn more!</span>
                     </div>
+                </div>
+                
+                <div class="stats-cards">
+                    <a href="/resident/bins" class="stat-card stat-card-alerts">
+                        <div class="stat-card-icon">
+                            <span class="material-icons">warning</span>
+                        </div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-title">Bin Alerts</div>
+                            <div class="stat-card-value" th:text="'Alerted bins: ' + ${alertedBins.size()}">Alerted bins: 6</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/resident/my-recycling" class="stat-card stat-card-recycling">
+                        <div class="stat-card-icon">
+                            <span class="material-icons">recycling</span>
+                        </div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-title">Recent Recycling</div>
+                            <div class="stat-card-value" th:text="'Transactions: ' + ${recentTransactions.size()}">Transactions: 0</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/resident/bins" class="stat-card stat-card-disposals">
+                        <div class="stat-card-icon">
+                            <span class="material-icons">delete</span>
+                        </div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-title">Waste Disposals</div>
+                            <div class="stat-card-value" th:text="'Recent disposals: ' + ${recentDisposals.size()}">Recent disposals: 0</div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -721,27 +887,6 @@
                 <h3>Total Bins</h3>
                 <p th:text="'Available bins: ' + ${nearbyBins.size()}">Available bins: 0</p>
                 <a href="/resident/bins" class="btn">View All Bins</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">⚠️</div>
-                <h3>Bin Alerts</h3>
-                <p th:text="'Alerted bins: ' + ${alertedBins.size()}">Alerted bins: 0</p>
-                <a href="/resident/bins" class="btn">View Alerts</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">♻️</div>
-                <h3>Recent Recycling</h3>
-                <p th:text="'Transactions: ' + ${recentTransactions.size()}">Transactions: 0</p>
-                <a href="/resident/my-recycling" class="btn">View History</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">📝</div>
-                <h3>Waste Disposals</h3>
-                <p th:text="'Recent disposals: ' + ${recentDisposals.size()}">Recent disposals: 0</p>
-                <a href="/resident/bins" class="btn">View Details</a>
             </div>
         </div>
         
