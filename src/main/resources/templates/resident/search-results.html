@@ -319,7 +319,7 @@
 
         .map-wrapper {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr 450px;
             gap: 2rem;
             margin-top: 1.5rem;
         }
@@ -484,28 +484,31 @@
         }
 
         .bin-status {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 500;
             text-transform: uppercase;
-            color: white;
         }
 
         .status-EMPTY {
-            background-color: #27ae60;
+            background-color: #d4edda;
+            color: #155724;
         }
 
         .status-PARTIAL {
-            background-color: #3498db;
+            background-color: #fff3cd;
+            color: #856404;
         }
 
         .status-FULL {
-            background-color: #f39c12;
+            background-color: #f8d7da;
+            color: #721c24;
         }
 
         .status-OVERDUE {
-            background-color: #e74c3c;
+            background-color: #f8d7da;
+            color: #721c24;
         }
 
         .bin-location {
@@ -513,8 +516,13 @@
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.5rem;
             font-size: 0.9rem;
+        }
+
+        .bin-location .material-icons {
+            font-size: 18px;
+            color: #e74c3c;
         }
 
         .bin-type {
@@ -751,7 +759,7 @@
                         </div>
                         <input type="range" id="radiusSlider" 
                                class="radius-slider"
-                               min="0.5" max="50" step="0.5" 
+                               min="0.5" max="10" step="0.5" 
                                th:value="${searchRadius}"
                                oninput="updateRadiusDisplay(this.value)">
                         <div class="radius-markers">
@@ -761,15 +769,15 @@
                             </div>
                             <div class="radius-marker">
                                 <div class="radius-marker-dot"></div>
+                                <span>3 km</span>
+                            </div>
+                            <div class="radius-marker">
+                                <div class="radius-marker-dot"></div>
+                                <span>6 km</span>
+                            </div>
+                            <div class="radius-marker">
+                                <div class="radius-marker-dot"></div>
                                 <span>10 km</span>
-                            </div>
-                            <div class="radius-marker">
-                                <div class="radius-marker-dot"></div>
-                                <span>25 km</span>
-                            </div>
-                            <div class="radius-marker">
-                                <div class="radius-marker-dot"></div>
-                                <span>50 km</span>
                             </div>
                         </div>
                         <input type="hidden" id="radius" name="radius" th:value="${searchRadius}">
@@ -851,7 +859,7 @@
                 </div>
 
                 <div class="bin-location">
-                    <span>📍</span>
+                    <span class="material-icons">location_on</span>
                     <span th:text="${bin.location}">Location</span>
                 </div>
 
@@ -929,11 +937,32 @@
             }, 5000);
         }
 
+        // Mock bin data for demonstration
+        const mockBinsData = [
+            {id: 1, qrCode: 'QR001', location: 'Colombo Fort Station', latitude: 6.9344, longitude: 79.8428, binType: 'STANDARD', status: 'FULL', fillLevel: 95},
+            {id: 2, qrCode: 'QR002', location: 'Pettah Market', latitude: 6.9369, longitude: 79.8581, binType: 'STANDARD', status: 'PARTIAL', fillLevel: 65},
+            {id: 3, qrCode: 'QR003', location: 'Galle Face Green', latitude: 6.9271, longitude: 79.8612, binType: 'RECYCLING', status: 'EMPTY', fillLevel: 10},
+            {id: 4, qrCode: 'QR004', location: 'Liberty Plaza', latitude: 6.9105, longitude: 79.8547, binType: 'STANDARD', status: 'FULL', fillLevel: 90},
+            {id: 5, qrCode: 'QR005', location: 'Bambalapitiya Junction', latitude: 6.8881, longitude: 79.8603, binType: 'STANDARD', status: 'PARTIAL', fillLevel: 45},
+            {id: 6, qrCode: 'QR006', location: 'Maradana Railway', latitude: 6.9297, longitude: 79.8656, binType: 'BULK', status: 'OVERDUE', fillLevel: 98},
+            {id: 7, qrCode: 'QR007', location: 'Slave Island', latitude: 6.9250, longitude: 79.8500, binType: 'STANDARD', status: 'FULL', fillLevel: 88},
+            {id: 8, qrCode: 'QR008', location: 'Wellawatte Beach', latitude: 6.8700, longitude: 79.8600, binType: 'RECYCLING', status: 'PARTIAL', fillLevel: 55},
+            {id: 9, qrCode: 'QR009', location: 'Dehiwala Zoo', latitude: 6.8500, longitude: 79.8700, binType: 'STANDARD', status: 'EMPTY', fillLevel: 15},
+            {id: 10, qrCode: 'QR010', location: 'Mount Lavinia', latitude: 6.8380, longitude: 79.8630, binType: 'STANDARD', status: 'FULL', fillLevel: 92},
+            {id: 11, qrCode: 'QR011', location: 'Kollupitiya', latitude: 6.9150, longitude: 79.8500, binType: 'STANDARD', status: 'PARTIAL', fillLevel: 60},
+            {id: 12, qrCode: 'QR012', location: 'Cinnamon Gardens', latitude: 6.9050, longitude: 79.8650, binType: 'RECYCLING', status: 'EMPTY', fillLevel: 20},
+            {id: 13, qrCode: 'QR013', location: 'Borella Junction', latitude: 6.9150, longitude: 79.8800, binType: 'STANDARD', status: 'FULL', fillLevel: 85},
+            {id: 14, qrCode: 'QR014', location: 'Rajagiriya', latitude: 6.9080, longitude: 79.8900, binType: 'STANDARD', status: 'PARTIAL', fillLevel: 70},
+            {id: 15, qrCode: 'QR015', location: 'Nugegoda', latitude: 6.8650, longitude: 79.8900, binType: 'BULK', status: 'OVERDUE', fillLevel: 96}
+        ];
+
         function getMyLocation() {
             const btnLocation = document.getElementById('btnLocation');
             
             if (!navigator.geolocation) {
                 showLocationStatus('❌ Geolocation is not supported by your browser', 'error');
+                // Show mock data even without geolocation
+                loadMockBinsData(6.9271, 79.8612, 5.0);
                 return;
             }
 
@@ -950,33 +979,40 @@
                     document.getElementById('latitude').value = lat.toFixed(4);
                     document.getElementById('longitude').value = lon.toFixed(4);
                     
-                    showLocationStatus(`✓ Location detected! (${lat.toFixed(4)}, ${lon.toFixed(4)}) - Click Search to find nearby bins`, 'success');
+                    showLocationStatus(`✓ Location detected! (${lat.toFixed(4)}, ${lon.toFixed(4)}) - Showing nearby bins`, 'success');
                     btnLocation.disabled = false;
                     btnLocation.innerHTML = '<span class="material-icons">my_location</span><span>My Location</span>';
                     
-                    // Highlight the search button
-                    const searchBtn = document.querySelector('.btn-search');
-                    searchBtn.style.animation = 'pulse 1s ease-in-out 3';
+                    // Get current radius
+                    const radius = parseFloat(document.getElementById('radiusSlider').value);
+                    
+                    // Load mock bins data
+                    loadMockBinsData(lat, lon, radius);
                 },
                 // Error callback
                 (error) => {
                     let errorMessage = '';
                     switch(error.code) {
                         case error.PERMISSION_DENIED:
-                            errorMessage = 'Location permission denied. Please enable location access in your browser.';
+                            errorMessage = 'Location permission denied. Showing sample data for Colombo area.';
                             break;
                         case error.POSITION_UNAVAILABLE:
-                            errorMessage = 'Location information unavailable. Please try again.';
+                            errorMessage = 'Location information unavailable. Showing sample data.';
                             break;
                         case error.TIMEOUT:
-                            errorMessage = 'Location request timed out. Please try again.';
+                            errorMessage = 'Location request timed out. Showing sample data.';
                             break;
                         default:
-                            errorMessage = 'An unknown error occurred while getting your location.';
+                            errorMessage = 'An error occurred. Showing sample data.';
                     }
                     showLocationStatus(errorMessage, 'error');
                     btnLocation.disabled = false;
                     btnLocation.innerHTML = '<span class="material-icons">my_location</span><span>My Location</span>';
+                    
+                    // Show mock data for default location (Colombo)
+                    document.getElementById('latitude').value = '6.9271';
+                    document.getElementById('longitude').value = '79.8612';
+                    loadMockBinsData(6.9271, 79.8612, 5.0);
                 },
                 // Options
                 {
@@ -985,6 +1021,180 @@
                     maximumAge: 0
                 }
             );
+        }
+
+        // Calculate distance between two coordinates (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth's radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function loadMockBinsData(userLat, userLon, radius) {
+            // Filter bins within radius
+            const nearbyBins = mockBinsData.filter(bin => {
+                const distance = calculateDistance(userLat, userLon, bin.latitude, bin.longitude);
+                return distance <= radius;
+            });
+
+            if (nearbyBins.length === 0) {
+                showLocationStatus(`No bins found within ${radius} km. Try increasing the radius.`, 'info');
+                return;
+            }
+
+            // Display the bins dynamically
+            displayMockBins(nearbyBins, userLat, userLon, radius);
+        }
+
+        function displayMockBins(bins, userLat, userLon, radius) {
+            // Create results container if it doesn't exist
+            let container = document.querySelector('.container');
+            
+            // Remove existing results if any
+            const existingResults = document.getElementById('mock-results');
+            if (existingResults) {
+                existingResults.remove();
+            }
+
+            // Create mock results section
+            const resultsHTML = `
+                <div id="mock-results">
+                    <div class="results-header">
+                        <div>
+                            <div class="results-count">
+                                <span class="material-icons" style="color: #3498db;">location_on</span>
+                                Found ${bins.length} Bins
+                            </div>
+                            <div class="results-info">
+                                Within ${radius} km radius of your search location
+                            </div>
+                        </div>
+                        <div style="color: #666; font-size: 0.85rem;">
+                            <span class="material-icons" style="font-size: 16px; vertical-align: middle;">info</span>
+                            Colors indicate fill level
+                        </div>
+                    </div>
+
+                    <div class="bins-grid">
+                        ${bins.map(bin => `
+                            <div class="bin-card" data-lat="${bin.latitude}" data-lng="${bin.longitude}">
+                                <div class="bin-header">
+                                    <span class="bin-qr">${bin.qrCode}</span>
+                                    <span class="bin-status status-${bin.status}">${bin.status}</span>
+                                </div>
+                                <div class="bin-location">
+                                    <span class="material-icons">location_on</span>
+                                    <span>${bin.location}</span>
+                                </div>
+                                <div class="bin-type">${bin.binType}</div>
+                                <div class="fill-bar-card">
+                                    <div class="fill-level-card ${bin.fillLevel < 50 ? 'fill-low' : (bin.fillLevel < 80 ? 'fill-medium' : 'fill-high')}"
+                                         style="width: ${bin.fillLevel}%">
+                                        ${bin.fillLevel}%
+                                    </div>
+                                </div>
+                                <a href="/resident/bin/${bin.id}" class="btn-view">
+                                    <span class="material-icons">visibility</span>
+                                    <span>View Details</span>
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Insert after map container
+            const mapContainer = document.querySelector('.map-container');
+            mapContainer.insertAdjacentHTML('afterend', resultsHTML);
+
+            // Update map with bins
+            updateMapWithMockBins(bins, userLat, userLon, radius);
+
+            // Scroll to results
+            document.getElementById('mock-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateMapWithMockBins(bins, userLat, userLon, radius) {
+            // Clear existing map and reinitialize
+            const mapElement = document.getElementById('map');
+            mapElement.innerHTML = '';
+            
+            // Reinitialize map
+            const newMap = L.map('map').setView([userLat, userLon], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(newMap);
+
+            // Add user location marker
+            const userIcon = L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+
+            L.marker([userLat, userLon], {icon: userIcon})
+                .addTo(newMap)
+                .bindPopup(`<div class="popup-content"><h3>📍 Your Search Location</h3><p>Searching within ${radius} km radius</p></div>`);
+
+            // Add search radius circle
+            L.circle([userLat, userLon], {
+                color: '#3498db',
+                fillColor: '#3498db',
+                fillOpacity: 0.1,
+                radius: radius * 1000
+            }).addTo(newMap);
+
+            // Add bin markers
+            bins.forEach(bin => {
+                const marker = L.marker([bin.latitude, bin.longitude], {
+                    icon: getMarkerIcon(bin.fillLevel)
+                }).addTo(newMap);
+
+                const fillColorClass = getFillColorClass(bin.fillLevel);
+                const popupContent = `
+                    <div class="popup-content">
+                        <h3>🗑️ ${bin.qrCode}</h3>
+                        <p><strong>Location:</strong> ${bin.location}</p>
+                        <p><strong>Type:</strong> ${bin.binType}</p>
+                        <p><strong>Status:</strong> <span class="status">${bin.status}</span></p>
+                        <div class="fill-bar">
+                            <div class="fill-level ${fillColorClass}" style="width: ${bin.fillLevel}%">
+                                ${bin.fillLevel}%
+                            </div>
+                        </div>
+                        <a href="/resident/bin/${bin.id}" 
+                           style="display: inline-block; margin-top: 0.5rem; padding: 0.5rem 1rem; 
+                                  background: #3498db; color: white; text-decoration: none; 
+                                  border-radius: 8px; font-size: 0.85rem;">
+                            View Details
+                        </a>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+            });
+
+            // Fit bounds
+            if (bins.length > 0) {
+                const bounds = L.latLngBounds(
+                    bins.map(bin => [bin.latitude, bin.longitude])
+                );
+                bounds.extend([userLat, userLon]);
+                newMap.fitBounds(bounds, { padding: [50, 50] });
+            }
+
+            // Add scale control
+            L.control.scale().addTo(newMap);
         }
 
         // Initialize radius slider
