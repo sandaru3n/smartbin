@@ -42,13 +42,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Check if data already exists
-        if (userRepository.count() > 0) {
-            System.out.println("Database already contains data. Skipping initialization.");
-            return;
-        }
-
         System.out.println("Initializing database with sample data...");
+        
+        // Clear existing data to ensure fresh start
+        System.out.println("Clearing existing data...");
+        routeBinRepository.deleteAll();
+        collectionRepository.deleteAll();
+        routeRepository.deleteAll();
+        binRepository.deleteAll();
+        userRepository.deleteAll();
 
         // Create sample residents
         createUser(
@@ -134,6 +136,15 @@ public class DataInitializer implements CommandLineRunner {
             User.UserRole.AUTHORITY
         );
 
+        createUser(
+            "Waste Manager",
+            "waste@gmail.com",
+            "password123",
+            "+94 770123456",
+            "Waste Management Office, Colombo",
+            User.UserRole.AUTHORITY
+        );
+
         // Create sample bins
         createSampleBins();
         
@@ -180,27 +191,55 @@ public class DataInitializer implements CommandLineRunner {
     private void createSampleBins() {
         System.out.println("Creating sample bins...");
         
-        // Colombo area bins
-        createBin("QR001", "Colombo Fort", 6.9344, 79.8428, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 95);
-        createBin("QR002", "Pettah Market", 6.9369, 79.8581, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 65);
-        createBin("QR003", "Galle Face Green", 6.9271, 79.8612, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 10);
-        createBin("QR004", "Liberty Plaza", 6.9105, 79.8547, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 90);
-        createBin("QR005", "Bambalapitiya", 6.8881, 79.8603, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 45);
+        // Colombo area bins - North District
+        createBin("QR001", "Colombo Fort Station", 6.9344, 79.8428, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 95, 50);
+        createBin("QR002", "Pettah Market", 6.9369, 79.8581, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 65, 12);
+        createBin("QR003", "Galle Face Green", 6.9271, 79.8612, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 10, 2);
+        createBin("QR004", "Liberty Plaza", 6.9105, 79.8547, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 90, 36);
+        createBin("QR005", "Bambalapitiya Junction", 6.8881, 79.8603, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 45, 8);
+        createBin("QR006", "Maradana Railway", 6.9297, 79.8656, Bin.BinType.BULK, Bin.BinStatus.OVERDUE, 98, 72);
+        createBin("QR007", "Slave Island", 6.9250, 79.8500, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 88, 28);
+        
+        // Colombo area bins - South District
+        createBin("QR008", "Wellawatte Beach", 6.8700, 79.8600, Bin.BinType.RECYCLING, Bin.BinStatus.PARTIAL, 55, 10);
+        createBin("QR009", "Dehiwala Zoo", 6.8500, 79.8700, Bin.BinType.STANDARD, Bin.BinStatus.EMPTY, 15, 3);
+        createBin("QR010", "Mount Lavinia", 6.8380, 79.8630, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 92, 40);
+        createBin("QR011", "Kollupitiya", 6.9150, 79.8500, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 60, 18);
+        createBin("QR012", "Cinnamon Gardens", 6.9050, 79.8650, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 20, 5);
+        
+        // Colombo area bins - East District
+        createBin("QR013", "Borella Junction", 6.9150, 79.8800, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 85, 32);
+        createBin("QR014", "Rajagiriya", 6.9080, 79.8900, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 70, 15);
+        createBin("QR015", "Nugegoda", 6.8650, 79.8900, Bin.BinType.BULK, Bin.BinStatus.OVERDUE, 96, 55);
+        createBin("QR016", "Kotte Parliament", 6.8950, 79.9100, Bin.BinType.STANDARD, Bin.BinStatus.EMPTY, 25, 6);
+        createBin("QR017", "Battaramulla", 6.8980, 79.9200, Bin.BinType.RECYCLING, Bin.BinStatus.PARTIAL, 50, 12);
+        
+        // Colombo area bins - West District
+        createBin("QR018", "Negombo Beach", 7.2083, 79.8358, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 90, 38);
+        createBin("QR019", "Wattala", 6.9900, 79.8900, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 55, 14);
+        createBin("QR020", "Ja-Ela", 7.0750, 79.8920, Bin.BinType.STANDARD, Bin.BinStatus.EMPTY, 18, 4);
+        createBin("QR021", "Katunayake Airport", 7.1807, 79.8841, Bin.BinType.BULK, Bin.BinStatus.FULL, 94, 42);
+        createBin("QR022", "Seeduwa", 7.1200, 79.8850, Bin.BinType.RECYCLING, Bin.BinStatus.PARTIAL, 48, 10);
         
         // Kandy area bins
-        createBin("QR006", "Kandy City Center", 7.2906, 80.6337, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 85);
-        createBin("QR007", "Temple of Tooth", 7.2944, 80.6414, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 5);
-        createBin("QR008", "Kandy Lake", 7.2931, 80.6406, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 55);
+        createBin("QR023", "Kandy City Center", 7.2906, 80.6337, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 85, 30);
+        createBin("QR024", "Temple of Tooth", 7.2944, 80.6414, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 5, 1);
+        createBin("QR025", "Kandy Lake", 7.2931, 80.6406, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 55, 16);
+        createBin("QR026", "Peradeniya Gardens", 7.2700, 80.5950, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 88, 35);
+        createBin("QR027", "Kandy Market", 7.2950, 80.6350, Bin.BinType.BULK, Bin.BinStatus.OVERDUE, 97, 68);
         
         // Galle area bins
-        createBin("QR009", "Galle Fort", 6.0535, 80.2210, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 88);
-        createBin("QR010", "Galle Market", 6.0556, 80.2181, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 15);
+        createBin("QR028", "Galle Fort", 6.0535, 80.2210, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 88, 33);
+        createBin("QR029", "Galle Market", 6.0556, 80.2181, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 15, 3);
+        createBin("QR030", "Unawatuna Beach", 6.0100, 80.2500, Bin.BinType.STANDARD, Bin.BinStatus.PARTIAL, 62, 20);
+        createBin("QR031", "Galle Bus Stand", 6.0560, 80.2200, Bin.BinType.STANDARD, Bin.BinStatus.FULL, 91, 40);
+        createBin("QR032", "Hikkaduwa", 6.1400, 80.1000, Bin.BinType.RECYCLING, Bin.BinStatus.EMPTY, 22, 5);
         
-        System.out.println("✓ Created 10 sample bins");
+        System.out.println("✓ Created 32 sample bins with varied statuses");
     }
     
     private void createBin(String qrCode, String location, Double latitude, Double longitude, 
-                          Bin.BinType binType, Bin.BinStatus status, Integer fillLevel) {
+                          Bin.BinType binType, Bin.BinStatus status, Integer fillLevel, int hoursAgo) {
         Bin bin = new Bin();
         bin.setQrCode(qrCode);
         bin.setLocation(location);
@@ -209,11 +248,11 @@ public class DataInitializer implements CommandLineRunner {
         bin.setBinType(binType);
         bin.setStatus(status);
         bin.setFillLevel(fillLevel);
-        bin.setAlertFlag(status == Bin.BinStatus.FULL && fillLevel > 90);
-        bin.setLastEmptied(LocalDateTime.now().minusHours(24));
+        bin.setAlertFlag(status == Bin.BinStatus.OVERDUE || (status == Bin.BinStatus.FULL && fillLevel > 90));
+        bin.setLastEmptied(LocalDateTime.now().minusHours(hoursAgo));
         
         binRepository.save(bin);
-        System.out.println("✓ Created bin: " + qrCode + " at " + location);
+        System.out.println("✓ Created bin: " + qrCode + " at " + location + " (Fill: " + fillLevel + "%)");
     }
     
     private void createSampleCollections() {
@@ -226,28 +265,83 @@ public class DataInitializer implements CommandLineRunner {
         List<Bin> bins = binRepository.findAll();
         
         if (!collectors.isEmpty() && !bins.isEmpty()) {
-            User collector = collectors.get(0);
+            // Create collections for the past week with different collectors
+            int collectionCount = 0;
             
-            // Create some completed collections
-            for (int i = 0; i < 3; i++) {
-                Bin bin = bins.get(i);
-                createCollection(bin, collector, Collection.CollectionType.STANDARD, 
-                               Collection.CollectionStatus.COMPLETED, "Mixed waste", 100);
+            // Today's collections (completed)
+            for (int i = 0; i < 5; i++) {
+                if (i < bins.size()) {
+                    User collector = collectors.get(i % collectors.size());
+                    Bin bin = bins.get(i);
+                    createCollection(bin, collector, Collection.CollectionType.STANDARD, 
+                                   Collection.CollectionStatus.COMPLETED, "Mixed waste", 95, 0);
+                    collectionCount++;
+                }
             }
             
-            // Create some assigned collections
-            for (int i = 3; i < 5; i++) {
-                Bin bin = bins.get(i);
-                createCollection(bin, collector, Collection.CollectionType.STANDARD, 
-                               Collection.CollectionStatus.ASSIGNED, null, null);
+            // Yesterday's collections (completed)
+            for (int i = 5; i < 12; i++) {
+                if (i < bins.size()) {
+                    User collector = collectors.get(i % collectors.size());
+                    Bin bin = bins.get(i);
+                    Collection.CollectionType type = (i % 3 == 0) ? Collection.CollectionType.RECYCLING : Collection.CollectionType.STANDARD;
+                    createCollection(bin, collector, type, 
+                                   Collection.CollectionStatus.COMPLETED, "Recyclable materials", 88, 1);
+                    collectionCount++;
+                }
             }
+            
+            // 2 days ago collections (completed)
+            for (int i = 12; i < 18; i++) {
+                if (i < bins.size()) {
+                    User collector = collectors.get(i % collectors.size());
+                    Bin bin = bins.get(i);
+                    createCollection(bin, collector, Collection.CollectionType.STANDARD, 
+                                   Collection.CollectionStatus.COMPLETED, "General waste", 92, 2);
+                    collectionCount++;
+                }
+            }
+            
+            // 3 days ago collections (completed)
+            for (int i = 18; i < 23; i++) {
+                if (i < bins.size()) {
+                    User collector = collectors.get(i % collectors.size());
+                    Bin bin = bins.get(i);
+                    Collection.CollectionType type = (i % 2 == 0) ? Collection.CollectionType.BULK : Collection.CollectionType.STANDARD;
+                    createCollection(bin, collector, type, 
+                                   Collection.CollectionStatus.COMPLETED, "Bulk waste", 85, 3);
+                    collectionCount++;
+                }
+            }
+            
+            // Last week collections (completed)
+            for (int i = 23; i < 28; i++) {
+                if (i < bins.size()) {
+                    User collector = collectors.get(i % collectors.size());
+                    Bin bin = bins.get(i);
+                    createCollection(bin, collector, Collection.CollectionType.STANDARD, 
+                                   Collection.CollectionStatus.COMPLETED, "Mixed waste", 90, 7);
+                    collectionCount++;
+                }
+            }
+            
+            // Assigned collections (pending)
+            for (int i = 28; i < 32; i++) {
+                if (i < bins.size()) {
+                    User collector = collectors.get(i % collectors.size());
+                    Bin bin = bins.get(i);
+                    createCollection(bin, collector, Collection.CollectionType.STANDARD, 
+                                   Collection.CollectionStatus.ASSIGNED, null, null, 0);
+                    collectionCount++;
+                }
+            }
+            
+            System.out.println("✓ Created " + collectionCount + " sample collections");
         }
-        
-        System.out.println("✓ Created sample collections");
     }
     
     private void createCollection(Bin bin, User collector, Collection.CollectionType type, 
-                                 Collection.CollectionStatus status, String wasteType, Integer wasteLevel) {
+                                 Collection.CollectionStatus status, String wasteType, Integer wasteLevel, int daysAgo) {
         Collection collection = new Collection();
         collection.setBin(bin);
         collection.setCollector(collector);
@@ -255,10 +349,10 @@ public class DataInitializer implements CommandLineRunner {
         collection.setStatus(status);
         collection.setWasteType(wasteType);
         collection.setWasteLevel(wasteLevel);
-        collection.setCollectionDate(LocalDateTime.now().minusDays(1));
+        collection.setCollectionDate(LocalDateTime.now().minusDays(daysAgo));
         
         if (status == Collection.CollectionStatus.COMPLETED) {
-            collection.setCompletionDate(LocalDateTime.now().minusHours(2));
+            collection.setCompletionDate(LocalDateTime.now().minusDays(daysAgo).plusHours(2));
         }
         
         collectionRepository.save(collection);
@@ -278,41 +372,92 @@ public class DataInitializer implements CommandLineRunner {
         List<Bin> bins = binRepository.findAll();
         
         if (!collectors.isEmpty() && !authorities.isEmpty() && !bins.isEmpty()) {
+            int routeCount = 0;
+            
+            // Create completed routes for the past week
+            String[] routeNames = {
+                "Colombo Central Route", "North District Route", "South District Route",
+                "East District Route", "West District Route", "Kandy City Route",
+                "Galle Fort Route", "Express Collection Route"
+            };
+            
+            // Completed routes (last 7 days)
+            for (int day = 0; day < 7; day++) {
+                User collector = collectors.get(day % collectors.size());
+                User authority = authorities.get(day % authorities.size());
+                String routeName = routeNames[day % routeNames.length] + " - Day " + (day + 1);
+                
+                Route completedRoute = new Route();
+                completedRoute.setRouteName(routeName);
+                completedRoute.setCollector(collector);
+                completedRoute.setAuthority(authority);
+                completedRoute.setStatus(Route.RouteStatus.COMPLETED);
+                completedRoute.setAssignedDate(LocalDateTime.now().minusDays(day).minusHours(8));
+                completedRoute.setStartedDate(LocalDateTime.now().minusDays(day).minusHours(7));
+                completedRoute.setCompletedDate(LocalDateTime.now().minusDays(day).minusHours(3));
+                completedRoute.setEstimatedDurationMinutes(120 + (day * 10));
+                completedRoute.setActualDurationMinutes(95 + (day * 8));
+                completedRoute.setTotalDistanceKm(15.5 + (day * 2.5));
+                
+                Route savedRoute = routeRepository.save(completedRoute);
+                
+                // Add 4-5 bins to each route
+                int binCount = 4 + (day % 2);
+                int startIndex = (day * 4) % bins.size();
+                for (int i = 0; i < binCount && (startIndex + i) < bins.size(); i++) {
+                    RouteBin routeBin = new RouteBin();
+                    routeBin.setRoute(savedRoute);
+                    routeBin.setBin(bins.get(startIndex + i));
+                    routeBin.setSequenceOrder(i + 1);
+                    routeBin.setStatus(RouteBin.CollectionStatus.COMPLETED);
+                    routeBin.setVisitedDate(LocalDateTime.now().minusDays(day).minusHours(6 - i));
+                    
+                    routeBinRepository.save(routeBin);
+                }
+                routeCount++;
+            }
+            
+            // Create in-progress routes
+            for (int i = 0; i < 2; i++) {
+                User collector = collectors.get(i % collectors.size());
+                User authority = authorities.get(0);
+                
+                Route inProgressRoute = new Route();
+                inProgressRoute.setRouteName("Active Route " + (i + 1));
+                inProgressRoute.setCollector(collector);
+                inProgressRoute.setAuthority(authority);
+                inProgressRoute.setStatus(Route.RouteStatus.IN_PROGRESS);
+                inProgressRoute.setAssignedDate(LocalDateTime.now().minusHours(3));
+                inProgressRoute.setStartedDate(LocalDateTime.now().minusHours(2));
+                inProgressRoute.setEstimatedDurationMinutes(150);
+                inProgressRoute.setTotalDistanceKm(18.0);
+                
+                Route savedRoute = routeRepository.save(inProgressRoute);
+                
+                // Add bins to in-progress route
+                int startIndex = 28 + (i * 2);
+                for (int j = 0; j < 3 && (startIndex + j) < bins.size(); j++) {
+                    RouteBin routeBin = new RouteBin();
+                    routeBin.setRoute(savedRoute);
+                    routeBin.setBin(bins.get(startIndex + j));
+                    routeBin.setSequenceOrder(j + 1);
+                    routeBin.setStatus(j == 0 ? RouteBin.CollectionStatus.COMPLETED : RouteBin.CollectionStatus.PENDING);
+                    if (j == 0) {
+                        routeBin.setVisitedDate(LocalDateTime.now().minusMinutes(30));
+                    }
+                    
+                    routeBinRepository.save(routeBin);
+                }
+                routeCount++;
+            }
+            
+            // Create assigned routes (pending)
             User collector = collectors.get(0);
             User authority = authorities.get(0);
             
-            // Create a completed route
-            Route completedRoute = new Route();
-            completedRoute.setRouteName("Colombo Central Route");
-            completedRoute.setCollector(collector);
-            completedRoute.setAuthority(authority);
-            completedRoute.setStatus(Route.RouteStatus.COMPLETED);
-            completedRoute.setAssignedDate(LocalDateTime.now().minusDays(1));
-            completedRoute.setStartedDate(LocalDateTime.now().minusDays(1).plusHours(1));
-            completedRoute.setCompletedDate(LocalDateTime.now().minusHours(2));
-            completedRoute.setEstimatedDurationMinutes(120);
-            completedRoute.setActualDurationMinutes(95);
-            completedRoute.setTotalDistanceKm(15.5);
-            
-            Route savedRoute = routeRepository.save(completedRoute);
-            
-            // Add bins to the route
-            List<Bin> routeBins = bins.subList(0, Math.min(3, bins.size()));
-            for (int i = 0; i < routeBins.size(); i++) {
-                RouteBin routeBin = new RouteBin();
-                routeBin.setRoute(savedRoute);
-                routeBin.setBin(routeBins.get(i));
-                routeBin.setSequenceOrder(i + 1);
-                routeBin.setStatus(RouteBin.CollectionStatus.COMPLETED);
-                routeBin.setVisitedDate(LocalDateTime.now().minusHours(3));
-                
-                routeBinRepository.save(routeBin);
-            }
-            
-            // Create an assigned route
             Route assignedRoute = new Route();
-            assignedRoute.setRouteName("Kandy City Route");
-            assignedRoute.setCollector(collectors.size() > 1 ? collectors.get(1) : collector);
+            assignedRoute.setRouteName("Scheduled Morning Route");
+            assignedRoute.setCollector(collector);
             assignedRoute.setAuthority(authority);
             assignedRoute.setStatus(Route.RouteStatus.ASSIGNED);
             assignedRoute.setAssignedDate(LocalDateTime.now());
@@ -332,9 +477,10 @@ public class DataInitializer implements CommandLineRunner {
                 
                 routeBinRepository.save(routeBin);
             }
+            routeCount++;
+            
+            System.out.println("✓ Created " + routeCount + " sample routes (7 completed, 2 in-progress, 1 assigned)");
         }
-        
-        System.out.println("✓ Created sample routes");
     }
 }
 
