@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report - SmartBin</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .main-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .report-config {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .config-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .generate-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            background: #34495e;
+        }
+
+        .report-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .report-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .export-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: #2980b9;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: #e9ecef;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .chart-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .status-empty {
+            background-color: #27ae60;
+        }
+
+        .status-partial {
+            background-color: #3498db;
+        }
+
+        .status-full {
+            background-color: #f39c12;
+        }
+
+        .status-overdue {
+            background-color: #e74c3c;
+        }
+
+        .table-section {
+            margin-bottom: 2rem;
+        }
+
+        .table-section h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        .report-metadata {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .report-metadata strong {
+            color: #2c3e50;
+        }
+
+        .report-metadata span {
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="/authority/dashboard" class="back-btn">
+            ← Generate Report
+        </a>
+        <div class="user-info">
+            <span th:text="${user.name}">Authority User</span>
+            <div class="user-icon">👤</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- Report Configuration Section -->
+        <div class="report-config">
+            <h2 class="config-title">Report Configuration</h2>
+            <form id="reportForm">
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label for="dateRange">Date Range:</label>
+                        <select id="dateRange" name="dateRange" required>
+                            <option value="">Select date range</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="region">Region:</label>
+                        <select id="region" name="region" required>
+                            <option value="">Select Region</option>
+                            <option value="all">All Regions</option>
+                            <option value="north">North District</option>
+                            <option value="south">South District</option>
+                            <option value="east">East District</option>
+                            <option value="west">West District</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportType">Report Type:</label>
+                        <select id="reportType" name="reportType" required>
+                            <option value="">Select Report Type</option>
+                            <option value="collection">Collection Report</option>
+                            <option value="performance">Performance Report</option>
+                            <option value="bin-status">Bin Status Report</option>
+                            <option value="overdue">Overdue Bins Report</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="generate-btn">
+                    📊 Generate Report
+                </button>
+            </form>
+        </div>
+
+        <!-- Report Content Section -->
+        <div id="reportContent" class="report-content">
+            <div class="report-header">
+                <h2 class="report-title" id="reportTitle">Waste Management Report</h2>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="export-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                    <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+                </div>
+            </div>
+
+            <!-- Report Metadata -->
+            <div class="report-metadata" style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #3498db;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <strong>Generated By:</strong> <span id="generatedBy">Authority User</span>
+                    </div>
+                    <div>
+                        <strong>Generated At:</strong> <span id="generatedAt">Loading...</span>
+                    </div>
+                    <div>
+                        <strong>Region:</strong> <span id="reportRegion">All Regions</span>
+                    </div>
+                    <div>
+                        <strong>Date Range:</strong> <span id="reportDateRange">This Week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Statistics -->
+            <div class="summary-stats" id="summaryStats">
+                <div class="stat-card">
+                    <div class="stat-icon">🗑️</div>
+                    <div class="stat-label">Total Bins</div>
+                    <div class="stat-value" id="totalBinsStat">32</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-label">Average Fill %</div>
+                    <div class="stat-value" id="avgFillStat">67%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-label">Overdue Bins</div>
+                    <div class="stat-value" id="overdueStat">5</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-label">Collections Today</div>
+                    <div class="stat-value" id="collectionsStat">18</div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">Bin Fill Level Distribution</h3>
+                    <canvas id="fillLevelChart" style="max-height: 300px;"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Bin Status Overview</h3>
+                    <canvas id="statusChart" style="max-height: 300px;"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Bin Type Distribution</h3>
+                    <canvas id="typeChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Data Tables -->
+            <div id="dataTableContainer" style="margin-top: 2rem;">
+                <!-- Bin Status Table -->
+                <div class="table-section">
+                    <h3 style="margin-bottom: 1rem; color: #2c3e50;">📋 Bin Status Details</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>QR Code</th>
+                                <th>Location</th>
+                                <th>Fill Level</th>
+                                <th>Status</th>
+                                <th>Type</th>
+                                <th>Last Emptied</th>
+                                <th>Alert</th>
+                            </tr>
+                        </thead>
+                        <tbody id="binStatusTableBody">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Overdue Bins Table -->
+                <div class="table-section" id="overdueTableSection" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #e74c3c;">🚨 Overdue Bins Requiring Attention</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>QR Code</th>
+                                <th>Location</th>
+                                <th>Fill Level</th>
+                                <th>Hours Overdue</th>
+                                <th>Priority</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overdueTableBody">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Collection Performance Table -->
+                <div class="table-section" id="performanceTableSection" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: #27ae60;">📈 Collection Performance Summary</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                                <th>Date</th>
+                                <th>Total Volume (KG)</th>
+                                <th>Collections</th>
+                                <th>Avg per Collection</th>
+                                <th>Efficiency %</th>
+                                <th>Distance (KM)</th>
+                    </tr>
+                </thead>
+                        <tbody id="performanceTableBody">
+                    <tr>
+                        <td>2025-01-15</td>
+                        <td>2,450</td>
+                        <td>24</td>
+                        <td>102.1</td>
+                                <td style="color: #27ae60;">94.2%</td>
+                                <td>45.2</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-14</td>
+                        <td>2,180</td>
+                        <td>22</td>
+                        <td>99.1</td>
+                                <td style="color: #f39c12;">91.8%</td>
+                                <td>42.1</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-13</td>
+                        <td>2,670</td>
+                        <td>28</td>
+                        <td>102.7</td>
+                                <td style="color: #27ae60;">96.5%</td>
+                                <td>48.9</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-12</td>
+                        <td>1,920</td>
+                        <td>20</td>
+                        <td>96.0</td>
+                                <td style="color: #f39c12;">88.3%</td>
+                                <td>38.7</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-11</td>
+                        <td>2,340</td>
+                        <td>23</td>
+                        <td>101.7</td>
+                                <td style="color: #27ae60;">93.7%</td>
+                                <td>44.3</td>
+                    </tr>
+                </tbody>
+            </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global chart instances
+        let fillLevelChart = null;
+        let statusChart = null;
+        let typeChart = null;
+
+        // Initialize page with default report
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default values
+            document.getElementById('dateRange').value = 'week';
+            document.getElementById('region').value = 'all';
+            document.getElementById('reportType').value = 'bin-status';
+            
+            // Load default report
+            loadDefaultReport();
+            
+            // Initialize charts with default data
+            initializeChartsWithDefaultData();
+            
+            // Load bin data tables
+            loadBinStatusTable();
+            loadOverdueBinsTable();
+            
+            // Update metadata
+            updateReportMetadata('bin-status', 'all', 'week');
+        });
+
+        // Form submission handling
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const reportType = document.getElementById('reportType').value;
+            const region = document.getElementById('region').value;
+            const dateRange = document.getElementById('dateRange').value;
+
+            if (!reportType || !region || !dateRange) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Generating Report...';
+
+            // Generate report using API
+            fetch('/authority/api/reports/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reportType: reportType,
+                    region: region,
+                    dateRange: dateRange
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                
+                if (data.error) {
+                    alert('Error generating report: ' + data.error);
+                    return;
+                }
+                
+                displayReport(data, reportType, region, dateRange);
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                // Fallback to default data if API fails
+                console.warn('API failed, using default data:', error);
+                loadDefaultReport();
+                updateReportMetadata(reportType, region, dateRange);
+            });
+        });
+
+        function loadDefaultReport() {
+            // This would normally fetch from API, but we'll use sample data
+            const defaultData = {
+                totalBins: 32,
+                averageFillLevel: 67,
+                overdueBins: 5,
+                totalCollections: 18,
+                emptyBins: 8,
+                partialBins: 12,
+                fullBins: 7,
+                overdueBins: 5,
+                standardBins: 20,
+                recyclingBins: 8,
+                bulkBins: 4
+            };
+            
+            updateSummaryStats(defaultData);
+            updateCharts(defaultData);
+        }
+
+        function updateReportMetadata(reportType, region, dateRange) {
+            const reportTypeNames = {
+                'collection': 'Collection Report',
+                'performance': 'Performance Report',
+                'bin-status': 'Bin Status Report',
+                'overdue': 'Overdue Bins Report'
+            };
+            
+            document.getElementById('reportTitle').textContent = 
+                `${reportTypeNames[reportType]} - ${region.toUpperCase()} (${dateRange})`;
+            document.getElementById('reportRegion').textContent = 
+                region === 'all' ? 'All Regions' : region.toUpperCase();
+            document.getElementById('reportDateRange').textContent = 
+                dateRange.charAt(0).toUpperCase() + dateRange.slice(1);
+            document.getElementById('generatedAt').textContent = 
+                new Date().toLocaleString();
+        }
+
+        function initializeChartsWithDefaultData() {
+            const defaultData = {
+                emptyBins: 8,
+                lowFillBins: 12,
+                mediumFillBins: 7,
+                fullBins: 5,
+                partialBins: 12,
+                standardBins: 20,
+                recyclingBins: 8,
+                bulkBins: 4
+            };
+            
+            updateCharts(defaultData);
+        }
+
+        function displayReport(data, reportType, region, dateRange) {
+            // Show report content section
+            document.getElementById('reportContent').style.display = 'block';
+            
+            // Update report title
+            const reportTypeNames = {
+                'collection': 'Collection Report',
+                'performance': 'Performance Report',
+                'bin-status': 'Bin Status Report',
+                'overdue': 'Overdue Bins Report'
+            };
+            document.getElementById('reportTitle').textContent = 
+                `${reportTypeNames[reportType]} - ${region.toUpperCase()} (${dateRange})`;
+            
+            // Update summary statistics
+            updateSummaryStats(data);
+            
+            // Update charts
+            updateCharts(data);
+            
+            // Update data table
+            updateDataTable(data, reportType);
+            
+            // Scroll to report
+            document.getElementById('reportContent').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateSummaryStats(data) {
+            const statsContainer = document.getElementById('summaryStats');
+            
+            const stats = [
+                { icon: '🗑️', label: 'Total Bins', value: data.totalBins || data.binCount || 0 },
+                { icon: '📊', label: 'Average Fill %', value: (data.averageFillLevel || 0) + '%' },
+                { icon: '⚠️', label: 'Overdue Bins', value: data.overdueBins || data.overdueCount || 0 },
+                { icon: '✅', label: 'Collections', value: data.totalCollections || data.collectionCount || 0 }
+            ];
+            
+            statsContainer.innerHTML = stats.map(stat => `
+                <div class="stat-card">
+                    <div class="stat-icon">${stat.icon}</div>
+                    <div class="stat-label">${stat.label}</div>
+                    <div class="stat-value">${stat.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateCharts(data) {
+            // Destroy existing charts if they exist
+            if (fillLevelChart) fillLevelChart.destroy();
+            if (statusChart) statusChart.destroy();
+            if (typeChart) typeChart.destroy();
+            
+            // Fill Level Distribution Chart
+            const fillLevelCtx = document.getElementById('fillLevelChart').getContext('2d');
+            fillLevelChart = new Chart(fillLevelCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
+                    datasets: [{
+                        label: 'Number of Bins',
+                        data: [
+                            data.emptyBins || 0,
+                            data.lowFillBins || 0,
+                            data.mediumFillBins || 0,
+                            data.fullBins || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(231, 76, 60, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(46, 204, 113, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(243, 156, 18, 1)',
+                            'rgba(231, 76, 60, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Status Overview Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Empty', 'Partial', 'Full', 'Overdue'],
+                    datasets: [{
+                        data: [
+                            data.emptyBins || 0,
+                            data.partialBins || 0,
+                            data.fullBins || 0,
+                            data.overdueBins || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(231, 76, 60, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(46, 204, 113, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(243, 156, 18, 1)',
+                            'rgba(231, 76, 60, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Bin Type Distribution Chart
+            const typeCtx = document.getElementById('typeChart').getContext('2d');
+            typeChart = new Chart(typeCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Standard', 'Recycling', 'Bulk'],
+                    datasets: [{
+                        data: [
+                            data.standardBins || 0,
+                            data.recyclingBins || 0,
+                            data.bulkBins || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(155, 89, 182, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(46, 204, 113, 1)',
+                            'rgba(155, 89, 182, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadBinStatusTable() {
+            // Sample bin data - in production this would come from API
+            const bins = [
+                {qrCode: 'QR001', location: 'Colombo Fort Station', fillLevel: 85, status: 'FULL', type: 'STANDARD', lastEmptied: '2 hours ago', alert: 'Yes'},
+                {qrCode: 'QR002', location: 'Pettah Market', fillLevel: 65, status: 'PARTIAL', type: 'STANDARD', lastEmptied: '5 hours ago', alert: 'No'},
+                {qrCode: 'QR003', location: 'Galle Face Green', fillLevel: 25, status: 'EMPTY', type: 'RECYCLING', lastEmptied: '8 hours ago', alert: 'No'},
+                {qrCode: 'QR004', location: 'Liberty Plaza', fillLevel: 90, status: 'FULL', type: 'STANDARD', lastEmptied: '3 hours ago', alert: 'Yes'},
+                {qrCode: 'QR005', location: 'Bambalapitiya Junction', fillLevel: 45, status: 'PARTIAL', type: 'STANDARD', lastEmptied: '6 hours ago', alert: 'No'},
+                {qrCode: 'QR006', location: 'Maradana Railway', fillLevel: 95, status: 'OVERDUE', type: 'BULK', lastEmptied: '52 hours ago', alert: 'Yes'},
+                {qrCode: 'QR007', location: 'Slave Island', fillLevel: 70, status: 'PARTIAL', type: 'STANDARD', lastEmptied: '4 hours ago', alert: 'No'},
+                {qrCode: 'QR008', location: 'Wellawatte Beach', fillLevel: 55, status: 'PARTIAL', type: 'RECYCLING', lastEmptied: '7 hours ago', alert: 'No'},
+                {qrCode: 'QR009', location: 'Dehiwala Zoo', fillLevel: 15, status: 'EMPTY', type: 'STANDARD', lastEmptied: '9 hours ago', alert: 'No'},
+                {qrCode: 'QR010', location: 'Mount Lavinia', fillLevel: 88, status: 'FULL', type: 'STANDARD', lastEmptied: '1 hour ago', alert: 'Yes'}
+            ];
+            
+            const tbody = document.getElementById('binStatusTableBody');
+            tbody.innerHTML = bins.map(bin => `
+                <tr>
+                    <td><strong>${bin.qrCode}</strong></td>
+                    <td>${bin.location}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 60px; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${bin.fillLevel}%; height: 100%; background: ${getFillColor(bin.fillLevel)}; transition: width 0.3s ease;"></div>
+                            </div>
+                            <span>${bin.fillLevel}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${bin.status.toLowerCase()}" style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500; color: white;">
+                            ${bin.status}
+                        </span>
+                    </td>
+                    <td>${bin.type}</td>
+                    <td>${bin.lastEmptied}</td>
+                    <td>
+                        <span style="color: ${bin.alert === 'Yes' ? '#e74c3c' : '#27ae60'}; font-weight: bold;">
+                            ${bin.alert === 'Yes' ? '🚨' : '✅'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadOverdueBinsTable() {
+            const overdueBins = [
+                {qrCode: 'QR006', location: 'Maradana Railway', fillLevel: 95, hoursOverdue: 52, priority: 'HIGH'},
+                {qrCode: 'QR015', location: 'Nugegoda', fillLevel: 96, hoursOverdue: 50, priority: 'HIGH'},
+                {qrCode: 'QR021', location: 'Katunayake Airport', fillLevel: 94, hoursOverdue: 48, priority: 'MEDIUM'},
+                {qrCode: 'QR027', location: 'Kandy Market', fillLevel: 97, hoursOverdue: 55, priority: 'HIGH'},
+                {qrCode: 'QR031', location: 'Galle Bus Stand', fillLevel: 91, hoursOverdue: 49, priority: 'MEDIUM'}
+            ];
+            
+            const tbody = document.getElementById('overdueTableBody');
+            tbody.innerHTML = overdueBins.map(bin => `
+                <tr>
+                    <td><strong>${bin.qrCode}</strong></td>
+                    <td>${bin.location}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 60px; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${bin.fillLevel}%; height: 100%; background: #e74c3c; transition: width 0.3s ease;"></div>
+                            </div>
+                            <span style="color: #e74c3c; font-weight: bold;">${bin.fillLevel}%</span>
+                        </div>
+                    </td>
+                    <td style="color: #e74c3c; font-weight: bold;">${bin.hoursOverdue} hours</td>
+                    <td>
+                        <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500; color: white; background: ${getPriorityColor(bin.priority)};">
+                            ${bin.priority}
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="dispatchToBin('${bin.qrCode}')" style="background: #3498db; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                            Dispatch
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getFillColor(fillLevel) {
+            if (fillLevel >= 90) return '#e74c3c';
+            if (fillLevel >= 70) return '#f39c12';
+            if (fillLevel >= 40) return '#3498db';
+            return '#27ae60';
+        }
+
+        function getPriorityColor(priority) {
+            switch(priority) {
+                case 'HIGH': return '#e74c3c';
+                case 'MEDIUM': return '#f39c12';
+                case 'LOW': return '#27ae60';
+                default: return '#95a5a6';
+            }
+        }
+
+        function dispatchToBin(qrCode) {
+            alert(`Dispatching collector to bin ${qrCode}. This would open the dispatch modal with this bin pre-selected.`);
+            // In a real implementation, this would open the dispatch modal and pre-select the bin
+        }
+
+        function updateDataTable(data, reportType) {
+            // This function is now handled by loadBinStatusTable() and loadOverdueBinsTable()
+            // The tables are loaded on page initialization and updated when needed
+        }
+
+        function exportToPDF() {
+            alert('PDF export will be implemented with a library like jsPDF');
+        }
+
+        function exportToCSV() {
+            alert('CSV export will download the report data as CSV file');
+        }
+    </script>
+</body>
+</html>

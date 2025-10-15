@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch Collector - SmartBin Authority</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .nav-breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-icon {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .page-title h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .page-description {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .dispatch-form {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .section-title h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .section-title p {
+            margin: 0.25rem 0 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            pointer-events: none;
+            font-size: 0.8rem;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            border-color: #3498db;
+            background: #f8f9ff;
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .selection-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .control-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .control-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .control-icon {
+            font-size: 0.9rem;
+        }
+
+        .selection-info {
+            margin-left: auto;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .bin-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .bin-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bin-item:hover {
+            background: #f8f9ff;
+        }
+
+        .bin-item:last-child {
+            border-bottom: none;
+        }
+
+        .bin-checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .bin-checkbox {
+            display: none;
+        }
+
+        .bin-checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bin-checkbox:checked + .bin-checkbox-custom {
+            background: #3498db;
+            border-color: #3498db;
+        }
+
+        .bin-checkbox:checked + .bin-checkbox-custom::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .bin-info {
+            flex: 1;
+        }
+
+        .bin-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bin-qr {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .bin-status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .bin-status-badge.EMPTY {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .bin-status-badge.PARTIAL {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .bin-status-badge.FULL {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .bin-status-badge.OVERDUE {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .bin-location {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .bin-details {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .fill-bar {
+            width: 60px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .fill-progress {
+            height: 100%;
+            background: #27ae60;
+            transition: width 0.3s ease;
+        }
+
+        .fill-progress[data-level="95"],
+        .fill-progress[data-level="96"],
+        .fill-progress[data-level="97"],
+        .fill-progress[data-level="98"],
+        .fill-progress[data-level="99"] {
+            background: #e74c3c;
+        }
+
+        .fill-percentage {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .detail-value {
+            font-size: 0.8rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .bin-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn-small {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .action-btn-small:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .alert-indicator {
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .route-preview {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+            text-align: center;
+            color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 2rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .dispatch-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: white;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-icon {
+            font-size: 1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #27ae60;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            
+            .page-header {
+                padding: 1.5rem;
+            }
+            
+            .dispatch-form {
+                padding: 1rem;
+            }
+            
+            .form-section {
+                padding: 1rem;
+            }
+            
+            .bin-details {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🗑️ SmartBin Authority</div>
+            <nav class="nav-breadcrumb">
+                <a href="/authority/dashboard">Dashboard</a>
+                <span>›</span>
+                <span>Dispatch Collector</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <div class="page-icon">🚛</div>
+                <div>
+                    <h1>Dispatch Collector</h1>
+                </div>
+            </div>
+            <p class="page-description">
+                Create an optimized route for waste collection. Select a collector and bins that need to be collected. 
+                Our AI will automatically optimize the route for maximum efficiency.
+            </p>
+        </div>
+
+        <!-- Dispatch Form -->
+        <form class="dispatch-form" id="dispatchForm">
+            <!-- Step 1: Select Collector -->
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="step-number">1</div>
+                    <div class="section-title">
+                        <h3>Select Collector</h3>
+                        <p>Choose the collector who will handle this route</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="collectorSelect">Available Collectors</label>
+                    <div class="select-wrapper">
+                        <select id="collectorSelect" required>
+                            <option value="">Choose a collector...</option>
+                            <option th:each="collector : ${collectors}" th:value="${collector.id}" th:text="${collector.name}">Collector Name</option>
+                        </select>
+                        <div class="select-arrow">▼</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Select Bins -->
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="step-number">2</div>
+                    <div class="section-title">
+                        <h3>Select Bins for Collection</h3>
+                        <p>Choose bins that need to be collected. Our AI will optimize the route automatically.</p>
+                    </div>
+                </div>
+                
+                <!-- Filter Options -->
+                <div class="filter-options">
+                    <button type="button" class="filter-btn active" data-filter="all">
+                        All Bins (<span id="totalBinsCount">0</span>)
+                    </button>
+                    <button type="button" class="filter-btn" data-filter="full">
+                        Full Bins (<span id="fullBinsCount">0</span>)
+                    </button>
+                    <button type="button" class="filter-btn" data-filter="overdue">
+                        Overdue (<span id="overdueBinsCount">0</span>)
+                    </button>
+                    <button type="button" class="filter-btn" data-filter="alert">
+                        With Alerts (<span id="alertBinsCount">0</span>)
+                    </button>
+                </div>
+
+                <!-- Select All/None -->
+                <div class="selection-controls">
+                    <button type="button" class="control-btn" onclick="selectAllBins()">
+                        <span class="control-icon">☑️</span>
+                        Select All
+                    </button>
+                    <button type="button" class="control-btn" onclick="selectNoneBins()">
+                        <span class="control-icon">☐</span>
+                        Select None
+                    </button>
+                    <div class="selection-info">
+                        <span id="selectedCount">0</span> bins selected
+                    </div>
+                </div>
+
+                <!-- Bin List -->
+                <div class="bin-list" id="binList">
+                    <div th:each="bin : ${fullBins}" class="bin-item" th:data-status="${bin.status}" th:data-alert="${bin.alertFlag}">
+                        <label class="bin-checkbox-wrapper">
+                            <input type="checkbox" class="bin-checkbox" th:value="${bin.id}" th:id="'bin_' + ${bin.id}" onchange="updateSelectionCount()">
+                            <div class="bin-checkbox-custom"></div>
+                        </label>
+                        <div class="bin-info">
+                            <div class="bin-header">
+                                <div class="bin-qr" th:text="${bin.qrCode}">QR001</div>
+                                <div class="bin-status-badge" th:classappend="${bin.status}" th:text="${bin.status}">FULL</div>
+                            </div>
+                            <div class="bin-location" th:text="${bin.location}">Colombo Fort Station</div>
+                            <div class="bin-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Fill Level:</span>
+                                    <div class="fill-bar">
+                                        <div class="fill-progress" th:style="'width: ' + ${bin.fillLevel} + '%'" th:data-level="${bin.fillLevel}"></div>
+                                    </div>
+                                    <span class="fill-percentage" th:text="${bin.fillLevel} + '%'">85%</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Last Emptied:</span>
+                                    <span class="detail-value" th:text="${#temporals.format(bin.lastEmptied, 'MMM dd, HH:mm')}">Jan 15, 14:30</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bin-actions">
+                            <button type="button" class="action-btn-small" onclick="viewBinDetails(this)" title="View Details">
+                                👁️
+                            </button>
+                            <div class="alert-indicator" th:if="${bin.alertFlag}" title="Alert Active">🚨</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Route Preview -->
+            <div class="form-section" id="routePreviewSection" style="display: none;">
+                <div class="section-header">
+                    <div class="step-number">3</div>
+                    <div class="section-title">
+                        <h3>Route Preview</h3>
+                        <p>Optimized route will be calculated and displayed here</p>
+                    </div>
+                </div>
+                <div class="route-preview" id="routePreview">
+                    <!-- Route details will be populated here -->
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="/authority/dashboard" class="btn btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary dispatch-btn" id="dispatchBtn">
+                    <span class="btn-icon">🚀</span>
+                    <span class="btn-text">Optimize & Dispatch Route</span>
+                    <div class="btn-loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <span>Optimizing Route...</span>
+                    </div>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBinCounts();
+            updateSelectionCount();
+            initializeFilterButtons();
+        });
+
+        function updateBinCounts() {
+            const bins = document.querySelectorAll('.bin-item');
+            const totalBins = bins.length;
+            const fullBins = document.querySelectorAll('.bin-item[data-status="FULL"]').length;
+            const overdueBins = document.querySelectorAll('.bin-item[data-status="OVERDUE"]').length;
+            const alertBins = document.querySelectorAll('.bin-item[data-alert="true"]').length;
+            
+            document.getElementById('totalBinsCount').textContent = totalBins;
+            document.getElementById('fullBinsCount').textContent = fullBins;
+            document.getElementById('overdueBinsCount').textContent = overdueBins;
+            document.getElementById('alertBinsCount').textContent = alertBins;
+        }
+
+        function updateSelectionCount() {
+            const selectedBins = document.querySelectorAll('.bin-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = selectedBins;
+            
+            // Enable/disable dispatch button based on selection
+            const dispatchBtn = document.getElementById('dispatchBtn');
+            if (selectedBins > 0) {
+                dispatchBtn.disabled = false;
+                dispatchBtn.style.opacity = '1';
+            } else {
+                dispatchBtn.disabled = true;
+                dispatchBtn.style.opacity = '0.6';
+            }
+        }
+
+        function selectAllBins() {
+            const checkboxes = document.querySelectorAll('.bin-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+            updateSelectionCount();
+        }
+
+        function selectNoneBins() {
+            const checkboxes = document.querySelectorAll('.bin-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+            updateSelectionCount();
+        }
+
+        function initializeFilterButtons() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Filter bins based on selection
+                    const filter = this.getAttribute('data-filter');
+                    filterBins(filter);
+                });
+            });
+        }
+
+        function filterBins(filter) {
+            const bins = document.querySelectorAll('.bin-item');
+            bins.forEach(bin => {
+                let show = false;
+                
+                switch(filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'full':
+                        show = bin.getAttribute('data-status') === 'FULL';
+                        break;
+                    case 'overdue':
+                        show = bin.getAttribute('data-status') === 'OVERDUE';
+                        break;
+                    case 'alert':
+                        show = bin.getAttribute('data-alert') === 'true';
+                        break;
+                }
+                
+                bin.style.display = show ? 'flex' : 'none';
+            });
+        }
+
+        function viewBinDetails(button) {
+            const binItem = button.closest('.bin-item');
+            const qrCode = binItem.querySelector('.bin-qr').textContent;
+            const location = binItem.querySelector('.bin-location').textContent;
+            const status = binItem.querySelector('.bin-status-badge').textContent;
+            
+            alert(`Bin Details:\nQR Code: ${qrCode}\nLocation: ${location}\nStatus: ${status}`);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        function showRoutePreview(routeData) {
+            const routePreviewSection = document.getElementById('routePreviewSection');
+            const routePreview = document.getElementById('routePreview');
+            
+            routePreview.innerHTML = `
+                <div style="text-align: left; background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                    <h4 style="margin: 0 0 1rem 0; color: #2c3e50;">Route Summary</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <strong>Route ID:</strong> ${routeData.routeId}
+                        </div>
+                        <div>
+                            <strong>Total Distance:</strong> ${routeData.totalDistance} km
+                        </div>
+                        <div>
+                            <strong>Estimated Duration:</strong> ${routeData.estimatedDuration} minutes
+                        </div>
+                        <div>
+                            <strong>Number of Bins:</strong> ${routeData.numBins}
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; border-left: 4px solid #27ae60;">
+                        <strong>✅ Route optimized and dispatched successfully!</strong><br>
+                        The collector has been notified and the route is now active.
+                    </div>
+                </div>
+            `;
+            
+            routePreviewSection.style.display = 'block';
+        }
+
+        // Form submission
+        document.getElementById('dispatchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const collectorId = document.getElementById('collectorSelect').value;
+            const selectedBins = Array.from(document.querySelectorAll('.bin-checkbox:checked'))
+                .map(cb => parseInt(cb.value));
+
+            if (selectedBins.length === 0) {
+                showNotification('Please select at least one bin for collection!', 'error');
+                return;
+            }
+
+            if (!collectorId) {
+                showNotification('Please select a collector!', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = document.getElementById('dispatchBtn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const btnLoading = submitBtn.querySelector('.btn-loading');
+            
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'flex';
+
+            // Send optimize route request to API
+            fetch('/authority/api/optimize-route', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    collectorId: collectorId,
+                    binIds: selectedBins
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reset button state
+                submitBtn.disabled = false;
+                btnText.style.display = 'flex';
+                btnLoading.style.display = 'none';
+                
+                if (data.success) {
+                    showNotification('Route optimized and dispatched successfully!', 'success');
+                    
+                    // Show route preview
+                    showRoutePreview(data);
+                    
+                    // Redirect to dashboard after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = '/authority/dashboard';
+                    }, 3000);
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                // Reset button state
+                submitBtn.disabled = false;
+                btnText.style.display = 'flex';
+                btnLoading.style.display = 'none';
+                showNotification('Failed to optimize route: ' + error.message, 'error');
+            });
+        });
+    </script>
+</body>
+</html>

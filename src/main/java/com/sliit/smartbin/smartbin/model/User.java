@@ -36,6 +36,8 @@ public class User {
     
     private String address;
     
+    private String region;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
