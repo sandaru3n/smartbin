@@ -10,6 +10,7 @@ import com.sliit.smartbin.smartbin.repository.CollectionRepository;
 import com.sliit.smartbin.smartbin.repository.RouteBinRepository;
 import com.sliit.smartbin.smartbin.repository.RouteRepository;
 import com.sliit.smartbin.smartbin.repository.UserRepository;
+import com.sliit.smartbin.smartbin.repository.BinAssignmentRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
     private final CollectionRepository collectionRepository;
     private final RouteRepository routeRepository;
     private final RouteBinRepository routeBinRepository;
+    private final BinAssignmentRepository binAssignmentRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -32,12 +34,14 @@ public class DataInitializer implements CommandLineRunner {
                            BinRepository binRepository,
                            CollectionRepository collectionRepository,
                            RouteRepository routeRepository,
-                           RouteBinRepository routeBinRepository) {
+                           RouteBinRepository routeBinRepository,
+                           BinAssignmentRepository binAssignmentRepository) {
         this.userRepository = userRepository;
         this.binRepository = binRepository;
         this.collectionRepository = collectionRepository;
         this.routeRepository = routeRepository;
         this.routeBinRepository = routeBinRepository;
+        this.binAssignmentRepository = binAssignmentRepository;
     }
 
     @Override
@@ -46,6 +50,7 @@ public class DataInitializer implements CommandLineRunner {
         
         // Clear existing data to ensure fresh start
         System.out.println("Clearing existing data...");
+        binAssignmentRepository.deleteAll(); // Delete bin assignments first (has FK to users)
         routeBinRepository.deleteAll();
         collectionRepository.deleteAll();
         routeRepository.deleteAll();

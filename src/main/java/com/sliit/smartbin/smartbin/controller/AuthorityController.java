@@ -9,6 +9,8 @@ import com.sliit.smartbin.smartbin.service.ReportService;
 import com.sliit.smartbin.smartbin.service.RouteService;
 import com.sliit.smartbin.smartbin.service.UserService;
 import com.sliit.smartbin.smartbin.service.NotificationService;
+import com.sliit.smartbin.smartbin.service.BinAssignmentService;
+import com.sliit.smartbin.smartbin.model.BinAssignment;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,17 +36,20 @@ public class AuthorityController {
     private final ReportService reportService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final BinAssignmentService binAssignmentService;
 
     public AuthorityController(BinService binService,
                                RouteService routeService,
                                ReportService reportService,
                                UserService userService,
-                               NotificationService notificationService) {
+                               NotificationService notificationService,
+                               BinAssignmentService binAssignmentService) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.binAssignmentService = binAssignmentService;
     }
 
     @GetMapping("/dashboard")
@@ -657,6 +662,161 @@ public class AuthorityController {
         }
         
         return "redirect:/authority/bins";
+    }
+    
+    // ==================== BIN ASSIGNMENT API ENDPOINTS ====================
+    
+    /**
+     * Save a new bin assignment to database
+     */
+    @PostMapping("/api/assignments/save")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> saveAssignment(@RequestBody Map<String, Object> request,
+                                                              HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Long collectorId = Long.valueOf(request.get("collectorId").toString());
+            
+            @SuppressWarnings("unchecked")
+            List<Object> binIdsObj = (List<Object>) request.get("binIds");
+            List<Long> binIds = new ArrayList<>();
+            for (Object binIdObj : binIdsObj) {
+                if (binIdObj instanceof Integer) {
+                    binIds.add(((Integer) binIdObj).longValue());
+                } else if (binIdObj instanceof Long) {
+                    binIds.add((Long) binIdObj);
+                } else {
+                    binIds.add(Long.valueOf(binIdObj.toString()));
+                }
+            }
+            
+            @SuppressWarnings("unchecked")
+            List<String> binLocations = (List<String>) request.get("binLocations");
+            Long routeId = request.get("routeId") != null ? Long.valueOf(request.get("routeId").toString()) : null;
+            
+            User collector = userService.findById(collectorId)
+                .orElseThrow(() -> new RuntimeException("Collector not found"));
+            
+            // Create assignment in database
+            BinAssignment assignment = binAssignmentService.createAssignment(
+                collector, user, binIds, binLocations, routeId
+            );
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Assignment saved successfully");
+            response.put("assignmentId", assignment.getId());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to save assignment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get all bin assignments
+     */
+    @GetMapping("/api/assignments/all")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAllAssignments(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BinAssignment> assignments = binAssignmentService.getAllAssignments();
+            List<Map<String, Object>> response = new ArrayList<>();
+            
+            for (BinAssignment assignment : assignments) {
+                Map<String, Object> assignmentData = new HashMap<>();
+                assignmentData.put("id", assignment.getId());
+                assignmentData.put("collectorId", assignment.getCollector().getId());
+                assignmentData.put("collectorName", assignment.getCollector().getName());
+                assignmentData.put("binIds", assignment.getBinIds());
+                assignmentData.put("binLocations", assignment.getBinLocations());
+                assignmentData.put("assignedBy", assignment.getAssignedBy().getName());
+                assignmentData.put("assignedAt", assignment.getAssignedAt().toString());
+                assignmentData.put("status", assignment.getStatus().toString());
+                assignmentData.put("routeId", assignment.getRouteId());
+                
+                response.add(assignmentData);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    /**
+     * Get bin assignments for a specific collector
+     */
+    @GetMapping("/api/assignments/collector/{collectorId}")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAssignmentsByCollector(@PathVariable Long collectorId,
+                                                                               HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BinAssignment> assignments = binAssignmentService.getAssignmentsByCollector(collectorId);
+            List<Map<String, Object>> response = new ArrayList<>();
+            
+            for (BinAssignment assignment : assignments) {
+                Map<String, Object> assignmentData = new HashMap<>();
+                assignmentData.put("id", assignment.getId());
+                assignmentData.put("collectorId", assignment.getCollector().getId());
+                assignmentData.put("collectorName", assignment.getCollector().getName());
+                assignmentData.put("binIds", assignment.getBinIds());
+                assignmentData.put("binLocations", assignment.getBinLocations());
+                assignmentData.put("assignedBy", assignment.getAssignedBy().getName());
+                assignmentData.put("assignedAt", assignment.getAssignedAt().toString());
+                assignmentData.put("status", assignment.getStatus().toString());
+                
+                response.add(assignmentData);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    /**
+     * Delete all bin assignments (for testing/reset)
+     */
+    @DeleteMapping("/api/assignments/clear")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearAllAssignments(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            binAssignmentService.deleteAllAssignments();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "All assignments cleared successfully");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to clear assignments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
 

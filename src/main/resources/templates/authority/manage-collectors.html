@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Collectors - SmartBin Authority</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,17 +16,17 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Google Sans', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
             min-height: 100vh;
-            color: #333;
+            color: #202124;
+            line-height: 1.5;
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            background: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -32,51 +36,55 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
         }
 
         .nav-breadcrumb {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #666;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .nav-breadcrumb a {
-            color: #3498db;
+            color: #1a73e8;
             text-decoration: none;
+            transition: all 0.2s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
         }
 
         .nav-breadcrumb a:hover {
-            text-decoration: underline;
+            background: rgba(26, 115, 232, 0.08);
         }
 
         .main-container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
         }
 
         .page-header {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .page-title {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .title-left {
@@ -86,44 +94,52 @@
         }
 
         .page-icon {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            font-size: 1.5rem;
+            background: #1a73e8;
             color: white;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            padding: 0.75rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
         }
 
         .page-title h1 {
-            font-size: 2rem;
-            color: #2c3e50;
+            font-size: 1.5rem;
+            color: #202124;
             margin: 0;
+            font-weight: 400;
         }
 
         .btn-add {
             padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #27ae60, #229954);
+            background: #1a73e8;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .btn-add:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+            background: #1557b0;
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
         }
 
         .page-description {
-            color: #666;
-            font-size: 1.1rem;
+            color: #5f6368;
+            font-size: 0.875rem;
             line-height: 1.6;
         }
 
@@ -165,36 +181,39 @@
 
         .collectors-table-container {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .table-header h2 {
-            color: #2c3e50;
-            font-size: 1.5rem;
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 400;
         }
 
         .search-box {
             padding: 0.75rem 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 0.875rem;
             width: 300px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            color: #202124;
         }
 
         .search-box:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
         }
 
         .collectors-table {
@@ -207,24 +226,27 @@
         }
 
         .collectors-table th {
-            padding: 1rem;
+            padding: 0.75rem;
             text-align: left;
-            font-weight: 600;
-            color: #2c3e50;
-            border-bottom: 2px solid #dee2e6;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #5f6368;
+            border-bottom: 1px solid #dadce0;
         }
 
         .collectors-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #f8f9fa;
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.875rem;
+            color: #202124;
         }
 
         .collectors-table tbody tr {
-            transition: background 0.3s ease;
+            transition: background 0.2s ease;
         }
 
         .collectors-table tbody tr:hover {
-            background: #f8f9ff;
+            background: #f8f9fa;
         }
 
         .collector-name {
@@ -282,6 +304,11 @@
         .status-busy {
             background: #fff3cd;
             color: #856404;
+        }
+
+        .status-available {
+            background: #e8f0fe;
+            color: #1a73e8;
         }
 
         .region-badge {
@@ -354,19 +381,21 @@
 
         .notification {
             position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: #27ae60;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: #34a853;
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
             z-index: 2000;
             transform: translateX(400px);
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
             max-width: 400px;
             white-space: pre-line;
             line-height: 1.6;
+            font-size: 0.875rem;
+            font-weight: 400;
         }
 
         .notification.show {
@@ -374,7 +403,7 @@
         }
 
         .notification.error {
-            background: #e74c3c;
+            background: #d93025;
         }
 
         /* Assignment Modal */
@@ -461,30 +490,38 @@
 
         .btn-secondary {
             padding: 0.75rem 1.5rem;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: #f8f9fa;
+            border-color: #1a73e8;
         }
 
         .btn-primary {
             padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: #1a73e8;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
+            background: #1557b0;
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
         }
 
         .spinner-small {
@@ -612,7 +649,7 @@
                         <th>Phone</th>
                         <th>Status</th>
                         <th>Assigned Region</th>
-                        <th>Active Routes</th>
+                        <th>Bin Assignments</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -630,7 +667,7 @@
                         <td th:text="${collector.email}">john@example.com</td>
                         <td th:text="${collector.phone ?: 'N/A'}">+94 77 123 4567</td>
                         <td>
-                            <span class="status-badge status-active">Active</span>
+                            <span class="status-badge status-available" th:attr="data-collector-id=${collector.id}">Available</span>
                         </td>
                         <td>
                             <span class="region-badge" th:text="${collector.region != null && !collector.region.isEmpty() ? collector.region : 'Not Assigned'}" 
@@ -638,7 +675,11 @@
                                 North District
                             </span>
                         </td>
-                        <td>0</td>
+                        <td>
+                            <div class="bin-assignments-cell" th:attr="data-collector-id=${collector.id}">
+                                <span style="color: #5f6368; font-size: 0.875rem;">No assignments</span>
+                            </div>
+                        </td>
                         <td>
                             <div class="action-buttons">
                                 <button class="btn-action btn-assign" 
@@ -724,7 +765,230 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateStatistics();
             checkEmptyState();
+            // Delay bin assignments loading to ensure DOM is ready
+            setTimeout(() => {
+                loadBinAssignments();
+                updateCollectorStatus();
+            }, 100);
         });
+
+        function updateCollectorStatus() {
+            console.log('Updating collector status from assignments...');
+            
+            // Load assignment history from database
+            fetch('/authority/api/assignments/all')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Loaded assignments for status update:', data);
+                    
+                    // Group assignments by collector ID
+                    const assignmentsByCollector = {};
+                    data.forEach(assignment => {
+                        const collectorId = assignment.collectorId;
+                        if (!assignmentsByCollector[collectorId]) {
+                            assignmentsByCollector[collectorId] = [];
+                        }
+                        assignmentsByCollector[collectorId].push(assignment);
+                    });
+                    
+                    // Update status badges
+                    document.querySelectorAll('.status-badge[data-collector-id]').forEach(badge => {
+                        const collectorId = parseInt(badge.getAttribute('data-collector-id'));
+                        const assignments = assignmentsByCollector[collectorId] || [];
+                        
+                        // Determine status based on assignments
+                        let status = 'Available';
+                        let statusClass = 'status-available';
+                        
+                        if (assignments.length > 0) {
+                            // Check if any assignments are IN_PROGRESS
+                            const inProgress = assignments.some(a => a.status === 'IN_PROGRESS');
+                            const assigned = assignments.some(a => a.status === 'ASSIGNED');
+                            const completed = assignments.filter(a => a.status === 'COMPLETED').length;
+                            
+                            if (inProgress) {
+                                status = 'On Route';
+                                statusClass = 'status-busy';
+                            } else if (assigned) {
+                                status = 'Active';
+                                statusClass = 'status-active';
+                            } else if (completed > 0) {
+                                status = 'Active';
+                                statusClass = 'status-active';
+                            }
+                        }
+                        
+                        badge.textContent = status;
+                        badge.className = 'status-badge ' + statusClass;
+                    });
+                    
+                    // Update statistics after status update
+                    updateStatisticsWithAssignments(assignmentsByCollector);
+                })
+                .catch(error => {
+                    console.error('Failed to load assignments for status:', error);
+                    // Default to "Active" if can't load
+                    document.querySelectorAll('.status-badge[data-collector-id]').forEach(badge => {
+                        badge.textContent = 'Active';
+                        badge.className = 'status-badge status-active';
+                    });
+                });
+        }
+
+        function updateStatisticsWithAssignments(assignmentsByCollector) {
+            const rows = document.querySelectorAll('#collectorsTableBody tr');
+            const totalCollectors = rows.length;
+            const activeCollectors = document.querySelectorAll('.status-active').length;
+            const busyCollectors = document.querySelectorAll('.status-busy').length;
+            const availableCollectors = document.querySelectorAll('.status-available').length;
+            
+            // Count unique regions
+            const regions = new Set();
+            document.querySelectorAll('.region-badge').forEach(badge => {
+                const region = badge.textContent.trim();
+                if (region !== 'Not Assigned') {
+                    regions.add(region);
+                }
+            });
+            
+            document.getElementById('totalCollectors').textContent = totalCollectors;
+            document.getElementById('activeCollectors').textContent = activeCollectors + busyCollectors;
+            document.getElementById('busyCollectors').textContent = busyCollectors;
+            document.getElementById('regionsCovered').textContent = regions.size;
+        }
+
+        function loadBinAssignments() {
+            console.log('Loading bin assignments from database...');
+            
+            // Find all bin assignment cells
+            const cells = document.querySelectorAll('.bin-assignments-cell');
+            console.log('Found ' + cells.length + ' collector cells');
+            
+            // Load assignment history from database
+            fetch('/authority/api/assignments/all')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Loaded assignments from database:', data);
+                    
+                    if (!data || data.length === 0) {
+                        console.log('No assignments found in database');
+                        cells.forEach(cell => {
+                            cell.innerHTML = '<span style="color: #5f6368; font-size: 0.875rem;">No assignments</span>';
+                        });
+                        return;
+                    }
+                    
+                    const assignmentHistory = data;
+            
+            // Group assignments by collector ID
+            const assignmentsByCollector = {};
+            assignmentHistory.forEach(assignment => {
+                const collectorId = assignment.collectorId;
+                if (!assignmentsByCollector[collectorId]) {
+                    assignmentsByCollector[collectorId] = [];
+                }
+                assignmentsByCollector[collectorId].push(assignment);
+            });
+            
+            console.log('Assignments grouped by collector:', assignmentsByCollector);
+
+            // Update each collector's bin assignments cell
+            cells.forEach(cell => {
+                const collectorId = parseInt(cell.getAttribute('data-collector-id'));
+                const assignments = assignmentsByCollector[collectorId];
+                console.log('Collector ID:', collectorId, 'Assignments:', assignments);
+
+                if (!assignments || assignments.length === 0) {
+                    cell.innerHTML = '<span style="color: #5f6368; font-size: 0.875rem;">No assignments</span>';
+                } else {
+                    // Count total bins assigned
+                    const totalBins = assignments.reduce((sum, a) => sum + a.binIds.length, 0);
+                    
+                    // Get all bin locations
+                    const allBinLocations = assignments.flatMap(a => a.binLocations);
+                    
+                    // Create display
+                    cell.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                ${allBinLocations.slice(0, 3).map(loc => `
+                                    <span style="background: #e8f0fe; color: #1a73e8; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                        ${loc}
+                                    </span>
+                                `).join('')}
+                                ${allBinLocations.length > 3 ? `
+                                    <span style="background: #f1f3f4; color: #5f6368; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                        +${allBinLocations.length - 3} more
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <div style="color: #5f6368; font-size: 0.75rem;">
+                                <i class="fas fa-trash-alt"></i> ${totalBins} bin(s) assigned
+                            </div>
+                            <div style="color: #5f6368; font-size: 0.75rem;">
+                                <i class="fas fa-clock"></i> Last: ${assignments[assignments.length - 1].dateTime}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+                })
+                .catch(error => {
+                    console.error('Failed to load assignments from database:', error);
+                    // Fallback to localStorage
+                    const saved = localStorage.getItem('binAssignmentHistory');
+                    if (saved) {
+                        const assignmentHistory = JSON.parse(saved);
+                        const assignmentsByCollector = {};
+                        assignmentHistory.forEach(assignment => {
+                            const collectorId = assignment.collectorId;
+                            if (!assignmentsByCollector[collectorId]) {
+                                assignmentsByCollector[collectorId] = [];
+                            }
+                            assignmentsByCollector[collectorId].push(assignment);
+                        });
+                        
+                        cells.forEach(cell => {
+                            const collectorId = parseInt(cell.getAttribute('data-collector-id'));
+                            const assignments = assignmentsByCollector[collectorId];
+                            
+                            if (!assignments || assignments.length === 0) {
+                                cell.innerHTML = '<span style="color: #5f6368; font-size: 0.875rem;">No assignments</span>';
+                            } else {
+                                const totalBins = assignments.reduce((sum, a) => sum + a.binIds.length, 0);
+                                const allBinLocations = assignments.flatMap(a => a.binLocations);
+                                
+                                cell.innerHTML = `
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                            ${allBinLocations.slice(0, 3).map(loc => `
+                                                <span style="background: #e8f0fe; color: #1a73e8; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                                    ${loc}
+                                                </span>
+                                            `).join('')}
+                                            ${allBinLocations.length > 3 ? `
+                                                <span style="background: #f1f3f4; color: #5f6368; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                                    +${allBinLocations.length - 3} more
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                        <div style="color: #5f6368; font-size: 0.75rem;">
+                                            <i class="fas fa-trash-alt"></i> ${totalBins} bin(s) assigned
+                                        </div>
+                                        <div style="color: #5f6368; font-size: 0.75rem;">
+                                            <i class="fas fa-clock"></i> Last: ${assignments[assignments.length - 1].dateTime}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    } else {
+                        cells.forEach(cell => {
+                            cell.innerHTML = '<span style="color: #5f6368; font-size: 0.875rem;">No assignments</span>';
+                        });
+                    }
+                });
+        }
 
         function updateStatistics() {
             const rows = document.querySelectorAll('#collectorsTableBody tr');

@@ -7,6 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,194 +19,201 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
+            font-family: 'Google Sans', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
+            color: #202124;
             min-height: 100vh;
+            line-height: 1.5;
         }
 
         .header {
             background: white;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header h1 {
-            color: #2c3e50;
-            font-size: 2rem;
-            font-weight: 700;
+            color: #202124;
+            font-size: 1.375rem;
+            font-weight: 400;
             margin: 0;
+            letter-spacing: 0;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            color: #666;
+            gap: 0.75rem;
+            color: #5f6368;
         }
 
         .notification-icon {
-            font-size: 1.5rem;
-            color: #666;
+            font-size: 1.25rem;
+            color: #5f6368;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: color 0.2s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
         }
 
         .notification-icon:hover {
-            color: #3498db;
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
         }
 
         .user-name {
-            font-weight: 600;
-            color: #2c3e50;
+            font-weight: 400;
+            color: #202124;
+            font-size: 0.875rem;
         }
 
         .user-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 32px;
+            height: 32px;
+            background: #1a73e8;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-icon:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
         }
 
         .main-container {
-            padding: 2rem;
-            max-width: 1400px;
+            padding: 1.5rem;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .metric-card {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.8);
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
         }
 
         .metric-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            transform: translateY(-1px);
         }
 
         .metric-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 16px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1rem;
             position: relative;
+            flex-shrink: 0;
         }
 
         .metric-content {
             flex: 1;
+            min-width: 0;
         }
 
         .metric-label {
-            color: #666;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            font-weight: 400;
+            line-height: 1.25;
         }
 
         .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2c3e50;
-            line-height: 1;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #202124;
+            line-height: 1.2;
         }
 
         .actions-section {
             display: flex;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 1rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
         }
 
         .action-btn {
             flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a73e8;
             color: white;
             border: none;
-            padding: 1.5rem 2rem;
-            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
             text-decoration: none;
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             position: relative;
             overflow: hidden;
-            min-height: 60px;
+            min-height: 40px;
         }
 
         .action-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+            background: #1557b0;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            transform: translateY(-1px);
         }
 
         .action-btn.secondary {
             background: white;
-            color: #2c3e50;
-            border: 2px solid #e9ecef;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .action-btn.secondary:hover {
             background: #f8f9fa;
-            border-color: #dee2e6;
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-color: #1a73e8;
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
         }
 
-        .action-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .action-btn:hover::before {
-            left: 100%;
+        .action-btn i {
+            font-size: 1rem;
         }
 
         .map-section {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            border: 1px solid transparent;
             margin-bottom: 2rem;
         }
 
@@ -210,18 +221,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .map-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2c3e50;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #202124;
         }
 
         .legend {
             display: flex;
-            gap: 1.5rem;
+            gap: 1rem;
             align-items: center;
             flex-wrap: wrap;
         }
@@ -230,31 +241,34 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #5f6368;
         }
 
         .legend-dot {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
-        .legend-dot.normal { background: #27ae60; }
-        .legend-dot.nearing { background: #f39c12; }
-        .legend-dot.overdue { background: #e74c3c; }
+        .legend-dot.normal { background: #34a853; }
+        .legend-dot.nearing { background: #fbbc04; }
+        .legend-dot.overdue { background: #ea4335; }
 
         .auto-refresh {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #666;
-            font-size: 0.9rem;
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 400;
         }
 
         .refresh-icon {
             animation: spin 2s linear infinite;
+            font-size: 0.875rem;
         }
 
         @keyframes spin {
@@ -323,15 +337,18 @@
         }
 
         .alert-banner {
-            background: #e74c3c;
-            color: white;
+            background: #fce8e6;
+            color: #d93025;
             padding: 0.75rem 1rem;
             margin-bottom: 1rem;
-            border-radius: 8px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            animation: flash 1s infinite;
+            font-size: 0.875rem;
+            font-weight: 400;
+            border: 1px solid #fce8e6;
         }
 
         @keyframes flash {
@@ -535,7 +552,27 @@
             }
             
             .metrics-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 0.75rem;
+            }
+            
+            .metric-card {
+                padding: 0.75rem;
+                gap: 0.5rem;
+            }
+            
+            .metric-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 0.875rem;
+            }
+            
+            .metric-value {
+                font-size: 1.25rem;
+            }
+            
+            .metric-label {
+                font-size: 0.6875rem;
             }
             
             .actions-section {
@@ -553,7 +590,9 @@
     <div class="header">
         <h1>Waste Management Dashboard</h1>
         <div class="user-info">
-            <div class="notification-icon">🔔</div>
+            <div class="notification-icon">
+                <i class="fas fa-bell"></i>
+            </div>
             <span class="user-name" th:text="${user.name}">Waste Manager</span>
             <div class="user-icon">W</div>
         </div>
@@ -561,35 +600,43 @@
 
     <!-- Alert Banner for Overdue Bins -->
     <div th:if="${overdueBins != null and !overdueBins.empty}" class="alert-banner">
-        ⚠️ <span th:text="${overdueBins.size()}">0</span> bins are overdue and require immediate attention!
+        <i class="fas fa-exclamation-triangle"></i> <span th:text="${overdueBins.size()}">0</span> bins are overdue and require immediate attention!
     </div>
 
     <div class="main-container">
         <!-- Key Metrics Section -->
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); color: #1976d2;">🗑️</div>
+                <div class="metric-icon" style="background: #e8f0fe; color: #1a73e8;">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
                 <div class="metric-content">
                     <div class="metric-label">Total Bins</div>
                     <div class="metric-value" th:text="${systemOverview.totalBins}">32</div>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); color: #f57c00;">📊</div>
+                <div class="metric-icon" style="background: #fef7e0; color: #fbbc04;">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
                 <div class="metric-content">
                     <div class="metric-label">Average Full %</div>
-                    <div class="metric-value" th:text="${binStatusReport.averageFillLevel} + '%'">66%</div>
+                    <div class="metric-value" th:text="${binStatusReport.averageFillLevel} + '%'">60%</div>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); color: #d32f2f;">⚠️</div>
+                <div class="metric-icon" style="background: #fce8e6; color: #ea4335;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
                 <div class="metric-content">
                     <div class="metric-label">Overdue Bins</div>
                     <div class="metric-value" th:text="${binStatusReport.overdueBins}">4</div>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon" style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); color: #388e3c;">🕐</div>
+                <div class="metric-icon" style="background: #e6f4ea; color: #34a853;">
+                    <i class="fas fa-clock"></i>
+                </div>
                 <div class="metric-content">
                     <div class="metric-label">Last Collection</div>
                     <div class="metric-value" th:text="${systemOverview.lastCollectionTime}">0h ago</div>
@@ -600,13 +647,16 @@
         <!-- Quick Actions Section -->
         <div class="actions-section">
             <a href="/authority/dispatch" class="action-btn">
-                🚛 Dispatch Collector
+                <i class="fas fa-truck"></i>
+                Dispatch Collector
             </a>
             <a href="/authority/reports" class="action-btn secondary">
-                📄 Generate Report
+                <i class="fas fa-chart-bar"></i>
+                Generate Report
             </a>
             <a href="/authority/manage-collectors" class="action-btn secondary">
-                👥 Manage Collectors
+                <i class="fas fa-users"></i>
+                Manage Collectors
             </a>
         </div>
 
@@ -628,7 +678,7 @@
                         <span>Overdue (>48hrs)</span>
                     </div>
                     <div class="auto-refresh">
-                        <span class="refresh-icon">🔄</span>
+                        <i class="fas fa-sync-alt refresh-icon"></i>
                         <span>Auto-refresh: 30s</span>
                     </div>
                 </div>
@@ -638,7 +688,9 @@
                     Interactive Map Loading...
                 </div>
                 <div class="map-controls">
-                    <button onclick="refreshMap()" style="background: none; border: none; cursor: pointer;">🗺️</button>
+                    <button onclick="refreshMap()" style="background: none; border: none; cursor: pointer;">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </button>
                 </div>
             </div>
         </div>
