@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report - SmartBin</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .main-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .report-config {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .config-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .generate-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            background: #34495e;
+        }
+
+        .report-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .report-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .export-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: #2980b9;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: #e9ecef;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .chart-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="/authority/dashboard" class="back-btn">
+            ← Generate Report
+        </a>
+        <div class="user-info">
+            <span th:text="${user.name}">Authority User</span>
+            <div class="user-icon">👤</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- Report Configuration Section -->
+        <div class="report-config">
+            <h2 class="config-title">Report Configuration</h2>
+            <form id="reportForm" method="post" th:action="@{/authority/reports/collection}">
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label for="dateRange">Date Range:</label>
+                        <select id="dateRange" name="dateRange" required>
+                            <option value="">Select date range</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="region">Region:</label>
+                        <select id="region" name="region" required>
+                            <option value="">Select Region</option>
+                            <option value="north">North District</option>
+                            <option value="south">South District</option>
+                            <option value="east">East District</option>
+                            <option value="west">West District</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportType">Report Type:</label>
+                        <select id="reportType" name="reportType" required>
+                            <option value="">Select Report Type</option>
+                            <option value="collection">Collection Report</option>
+                            <option value="performance">Performance Report</option>
+                            <option value="bin-status">Bin Status Report</option>
+                            <option value="overdue">Overdue Bins Report</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="generate-btn">
+                    📊 Generate Report
+                </button>
+            </form>
+        </div>
+
+        <!-- Report Content Section -->
+        <div th:if="${report}" class="report-content">
+            <div class="report-header">
+                <h2 class="report-title" th:text="${report.reportType}">Waste Volume Analysis - North District</h2>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportToPDF()">PDF</button>
+                    <button class="export-btn" onclick="exportToCSV()">CSV</button>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">Daily Waste Collection Volume</h3>
+                    <div class="chart-placeholder">
+                        <div class="chart-icon">📊</div>
+                        <div>Daily Waste Collection Volume</div>
+                        <div style="font-size: 0.9rem; margin-top: 0.5rem;">Bar Chart Visualization</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Waste Type Distribution</h3>
+                    <div class="chart-placeholder">
+                        <div class="chart-icon">🥧</div>
+                        <div>Waste Type Distribution</div>
+                        <div style="font-size: 0.9rem; margin-top: 0.5rem;">Pie Chart Visualization</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Weekly Collection Trends</h3>
+                    <div class="chart-placeholder">
+                        <div class="chart-icon">📈</div>
+                        <div>Weekly Collection Trends</div>
+                        <div style="font-size: 0.9rem; margin-top: 0.5rem;">Line Chart Visualization</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>DATE</th>
+                        <th>TOTAL VOLUME (KG)</th>
+                        <th>COLLECTIONS</th>
+                        <th>AVG PER COLLECTION</th>
+                        <th>EFFICIENCY %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-01-15</td>
+                        <td>2,450</td>
+                        <td>24</td>
+                        <td>102.1</td>
+                        <td>94.2%</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-14</td>
+                        <td>2,180</td>
+                        <td>22</td>
+                        <td>99.1</td>
+                        <td>91.8%</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-13</td>
+                        <td>2,670</td>
+                        <td>28</td>
+                        <td>102.7</td>
+                        <td>96.5%</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-12</td>
+                        <td>1,920</td>
+                        <td>20</td>
+                        <td>96.0</td>
+                        <td>88.3%</td>
+                    </tr>
+                    <tr>
+                        <td>2025-01-11</td>
+                        <td>2,340</td>
+                        <td>23</td>
+                        <td>101.7</td>
+                        <td>93.7%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Summary Statistics -->
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🗑️</div>
+                    <div class="stat-label">Total Volume</div>
+                    <div class="stat-value">11,560 kg</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚛</div>
+                    <div class="stat-label">Collections</div>
+                    <div class="stat-value">115</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-label">Avg Efficiency</div>
+                    <div class="stat-value">92.9%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-label">Report Period</div>
+                    <div class="stat-value">5 Days</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+
+        function initializeCharts() {
+            // Sample data for charts
+            const dailyData = {
+                labels: ['2025-01-11', '2025-01-12', '2025-01-13', '2025-01-14', '2025-01-15'],
+                datasets: [{
+                    label: 'Volume (kg)',
+                    data: [2340, 1920, 2670, 2180, 2450],
+                    backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            const wasteTypeData = {
+                labels: ['Organic', 'Recyclable', 'Non-recyclable'],
+                datasets: [{
+                    data: [45, 30, 25],
+                    backgroundColor: [
+                        'rgba(46, 204, 113, 0.8)',
+                        'rgba(52, 152, 219, 0.8)',
+                        'rgba(231, 76, 60, 0.8)'
+                    ]
+                }]
+            };
+
+            const trendData = {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [{
+                    label: 'Collections',
+                    data: [85, 92, 78, 95],
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    tension: 0.4
+                }]
+            };
+
+            // Create charts (placeholder implementation)
+            console.log('Charts initialized with sample data');
+        }
+
+        function exportToPDF() {
+            alert('PDF export functionality would be implemented here');
+        }
+
+        function exportToCSV() {
+            alert('CSV export functionality would be implemented here');
+        }
+
+        // Form submission handling
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            const reportType = document.getElementById('reportType').value;
+            const region = document.getElementById('region').value;
+            const dateRange = document.getElementById('dateRange').value;
+
+            if (!reportType || !region || !dateRange) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Update form action based on report type
+            const form = e.target;
+            form.action = `/authority/reports/${reportType}`;
+        });
+    </script>
+</body>
+</html>

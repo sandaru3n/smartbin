@@ -7,17 +7,22 @@ import com.sliit.smartbin.smartbin.model.User;
 import com.sliit.smartbin.smartbin.service.BinService;
 import com.sliit.smartbin.smartbin.service.ReportService;
 import com.sliit.smartbin.smartbin.service.RouteService;
-import com.sliit.smartbin.smartbin.repository.UserRepository;
+import com.sliit.smartbin.smartbin.service.UserService;
+import com.sliit.smartbin.smartbin.service.NotificationService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/authority")
@@ -26,22 +31,25 @@ public class AuthorityController {
     private final BinService binService;
     private final RouteService routeService;
     private final ReportService reportService;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final NotificationService notificationService;
 
     public AuthorityController(BinService binService,
                                RouteService routeService,
                                ReportService reportService,
-                               UserRepository userRepository) {
+                               UserService userService,
+                               NotificationService notificationService) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -62,6 +70,14 @@ public class AuthorityController {
         // Get alerted bins
         List<Bin> alertedBins = binService.findAlertedBins();
         model.addAttribute("alertedBins", alertedBins);
+        
+        // Get full bins for dispatch
+        List<Bin> fullBins = binService.findBinsByStatus(Bin.BinStatus.FULL);
+        model.addAttribute("fullBins", fullBins);
+        
+        // Get available collectors
+        List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        model.addAttribute("collectors", collectors);
         
         return "authority/dashboard";
     }
@@ -96,9 +112,7 @@ public class AuthorityController {
         model.addAttribute("overdueBins", overdueBins);
         
         // Get available collectors
-        List<User> collectors = userRepository.findAll().stream()
-            .filter(u -> u.getRole() == User.UserRole.COLLECTOR)
-            .toList();
+        List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
         model.addAttribute("collectors", collectors);
         
         model.addAttribute("user", user);
@@ -110,16 +124,19 @@ public class AuthorityController {
     public String processDispatch(@RequestParam List<Long> binIds,
                                 @RequestParam Long collectorId,
                                 HttpSession session, RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
         try {
-            User collector = userRepository.findById(collectorId)
+            User collector = userService.findById(collectorId)
                 .orElseThrow(() -> new RuntimeException("Collector not found"));
             
             Route route = routeService.assignRouteToCollector(binIds, collector, user);
+            
+            // Send notification to collector
+            notificationService.sendRouteNotification(collector, route);
             
             redirectAttributes.addFlashAttribute("success", 
                 "Route dispatched successfully! Route ID: " + route.getId());
@@ -127,13 +144,49 @@ public class AuthorityController {
             redirectAttributes.addFlashAttribute("error", "Failed to dispatch route: " + e.getMessage());
         }
         
-        return "redirect:/authority/dispatch";
+        return "redirect:/authority/dashboard";
+    }
+
+    @PostMapping("/api/dispatch")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> apiDispatch(@RequestBody Map<String, Object> request,
+                                                          HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            @SuppressWarnings("unchecked")
+            List<Long> binIds = (List<Long>) request.get("binIds");
+            Long collectorId = Long.valueOf(request.get("collectorId").toString());
+            
+            User collector = userService.findById(collectorId)
+                .orElseThrow(() -> new RuntimeException("Collector not found"));
+            
+            Route route = routeService.assignRouteToCollector(binIds, collector, user);
+            
+            // Send notification to collector
+            notificationService.sendRouteNotification(collector, route);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Route dispatched successfully!");
+            response.put("routeId", route.getId());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to dispatch route: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @GetMapping("/routes")
     public String manageRoutes(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -146,14 +199,12 @@ public class AuthorityController {
 
     @GetMapping("/collectors")
     public String manageCollectors(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
-        List<User> collectors = userRepository.findAll().stream()
-            .filter(u -> u.getRole() == User.UserRole.COLLECTOR)
-            .toList();
+        List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
         
         model.addAttribute("collectors", collectors);
         model.addAttribute("user", user);
@@ -161,10 +212,46 @@ public class AuthorityController {
         return "authority/collectors";
     }
 
+    @PostMapping("/api/assign-collector")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> assignCollector(@RequestBody Map<String, Object> request,
+                                                            HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Long collectorId = Long.valueOf(request.get("collectorId").toString());
+            String region = request.get("region").toString();
+            
+            User collector = userService.findById(collectorId)
+                .orElseThrow(() -> new RuntimeException("Collector not found"));
+            
+            // Update collector region assignment
+            collector.setRegion(region);
+            userService.updateUser(collector);
+            
+            // Send notification to collector
+            notificationService.sendRegionAssignmentNotification(collector, region);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Collector assigned to region successfully!");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to assign collector: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @GetMapping("/reports")
     public String generateReports(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -172,12 +259,78 @@ public class AuthorityController {
         return "authority/reports";
     }
 
+    @GetMapping("/api/bin-status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getBinStatus(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Map<String, Object> binStatusReport = reportService.generateBinStatusReport(new ReportDTO());
+            Map<String, Object> systemOverview = reportService.generateSystemOverviewReport();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("binStatus", binStatusReport);
+            response.put("systemOverview", systemOverview);
+            response.put("lastUpdated", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Failed to fetch bin status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/api/bins")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getBins(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<Bin> bins = binService.findAllBins();
+            List<Map<String, Object>> binData = bins.stream()
+                .map(bin -> {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", bin.getId());
+                    data.put("qrCode", bin.getQrCode());
+                    data.put("location", bin.getLocation());
+                    data.put("latitude", bin.getLatitude());
+                    data.put("longitude", bin.getLongitude());
+                    data.put("fillLevel", bin.getFillLevel());
+                    data.put("status", bin.getStatus().toString());
+                    data.put("lastEmptied", bin.getLastEmptied());
+                    data.put("alertFlag", bin.getAlertFlag());
+                    return data;
+                })
+                .toList();
+            
+            return ResponseEntity.ok(binData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // Helper method to validate authority user (Single Responsibility Principle)
+    private User validateAuthorityUser(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+            return null;
+        }
+        return user;
+    }
+
     @PostMapping("/reports/collection")
     public String generateCollectionReport(@RequestParam(required = false) String startDate,
                                          @RequestParam(required = false) String endDate,
                                          HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -204,8 +357,8 @@ public class AuthorityController {
 
     @PostMapping("/reports/performance")
     public String generatePerformanceReport(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -226,8 +379,8 @@ public class AuthorityController {
 
     @PostMapping("/reports/bin-status")
     public String generateBinStatusReport(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -248,8 +401,8 @@ public class AuthorityController {
 
     @PostMapping("/reports/overdue")
     public String generateOverdueReport(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -270,8 +423,8 @@ public class AuthorityController {
 
     @PostMapping("/bin/{id}/alert")
     public String setBinAlert(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
@@ -282,6 +435,10 @@ public class AuthorityController {
                 binEntity.setAlertFlag(true);
                 binEntity.setStatus(Bin.BinStatus.OVERDUE);
                 binService.updateBinStatus(id, Bin.BinStatus.OVERDUE, binEntity.getFillLevel());
+                
+                // Send alert notification
+                notificationService.sendBinAlertNotification(binEntity);
+                
                 redirectAttributes.addFlashAttribute("success", "Bin alert set successfully!");
             } else {
                 redirectAttributes.addFlashAttribute("error", "Bin not found!");
@@ -295,8 +452,8 @@ public class AuthorityController {
 
     @PostMapping("/bin/{id}/clear-alert")
     public String clearBinAlert(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole() != User.UserRole.AUTHORITY) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
             return "redirect:/authority/login";
         }
         
