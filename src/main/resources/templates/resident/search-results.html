@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Nearby Bins - SmartBin</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo .material-icons {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+
+        .btn-back {
+            background: transparent;
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .page-header h1 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            .form-group {
+                grid-column: span 1 !important;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-search {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            justify-content: center;
+        }
+
+        .btn-search:hover {
+            background: #34495e;
+        }
+
+        .btn-location {
+            background: #3498db;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .btn-location:hover {
+            background: #2980b9;
+        }
+
+        .btn-location:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .btn-location .material-icons {
+            font-size: 18px;
+        }
+
+        .radius-slider-container {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .radius-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .radius-label-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .radius-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 10px;
+            background: #ddd;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .radius-slider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radius-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            background: #2980b9;
+        }
+
+        .radius-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+        }
+
+        .radius-value-badge {
+            background: #2c3e50;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .radius-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .radius-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .radius-marker-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #999;
+        }
+
+        .location-status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .location-status.active {
+            display: block;
+        }
+
+        .location-status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .location-status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .location-status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .map-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .map-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px;
+        }
+
+        .popup-content {
+            padding: 0.5rem;
+        }
+
+        .popup-content h3 {
+            margin: 0 0 0.5rem 0;
+            color: #667eea;
+            font-size: 1rem;
+        }
+
+        .popup-content p {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .popup-content .status {
+            font-weight: bold;
+        }
+
+        .popup-content .fill-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .popup-content .fill-level {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .fill-low {
+            background: #27ae60;
+        }
+
+        .fill-medium {
+            background: #f39c12;
+        }
+
+        .fill-high {
+            background: #e74c3c;
+        }
+
+        .map-legend {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .map-legend h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .map-legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: #666;
+            padding: 0.5rem 0;
+        }
+
+        .map-legend-item span {
+            line-height: 1.4;
+        }
+
+        .map-legend-item small {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .legend-icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .legend-user {
+            background: #3498db;
+        }
+
+        .legend-empty {
+            background: #27ae60;
+        }
+
+        .legend-partial {
+            background: #f39c12;
+        }
+
+        .legend-full {
+            background: #e74c3c;
+        }
+
+        .bins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .bin-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e9ecef;
+        }
+
+        .bin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: #3498db;
+        }
+
+        .bin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .bin-qr {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .bin-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .status-EMPTY {
+            background-color: #27ae60;
+        }
+
+        .status-PARTIAL {
+            background-color: #3498db;
+        }
+
+        .status-FULL {
+            background-color: #f39c12;
+        }
+
+        .status-OVERDUE {
+            background-color: #e74c3c;
+        }
+
+        .bin-location {
+            color: #666;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .bin-type {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .fill-bar-card {
+            background: #e9ecef;
+            border-radius: 6px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .fill-level-card {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: width 0.3s ease;
+        }
+
+        .btn-view {
+            background: #3498db;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .btn-view .material-icons {
+            font-size: 18px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #666;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #95a5a6;
+        }
+
+        .empty-state h3 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .results-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .results-count {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .results-info {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .quick-action-hint {
+            background: #e8f4f8;
+            color: #2c3e50;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            border: 1px solid #d1e7f0;
+        }
+
+        .quick-action-hint .material-icons {
+            font-size: 18px;
+            color: #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .page-header {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .bins-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .navbar {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 1rem;
+            }
+
+            .map-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">search</span>
+                Search Nearby Bins
+            </div>
+            <a href="/resident/dashboard" class="btn-back">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🔍 Search Waste Bins Near You</h1>
+            <p>Use your current location or enter coordinates manually to find nearby waste bins.</p>
+            
+            <div class="quick-action-hint">
+                <span class="material-icons">info</span>
+                <span>Quick Tip: Click "My Location" then "Search" to find bins near you!</span>
+            </div>
+
+            <div id="locationStatus" class="location-status"></div>
+
+            <form action="/resident/search-bins" method="get" class="search-form" id="searchForm">
+                <div class="form-group">
+                    <label for="latitude">Latitude:</label>
+                    <input type="number" id="latitude" name="latitude" 
+                           step="0.0001" 
+                           placeholder="6.9271"
+                           th:value="${searchLatitude}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="longitude">Longitude:</label>
+                    <input type="number" id="longitude" name="longitude" 
+                           step="0.0001" 
+                           placeholder="79.8612"
+                           th:value="${searchLongitude}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="radius">Search Radius:</label>
+                    <div class="radius-slider-container">
+                        <div class="radius-slider-header">
+                            <div class="radius-label-group">
+                                <span class="material-icons" style="font-size: 16px;">straighten</span>
+                                <span>Adjust distance</span>
+                            </div>
+                            <div class="radius-value-badge" id="radiusDisplay" th:text="${searchRadius} + ' km'">5.0 km</div>
+                        </div>
+                        <input type="range" id="radiusSlider" 
+                               class="radius-slider"
+                               min="0.5" max="50" step="0.5" 
+                               th:value="${searchRadius}"
+                               oninput="updateRadiusDisplay(this.value)">
+                        <div class="radius-markers">
+                            <div class="radius-marker">
+                                <div class="radius-marker-dot"></div>
+                                <span>0.5 km</span>
+                            </div>
+                            <div class="radius-marker">
+                                <div class="radius-marker-dot"></div>
+                                <span>10 km</span>
+                            </div>
+                            <div class="radius-marker">
+                                <div class="radius-marker-dot"></div>
+                                <span>25 km</span>
+                            </div>
+                            <div class="radius-marker">
+                                <div class="radius-marker-dot"></div>
+                                <span>50 km</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="radius" name="radius" th:value="${searchRadius}">
+                    </div>
+                </div>
+            </form>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="button" class="btn-location" onclick="getMyLocation()" id="btnLocation" style="flex: 1;">
+                    <span class="material-icons">my_location</span>
+                    <span>Use My Location</span>
+                </button>
+
+                <button type="submit" form="searchForm" class="btn-search" style="flex: 1;">
+                    <span class="material-icons" style="font-size: 18px;">search</span>
+                    <span>Search Bins</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 1.1rem; font-weight: 600; color: #2c3e50; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-icons" style="color: #3498db;">map</span>
+                    Interactive Map
+                </h2>
+                <div style="color: #666; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="material-icons" style="font-size: 16px;">touch_app</span>
+                    <span>Click markers for details</span>
+                </div>
+            </div>
+
+            <div class="map-wrapper">
+                <div id="map"></div>
+                
+                <div class="map-legend">
+                    <h4>Map Legend</h4>
+                    <div class="map-legend-item">
+                        <div class="legend-icon legend-user"></div>
+                        <span>Your Location</span>
+                    </div>
+                    <div class="map-legend-item">
+                        <div class="legend-icon legend-empty"></div>
+                        <span>Empty/Low Bins<br><small>(0-50%)</small></span>
+                    </div>
+                    <div class="map-legend-item">
+                        <div class="legend-icon legend-partial"></div>
+                        <span>Partial Bins<br><small>(51-79%)</small></span>
+                    </div>
+                    <div class="map-legend-item">
+                        <div class="legend-icon legend-full"></div>
+                        <span>Full Bins<br><small>(80-100%)</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${bins != null and !bins.empty}" class="results-header">
+            <div>
+                <div class="results-count">
+                    <span class="material-icons" style="color: #3498db;">location_on</span>
+                    Found <span th:text="${bins.size()}">0</span> Bins
+                </div>
+                <div class="results-info">
+                    Within <span th:text="${searchRadius}">5.0</span> km radius of your search location
+                </div>
+            </div>
+            <div style="color: #666; font-size: 0.85rem;">
+                <span class="material-icons" style="font-size: 16px; vertical-align: middle;">info</span>
+                Colors indicate fill level
+            </div>
+        </div>
+
+        <div th:if="${bins != null and !bins.empty}" class="bins-grid">
+            <div class="bin-card" th:each="bin : ${bins}" th:data-lat="${bin.latitude}" th:data-lng="${bin.longitude}">
+                <div class="bin-header">
+                    <span class="bin-qr" th:text="${bin.qrCode}">BIN001</span>
+                    <span class="bin-status" th:class="'status-' + ${bin.status}" th:text="${bin.status}">EMPTY</span>
+                </div>
+
+                <div class="bin-location">
+                    <span>📍</span>
+                    <span th:text="${bin.location}">Location</span>
+                </div>
+
+                <div class="bin-type" th:text="${bin.binType}">STANDARD</div>
+
+                <div class="fill-bar-card">
+                    <div class="fill-level-card" 
+                         th:classappend="${bin.fillLevel < 50 ? 'fill-low' : (bin.fillLevel < 80 ? 'fill-medium' : 'fill-high')}"
+                         th:style="'width: ' + ${bin.fillLevel} + '%'" 
+                         th:text="${bin.fillLevel} + '%'">
+                        0%
+                    </div>
+                </div>
+
+                <a th:href="@{/resident/bin/{id}(id=${bin.id})}" class="btn-view">
+                    <span class="material-icons">visibility</span>
+                    <span>View Details</span>
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${bins == null or bins.empty}" class="empty-state">
+            <span class="material-icons icon">search_off</span>
+            <h3>No bins found in this area</h3>
+            <p>Try expanding your search radius or changing your location.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button onclick="document.getElementById('radiusSlider').value = parseFloat(document.getElementById('radiusSlider').value) + 5; updateRadiusDisplay(document.getElementById('radiusSlider').value);" 
+                        class="btn-search" style="width: auto;">
+                    <span class="material-icons" style="font-size: 18px;">add_circle</span>
+                    Expand Radius
+                </button>
+                <button onclick="getMyLocation()" class="btn-location" style="width: auto;">
+                    <span class="material-icons">my_location</span>
+                    Try My Location
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script th:inline="javascript">
+        // Geolocation functions
+        function updateRadiusDisplay(value) {
+            const badge = document.getElementById('radiusDisplay');
+            badge.textContent = value + ' km';
+            document.getElementById('radius').value = value;
+            
+            // Add pulse animation on change
+            badge.style.animation = 'none';
+            setTimeout(() => {
+                badge.style.animation = 'badgePulse 0.3s ease-out';
+            }, 10);
+        }
+        
+        // Add badge pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes badgePulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function showLocationStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('locationStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = 'location-status active ' + type;
+            
+            setTimeout(() => {
+                statusDiv.className = 'location-status';
+            }, 5000);
+        }
+
+        function getMyLocation() {
+            const btnLocation = document.getElementById('btnLocation');
+            
+            if (!navigator.geolocation) {
+                showLocationStatus('❌ Geolocation is not supported by your browser', 'error');
+                return;
+            }
+
+            btnLocation.disabled = true;
+            btnLocation.innerHTML = '<span class="material-icons">hourglass_empty</span><span>Detecting...</span>';
+            showLocationStatus('Detecting your location...', 'info');
+
+            navigator.geolocation.getCurrentPosition(
+                // Success callback
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    document.getElementById('latitude').value = lat.toFixed(4);
+                    document.getElementById('longitude').value = lon.toFixed(4);
+                    
+                    showLocationStatus(`✓ Location detected! (${lat.toFixed(4)}, ${lon.toFixed(4)}) - Click Search to find nearby bins`, 'success');
+                    btnLocation.disabled = false;
+                    btnLocation.innerHTML = '<span class="material-icons">my_location</span><span>My Location</span>';
+                    
+                    // Highlight the search button
+                    const searchBtn = document.querySelector('.btn-search');
+                    searchBtn.style.animation = 'pulse 1s ease-in-out 3';
+                },
+                // Error callback
+                (error) => {
+                    let errorMessage = '';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location permission denied. Please enable location access in your browser.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information unavailable. Please try again.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out. Please try again.';
+                            break;
+                        default:
+                            errorMessage = 'An unknown error occurred while getting your location.';
+                    }
+                    showLocationStatus(errorMessage, 'error');
+                    btnLocation.disabled = false;
+                    btnLocation.innerHTML = '<span class="material-icons">my_location</span><span>My Location</span>';
+                },
+                // Options
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // Initialize radius slider
+        window.addEventListener('DOMContentLoaded', function() {
+            const radiusSlider = document.getElementById('radiusSlider');
+            const radiusValue = /*[[${searchRadius}]]*/ 5.0;
+            radiusSlider.value = radiusValue;
+            updateRadiusDisplay(radiusValue);
+        });
+
+        // Get search parameters
+        const userLat = /*[[${searchLatitude}]]*/ 6.9271;
+        const userLon = /*[[${searchLongitude}]]*/ 79.8612;
+        const searchRadius = /*[[${searchRadius}]]*/ 5.0;
+
+        // Initialize map
+        const map = L.map('map').setView([userLat, userLon], 13);
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Add user location marker (blue)
+        const userIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        L.marker([userLat, userLon], {icon: userIcon})
+            .addTo(map)
+            .bindPopup('<div class="popup-content"><h3>📍 Your Search Location</h3><p>Searching within ' + searchRadius + ' km radius</p></div>');
+
+        // Add search radius circle
+        L.circle([userLat, userLon], {
+            color: '#667eea',
+            fillColor: '#667eea',
+            fillOpacity: 0.1,
+            radius: searchRadius * 1000 // convert km to meters
+        }).addTo(map);
+
+        // Create custom icons for different bin statuses
+        const getMarkerIcon = (fillLevel) => {
+            let color = 'green';
+            if (fillLevel >= 80) {
+                color = 'red';
+            } else if (fillLevel >= 50) {
+                color = 'orange';
+            }
+            
+            return L.icon({
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+        };
+
+        // Get fill bar color class
+        const getFillColorClass = (fillLevel) => {
+            if (fillLevel < 50) return 'fill-low';
+            if (fillLevel < 80) return 'fill-medium';
+            return 'fill-high';
+        };
+
+        // Parse bins data from Thymeleaf
+        const bins = /*[[${bins}]]*/ [];
+
+        // Add markers for each bin
+        bins.forEach(bin => {
+            const marker = L.marker([bin.latitude, bin.longitude], {
+                icon: getMarkerIcon(bin.fillLevel)
+            }).addTo(map);
+
+            // Create popup content
+            const fillColorClass = getFillColorClass(bin.fillLevel);
+            const popupContent = `
+                <div class="popup-content">
+                    <h3>🗑️ ${bin.qrCode}</h3>
+                    <p><strong>Location:</strong> ${bin.location}</p>
+                    <p><strong>Type:</strong> ${bin.binType}</p>
+                    <p><strong>Status:</strong> <span class="status">${bin.status}</span></p>
+                    <div class="fill-bar">
+                        <div class="fill-level ${fillColorClass}" style="width: ${bin.fillLevel}%">
+                            ${bin.fillLevel}%
+                        </div>
+                    </div>
+                    <a href="/resident/bin/${bin.id}" 
+                       style="display: inline-block; margin-top: 0.5rem; padding: 0.5rem 1rem; 
+                              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                              color: white; text-decoration: none; border-radius: 8px; 
+                              font-size: 0.85rem;">
+                        View Details
+                    </a>
+                </div>
+            `;
+
+            marker.bindPopup(popupContent);
+        });
+
+        // Fit map bounds to show all bins and user location
+        if (bins.length > 0) {
+            const bounds = L.latLngBounds(
+                bins.map(bin => [bin.latitude, bin.longitude])
+            );
+            bounds.extend([userLat, userLon]);
+            map.fitBounds(bounds, { padding: [50, 50] });
+        }
+
+        // Add scale control
+        L.control.scale().addTo(map);
+
+        // Click bin card to center map on that bin
+        document.querySelectorAll('.bin-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'A') {
+                    const lat = parseFloat(this.dataset.lat);
+                    const lng = parseFloat(this.dataset.lng);
+                    map.setView([lat, lng], 16);
+                }
+            });
+        });
+
+        // Use My Location button functionality (if added in future)
+        function useMyLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+

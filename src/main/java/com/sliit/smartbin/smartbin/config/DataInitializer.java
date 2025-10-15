@@ -7,9 +7,11 @@ import com.sliit.smartbin.smartbin.model.RouteBin;
 import com.sliit.smartbin.smartbin.model.User;
 import com.sliit.smartbin.smartbin.repository.BinRepository;
 import com.sliit.smartbin.smartbin.repository.CollectionRepository;
+import com.sliit.smartbin.smartbin.repository.RecyclingTransactionRepository;
 import com.sliit.smartbin.smartbin.repository.RouteBinRepository;
 import com.sliit.smartbin.smartbin.repository.RouteRepository;
 import com.sliit.smartbin.smartbin.repository.UserRepository;
+import com.sliit.smartbin.smartbin.repository.WasteDisposalRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,8 @@ public class DataInitializer implements CommandLineRunner {
     private final CollectionRepository collectionRepository;
     private final RouteRepository routeRepository;
     private final RouteBinRepository routeBinRepository;
+    private final RecyclingTransactionRepository recyclingTransactionRepository;
+    private final WasteDisposalRepository wasteDisposalRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -32,12 +36,16 @@ public class DataInitializer implements CommandLineRunner {
                            BinRepository binRepository,
                            CollectionRepository collectionRepository,
                            RouteRepository routeRepository,
-                           RouteBinRepository routeBinRepository) {
+                           RouteBinRepository routeBinRepository,
+                           RecyclingTransactionRepository recyclingTransactionRepository,
+                           WasteDisposalRepository wasteDisposalRepository) {
         this.userRepository = userRepository;
         this.binRepository = binRepository;
         this.collectionRepository = collectionRepository;
         this.routeRepository = routeRepository;
         this.routeBinRepository = routeBinRepository;
+        this.recyclingTransactionRepository = recyclingTransactionRepository;
+        this.wasteDisposalRepository = wasteDisposalRepository;
     }
 
     @Override
@@ -49,6 +57,11 @@ public class DataInitializer implements CommandLineRunner {
         routeBinRepository.deleteAll();
         collectionRepository.deleteAll();
         routeRepository.deleteAll();
+        
+        // Delete new waste management tables
+        wasteDisposalRepository.deleteAll();
+        recyclingTransactionRepository.deleteAll();
+        
         binRepository.deleteAll();
         userRepository.deleteAll();
 

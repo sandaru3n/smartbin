@@ -228,6 +228,233 @@
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
+        
+        .points-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            display: inline-block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+        
+        .points-badge .label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .points-badge .value {
+            font-size: 2rem;
+            display: block;
+            margin-top: 0.3rem;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .action-btn {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: bold;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .action-btn .icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .slider-container {
+            margin-top: 1rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .fill-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .activity-section {
+            margin-top: 3rem;
+        }
+        
+        .activity-section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .activity-card .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .activity-card .activity-type {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .activity-card .activity-date {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .activity-card .activity-details {
+            color: #666;
+        }
+        
+        .points-earned {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .map-container {
+            height: 400px;
+            background: #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -243,25 +470,49 @@
 
     <div class="container">
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
         <div class="welcome-card">
             <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
             <p>Manage your waste collection and contribute to a cleaner environment.</p>
+            
+            <div style="margin-top: 1.5rem;">
+                <div class="points-badge">
+                    <span class="label">♻️ Your Recycling Points</span>
+                    <span class="value" th:text="${recyclingPoints}">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions Section -->
+        <div style="margin-top: 2rem;">
+            <h2 style="color: #333; margin-bottom: 1rem;">Quick Actions</h2>
+            <div class="quick-actions">
+                <a href="#" class="action-btn" onclick="openScanBinModal(); return false;">
+                    <span class="icon">📱</span>
+                    Scan Bin QR Code
+                </a>
+                <a href="/resident/recycling-units" class="action-btn">
+                    <span class="icon">♻️</span>
+                    Find Recycling Units
+                </a>
+                <a href="/resident/search-bins" class="action-btn">
+                    <span class="icon">🔍</span>
+                    Search Nearby Bins
+                </a>
+                <a href="/resident/my-recycling" class="action-btn">
+                    <span class="icon">📊</span>
+                    My Recycling History
+                </a>
+            </div>
         </div>
 
         <div class="dashboard-grid">
             <div class="dashboard-card">
                 <div class="icon">🗑️</div>
-                <h3>View Bins</h3>
-                <p>Browse all waste bins and their current status.</p>
-                <a href="/resident/bins" class="btn">View Bins</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">🔍</div>
-                <h3>Find Nearby Bins</h3>
-                <p>Search for bins near your location.</p>
-                <a href="/resident/search-bins" class="btn">Search Bins</a>
+                <h3>Total Bins</h3>
+                <p th:text="'Available bins: ' + ${nearbyBins.size()}">Available bins: 0</p>
+                <a href="/resident/bins" class="btn">View All Bins</a>
             </div>
 
             <div class="dashboard-card">
@@ -272,10 +523,51 @@
             </div>
 
             <div class="dashboard-card">
-                <div class="icon">📊</div>
-                <h3>Reports</h3>
-                <p>View waste management statistics and reports.</p>
-                <a href="/resident/reports" class="btn">View Reports</a>
+                <div class="icon">♻️</div>
+                <h3>Recent Recycling</h3>
+                <p th:text="'Transactions: ' + ${recentTransactions.size()}">Transactions: 0</p>
+                <a href="/resident/my-recycling" class="btn">View History</a>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="icon">📝</div>
+                <h3>Waste Disposals</h3>
+                <p th:text="'Recent disposals: ' + ${recentDisposals.size()}">Recent disposals: 0</p>
+                <a href="/resident/bins" class="btn">View Details</a>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Section -->
+        <div class="activity-section" th:if="${!recentTransactions.empty || !recentDisposals.empty}">
+            <h2>Recent Activity</h2>
+            
+            <div th:if="${!recentTransactions.empty}">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Recent Recycling Transactions</h3>
+                <div th:each="transaction : ${recentTransactions}" class="activity-card">
+                    <div class="activity-header">
+                        <span class="activity-type" th:text="'♻️ ' + ${transaction.itemType}">Recycling</span>
+                        <span class="activity-date" th:text="${#temporals.format(transaction.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                    </div>
+                    <div class="activity-details">
+                        <span th:text="'Weight: ' + ${transaction.weight} + ' kg'">Weight</span> | 
+                        <span th:text="'Value: LKR ' + ${transaction.priceValue}">Value</span>
+                    </div>
+                    <div class="points-earned" th:text="'+ ' + ${transaction.pointsEarned} + ' points'">Points</div>
+                </div>
+            </div>
+            
+            <div th:if="${!recentDisposals.empty}" style="margin-top: 2rem;">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Recent Waste Disposals</h3>
+                <div th:each="disposal : ${recentDisposals}" class="activity-card">
+                    <div class="activity-header">
+                        <span class="activity-type" th:text="'🗑️ Bin: ' + ${disposal.bin.qrCode}">Disposal</span>
+                        <span class="activity-date" th:text="${#temporals.format(disposal.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                    </div>
+                    <div class="activity-details">
+                        <span th:text="'Fill Level: ' + ${disposal.reportedFillLevel} + '%'">Fill Level</span> | 
+                        <span th:text="'Status: ' + ${disposal.status}">Status</span>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -299,6 +591,80 @@
             </div>
         </div>
     </div>
+    
+    <!-- Scan Bin QR Code Modal -->
+    <div id="scanBinModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeScanBinModal()">&times;</span>
+            <h2>Scan Bin QR Code</h2>
+            <p style="color: #666; margin-bottom: 1.5rem;">Enter or scan the QR code from the waste bin to report its fill level.</p>
+            
+            <form action="/resident/submit-disposal" method="post">
+                <div class="form-group">
+                    <label for="qrCode">Bin QR Code *</label>
+                    <input type="text" id="qrCode" name="qrCode" required 
+                           placeholder="e.g., BIN001" 
+                           pattern="BIN\d{3,4}"
+                           title="QR code must be in format: BIN followed by 3-4 digits">
+                    <small style="color: #666;">Format: BIN + numbers (e.g., BIN001, BIN1234)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fillLevel">Fill Level (0-100%) *</label>
+                    <input type="range" id="fillLevel" name="fillLevel" 
+                           class="slider" min="0" max="100" value="50" 
+                           oninput="updateFillDisplay(this.value)">
+                    <div class="fill-display">
+                        <span id="fillLevelDisplay">50</span>%
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Additional Notes (Optional)</label>
+                    <textarea id="notes" name="notes" rows="3" 
+                              placeholder="Any additional observations about the bin..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">
+                    Submit Waste Disposal
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openScanBinModal() {
+            document.getElementById('scanBinModal').style.display = 'block';
+        }
+        
+        function closeScanBinModal() {
+            document.getElementById('scanBinModal').style.display = 'none';
+        }
+        
+        function updateFillDisplay(value) {
+            document.getElementById('fillLevelDisplay').textContent = value;
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('scanBinModal');
+            if (event.target == modal) {
+                closeScanBinModal();
+            }
+        }
+        
+        // Auto-close alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            });
+        }, 5000);
+    </script>
 </body>
 </html>
 
