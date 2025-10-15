@@ -484,11 +484,11 @@
         }
 
         .bin-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 500;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .status-EMPTY {
@@ -855,7 +855,12 @@
             <div class="bin-card" th:each="bin : ${bins}" th:data-lat="${bin.latitude}" th:data-lng="${bin.longitude}">
                 <div class="bin-header">
                     <span class="bin-qr" th:text="${bin.qrCode}">BIN001</span>
-                    <span class="bin-status" th:class="'status-' + ${bin.status}" th:text="${bin.status}">EMPTY</span>
+                    <span class="bin-status" th:class="'status-' + ${bin.status}">
+                        <span th:if="${bin.status == 'EMPTY'}">Empty</span>
+                        <span th:if="${bin.status == 'PARTIAL'}">Partial</span>
+                        <span th:if="${bin.status == 'FULL'}">Full</span>
+                        <span th:if="${bin.status == 'OVERDUE'}">Overdue</span>
+                    </span>
                 </div>
 
                 <div class="bin-location">
@@ -863,7 +868,11 @@
                     <span th:text="${bin.location}">Location</span>
                 </div>
 
-                <div class="bin-type" th:text="${bin.binType}">STANDARD</div>
+                <div class="bin-type">
+                    <span th:if="${bin.binType == 'STANDARD'}">Standard</span>
+                    <span th:if="${bin.binType == 'RECYCLING'}">Recycling</span>
+                    <span th:if="${bin.binType == 'BULK'}">Bulk</span>
+                </div>
 
                 <div class="fill-bar-card">
                     <div class="fill-level-card" 
@@ -1035,6 +1044,27 @@
             return R * c;
         }
 
+        // Convert status to proper case
+        function formatStatus(status) {
+            const statusMap = {
+                'EMPTY': 'Empty',
+                'PARTIAL': 'Partial',
+                'FULL': 'Full',
+                'OVERDUE': 'Overdue'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Convert bin type to proper case
+        function formatBinType(type) {
+            const typeMap = {
+                'STANDARD': 'Standard',
+                'RECYCLING': 'Recycling',
+                'BULK': 'Bulk'
+            };
+            return typeMap[type] || type;
+        }
+
         function loadMockBinsData(userLat, userLon, radius) {
             // Filter bins within radius
             const nearbyBins = mockBinsData.filter(bin => {
@@ -1085,13 +1115,13 @@
                             <div class="bin-card" data-lat="${bin.latitude}" data-lng="${bin.longitude}">
                                 <div class="bin-header">
                                     <span class="bin-qr">${bin.qrCode}</span>
-                                    <span class="bin-status status-${bin.status}">${bin.status}</span>
+                                    <span class="bin-status status-${bin.status}">${formatStatus(bin.status)}</span>
                                 </div>
                                 <div class="bin-location">
                                     <span class="material-icons">location_on</span>
                                     <span>${bin.location}</span>
                                 </div>
-                                <div class="bin-type">${bin.binType}</div>
+                                <div class="bin-type">${formatBinType(bin.binType)}</div>
                                 <div class="fill-bar-card">
                                     <div class="fill-level-card ${bin.fillLevel < 50 ? 'fill-low' : (bin.fillLevel < 80 ? 'fill-medium' : 'fill-high')}"
                                          style="width: ${bin.fillLevel}%">

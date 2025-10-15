@@ -292,16 +292,16 @@
         }
         
         .bin-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 500;
-            text-transform: uppercase;
-            color: white;
+            text-transform: none;
         }
         
         .status-FULL {
-            background-color: #f39c12;
+            background-color: #f8d7da;
+            color: #721c24;
         }
         
         .status-PARTIAL {
@@ -310,11 +310,13 @@
         }
         
         .status-EMPTY {
-            background-color: #27ae60;
+            background-color: #d4edda;
+            color: #155724;
         }
         
         .status-OVERDUE {
-            background-color: #e74c3c;
+            background-color: #f8d7da;
+            color: #721c24;
         }
         
         .bin-location {
@@ -1005,13 +1007,22 @@
                 <a th:href="@{/resident/bin/{id}(id=${bin.id})}" class="bin-card" th:each="bin : ${nearbyBins}" style="text-decoration: none; color: inherit;">
                     <div class="bin-header">
                         <span class="bin-qr" th:text="${bin.qrCode}">QR001</span>
-                        <span class="bin-status" th:class="'status-' + ${bin.status}" th:text="${bin.status}">FULL</span>
+                        <span class="bin-status" th:class="'status-' + ${bin.status}">
+                            <span th:if="${bin.status == 'EMPTY'}">Empty</span>
+                            <span th:if="${bin.status == 'PARTIAL'}">Partial</span>
+                            <span th:if="${bin.status == 'FULL'}">Full</span>
+                            <span th:if="${bin.status == 'OVERDUE'}">Overdue</span>
+                        </span>
                     </div>
                     <div class="bin-location">
                         <span class="material-icons">location_on</span>
                         <span th:text="${bin.location}">Colombo Fort</span>
                     </div>
-                    <div class="bin-type" th:text="${bin.binType}">STANDARD</div>
+                    <div class="bin-type">
+                        <span th:if="${bin.binType == 'STANDARD'}">Standard</span>
+                        <span th:if="${bin.binType == 'RECYCLING'}">Recycling</span>
+                        <span th:if="${bin.binType == 'BULK'}">Bulk</span>
+                    </div>
                     <div class="bin-fill">
                         <div class="fill-bar">
                             <div class="fill-level" 
