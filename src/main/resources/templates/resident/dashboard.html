@@ -1146,7 +1146,7 @@
                                class="slider" min="0" max="100" value="50" 
                                oninput="updateFillDisplay(this.value)"
                                style="width: 100%; margin-bottom: 0.75rem;">
-                        <div class="fill-display" style="text-align: center; padding: 0.75rem; background: white; border-radius: 8px; border: 2px solid #e9ecef;">
+                        <div class="fill-display" id="fillDisplayContainer" style="text-align: center; padding: 0.75rem; background: white; border-radius: 8px; border: 2px solid #e9ecef;">
                             <span id="fillLevelDisplay" style="font-size: 2rem; font-weight: 700; color: #2c3e50;">50</span>
                             <span style="font-size: 1.2rem; color: #6c757d; margin-left: 0.5rem;">%</span>
                         </div>
@@ -1198,7 +1198,28 @@
         }
         
         function updateFillDisplay(value) {
-            document.getElementById('fillLevelDisplay').textContent = value;
+            const display = document.getElementById('fillLevelDisplay');
+            const container = document.getElementById('fillDisplayContainer');
+            
+            display.textContent = value;
+            
+            // Update colors based on fill level
+            if (value < 30) {
+                // Low fill - Green
+                container.style.borderColor = '#27ae60';
+                container.style.backgroundColor = '#d4edda';
+                display.style.color = '#27ae60';
+            } else if (value < 70) {
+                // Medium fill - Orange
+                container.style.borderColor = '#f39c12';
+                container.style.backgroundColor = '#fff3cd';
+                display.style.color = '#f39c12';
+            } else {
+                // High fill - Red
+                container.style.borderColor = '#e74c3c';
+                container.style.backgroundColor = '#f8d7da';
+                display.style.color = '#e74c3c';
+            }
         }
         
         function startQRScanner() {
@@ -1259,6 +1280,11 @@
             }
         }
         
+        // Initialize fill level display color on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFillDisplay(50); // Initialize with default value
+        });
+
         // Auto-close alerts after 5 seconds
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert');
