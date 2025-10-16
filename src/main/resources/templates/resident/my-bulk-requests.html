@@ -18,12 +18,61 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             color: #2c3e50;
-            padding: 2rem;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo .material-icons {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 2rem;
         }
 
         /* Header */
@@ -39,6 +88,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 2rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }
 
         .header h1 {
@@ -48,11 +104,34 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            margin: 0;
         }
 
         .header .material-icons {
             font-size: 2.5rem;
             color: #e91e63;
+        }
+
+        .back-link {
+            color: #667eea;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
+            border-radius: 12px;
+            transition: all 0.3s;
+            font-weight: 600;
+            border: 2px solid #c5cae9;
+            margin-right: auto;
+        }
+
+        .back-link:hover {
+            background: linear-gradient(135deg, #eef1ff 0%, #e0e7ff 100%);
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
         }
 
         .new-request-btn {
@@ -320,17 +399,38 @@
         }
 
         @media (max-width: 768px) {
-            body {
+            .container {
                 padding: 1rem;
             }
 
-            .header h1 {
-                font-size: 1.5rem;
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
             }
 
             .header-content {
                 flex-direction: column;
                 gap: 1rem;
+                align-items: stretch;
+            }
+
+            .header-left {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .back-link {
+                margin-right: 0;
+                justify-content: center;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                justify-content: center;
             }
 
             .request-details {
@@ -349,14 +449,34 @@
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin - Resident Portal
+            </div>
+            <div class="user-info">
+                <span th:text="${user.name}">User</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
         <!-- Header -->
         <div class="header">
             <div class="header-content">
-                <h1>
-                    <span class="material-icons">list_alt</span>
-                    My Bulk Collection Requests
-                </h1>
+                <div class="header-left">
+                    <a href="/resident/dashboard" class="back-link">
+                        <span class="material-icons">arrow_back</span>
+                        Back to Dashboard
+                    </a>
+                    <h1>
+                        <span class="material-icons">list_alt</span>
+                        My Bulk Collection Requests
+                    </h1>
+                </div>
                 <a href="/resident/bulk-request" class="new-request-btn">
                     <span class="material-icons">add</span>
                     New Request

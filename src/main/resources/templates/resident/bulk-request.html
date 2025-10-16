@@ -17,7 +17,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #f8f9fa;
+            background: white;
             min-height: 100vh;
             color: #2c3e50;
             margin: 0;
@@ -28,30 +28,46 @@
             max-width: 100%;
             margin: 0;
             padding: 0;
+            background: white;
         }
 
-        /* Top Bar */
+        /* Top Bar - Payment Page Style */
         .top-bar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1rem 2rem;
+            padding: 1.5rem 3rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
         .top-bar h1 {
             font-size: 1.5rem;
-            font-weight: 700;
+            font-weight: 800;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             margin: 0;
+            position: relative;
+            z-index: 1;
         }
 
         .top-bar .material-icons {
-            font-size: 1.75rem;
+            font-size: 2.25rem;
+            animation: pulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
         }
 
         .back-link {
@@ -60,15 +76,25 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            border: 2px solid transparent;
         }
 
         .back-link:hover {
             background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
         }
 
         /* Navigation - Removed */
@@ -92,56 +118,54 @@
         /* Form Container */
         .form-container {
             background: white;
-            padding: 2rem;
-            margin: 1.5rem;
-            border-radius: 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 2rem 3rem;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .form-section {
-            margin-bottom: 0;
-            padding: 1.25rem;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s;
-        }
-
-        .form-section:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+            margin-bottom: 1.5rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
         }
 
         .section-header {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.85rem;
-            padding-bottom: 0.65rem;
-            border-bottom: 2px solid #f0f0f0;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
         .section-icon {
-            width: 28px;
-            height: 28px;
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 6px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .section-icon .material-icons {
             color: white;
-            font-size: 0.95rem;
+            font-size: 1.25rem;
         }
 
         .section-title {
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            color: #495057;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: #2c3e50;
+            text-transform: none;
+            letter-spacing: 0;
         }
 
         /* Form Elements */
@@ -152,28 +176,37 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
             color: #2c3e50;
+            font-size: 0.9rem;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
+            font-family: 'Inter', sans-serif;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            border-color: #e91e63;
+            border-color: #667eea;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #c5cae9;
         }
 
         .form-row {
@@ -184,139 +217,241 @@
 
         /* Map Section */
         .map-container {
-            height: 250px;
-            border-radius: 10px;
+            height: 220px;
+            border-radius: 16px;
             position: relative;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             overflow: hidden;
-            border: 2px solid #e9ecef;
+            border: 2px solid #dee2e6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .map-container:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
         }
 
         #pickupMap {
             width: 100%;
             height: 100%;
-            border-radius: 12px;
+            border-radius: 16px;
         }
 
         .location-btn {
             position: absolute;
             bottom: 1.5rem;
             right: 1.5rem;
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: white;
-            border: 2px solid #e91e63;
-            color: #e91e63;
+            border: none;
+            color: #667eea;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
             z-index: 1000;
         }
 
+        .location-btn .material-icons {
+            font-size: 1.75rem;
+        }
+
         .location-btn:hover {
-            background: #e91e63;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
         }
 
         /* Photo Upload */
         .photo-upload {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            height: 150px;
         }
 
         .upload-btn {
             border: 2px dashed #667eea;
-            background: #f8f9ff;
-            border-radius: 10px;
-            padding: 1.15rem;
+            background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
+            border-radius: 12px;
+            padding: 1rem;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .upload-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s;
         }
 
         .upload-btn:hover {
-            background: #eef1ff;
+            background: linear-gradient(135deg, #eef1ff 0%, #e0e7ff 100%);
             border-color: #764ba2;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        }
+
+        .upload-btn:hover::before {
+            opacity: 1;
         }
 
         .upload-btn .material-icons {
-            font-size: 1.75rem;
+            font-size: 2.5rem;
             color: #667eea;
+            position: relative;
+            z-index: 1;
+        }
+
+        .upload-btn span {
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.9rem;
         }
 
         .photo-preview {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .photo-item {
             aspect-ratio: 1;
-            background: #e9ecef;
-            border-radius: 8px;
+            background: #f8f9fa;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .photo-item:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
         }
 
         .photo-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
         }
 
         .remove-photo {
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 24px;
-            height: 24px;
+            top: 0.75rem;
+            right: 0.75rem;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: #e74c3c;
-            border: none;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: 2px solid white;
             color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+            z-index: 10;
         }
 
-        /* Fee Estimation */
+        .remove-photo:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6);
+        }
+
+        /* Fee Estimation - Payment Page Style */
         .fee-estimate {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
             padding: 1.5rem;
-            border-radius: 12px;
-            border: 2px solid #e91e63;
+            border-radius: 16px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
+            border: none;
+        }
+
+        .fee-estimate::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 60%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30%, -30%); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .amount-label {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            color: white;
         }
 
         .fee-amount {
             font-size: 2.25rem;
             font-weight: 800;
-            color: #667eea;
-            margin-bottom: 0.65rem;
-            text-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
         }
 
         .fee-breakdown {
-            color: #666;
+            color: white;
             font-size: 0.85rem;
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            opacity: 0.95;
         }
 
         .fee-breakdown p {
@@ -327,153 +462,222 @@
         }
 
         .fee-breakdown strong {
-            color: #667eea;
+            color: white;
+            font-weight: 700;
         }
 
-        /* Action Buttons */
+        /* Action Buttons - Payment Page Style */
         .action-buttons {
             display: flex;
             gap: 1rem;
             justify-content: center;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
         }
 
         .btn {
-            padding: 0.85rem 1.5rem;
+            flex: 1;
+            max-width: 300px;
+            padding: 0.9rem 1.25rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn .material-icons {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            border: none;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a4193 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            color: #374151;
+            border: 2px solid #d1d5db;
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            border-color: #9ca3af;
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
-        /* Desktop Three-Column Compact Layout */
+        /* Desktop Layout - Two Column */
         @media (min-width: 992px) {
             .form-container {
-                display: grid !important;
-                grid-template-columns: repeat(3, 1fr) !important;
-                grid-template-rows: auto auto auto !important;
-                gap: 1.25rem;
-                align-items: start;
-                padding: 1.5rem 2rem;
+                max-width: 1200px;
+                margin: 0 auto;
             }
 
-            /* Row 1: Item Details | Pickup Address | Map */
-            .form-section:nth-of-type(1) {
-                grid-column: 1;
-                grid-row: 1;
+            .form-section {
+                padding: 2.5rem 3rem;
             }
 
-            .form-section:nth-of-type(2) {
-                grid-column: 2;
-                grid-row: 1;
+            .form-section form {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
             }
 
-            .form-section:nth-of-type(3) {
-                grid-column: 3;
-                grid-row: 1;
+            .left-column {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
             }
 
-            /* Row 2: Upload Photos (span 2) | Fee Estimate */
-            .form-section:nth-of-type(4) {
-                grid-column: 1 / 3;
-                grid-row: 2;
+            .right-column {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
             }
 
-            .form-section:nth-of-type(5) {
-                grid-column: 3;
-                grid-row: 2;
-            }
-
-            /* Action Buttons - Span all columns, Row 3 */
-            .action-buttons {
+            .full-width {
                 grid-column: 1 / -1;
-                grid-row: 3;
-                margin-top: 0.5rem;
             }
         }
 
-        /* Tablet Two-Column Layout */
+        /* Tablet Layout */
         @media (min-width: 768px) and (max-width: 991px) {
             .form-container {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
-                grid-template-rows: auto auto auto auto !important;
-                gap: 1rem;
-                align-items: start;
+                padding: 1.5rem;
             }
 
-            /* Row 1: Item Details | Pickup Address */
-            .form-section:nth-of-type(1) {
-                grid-column: 1;
-                grid-row: 1;
+            .form-section {
+                padding: 2rem;
             }
 
-            .form-section:nth-of-type(2) {
-                grid-column: 2;
-                grid-row: 1;
+            .form-section form {
+                display: flex;
+                flex-direction: column;
             }
 
-            /* Row 2: Map | Fee Estimate */
-            .form-section:nth-of-type(3) {
-                grid-column: 1;
-                grid-row: 2;
+            .left-column, .right-column {
+                width: 100%;
             }
 
-            .form-section:nth-of-type(5) {
-                grid-column: 2;
-                grid-row: 2;
+            .photo-upload {
+                height: auto;
             }
 
-            /* Row 3: Upload Photos (span 2) */
-            .form-section:nth-of-type(4) {
-                grid-column: 1 / -1;
-                grid-row: 3;
-            }
-
-            /* Action Buttons - Span all columns, Row 4 */
-            .action-buttons {
-                grid-column: 1 / -1;
-                grid-row: 4;
-                margin-top: 0.5rem;
+            .upload-btn {
+                height: auto;
+                min-height: 140px;
             }
         }
 
         /* Mobile Single Column */
+        @media (max-width: 1024px) {
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .top-bar {
+                padding: 1.25rem 1.5rem;
+                flex-direction: row;
+            }
+
+            .form-section {
+                padding: 1.75rem;
+            }
+
+            .form-section form {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .left-column, .right-column {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 767px) {
             .container {
+                padding: 0;
+            }
+
+            .top-bar {
+                padding: 1rem 1.25rem;
+            }
+
+            .top-bar h1 {
+                font-size: 1.25rem;
+            }
+
+            .top-bar .material-icons {
+                font-size: 1.75rem;
+            }
+
+            .form-container {
                 padding: 1rem;
             }
 
-            .header h1 {
+            .form-section {
+                padding: 1.25rem;
+                border-radius: 16px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                margin-top: 1rem;
+            }
+
+            .btn {
+                max-width: 100%;
+                padding: 0.85rem 1rem;
+            }
+
+            .fee-amount {
                 font-size: 2rem;
+            }
+
+            .map-container {
+                height: 200px;
             }
 
             .form-row {
@@ -482,10 +686,16 @@
 
             .photo-upload {
                 grid-template-columns: 1fr;
+                height: auto;
             }
 
-            .action-buttons {
-                flex-direction: column;
+            .upload-btn {
+                height: auto;
+                min-height: 120px;
+            }
+
+            .upload-btn .material-icons {
+                font-size: 2.5rem;
             }
         }
 
@@ -526,132 +736,146 @@
     <div class="container">
         <!-- Form Container -->
         <div class="form-container">
-            <form id="bulkRequestForm" th:action="@{/resident/bulk-request}" th:object="${bulkRequest}" method="post">
-                
-                <!-- Item Details Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <div class="section-icon">
-                            <span class="material-icons">shopping_bag</span>
+            <!-- Single Form Box -->
+            <div class="form-section">
+                <form id="bulkRequestForm" th:action="@{/resident/bulk-request}" th:object="${bulkRequest}" method="post">
+                    
+                    <!-- Left Column -->
+                    <div class="left-column">
+                        <!-- Item Details -->
+                        <div>
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <span class="material-icons">shopping_bag</span>
+                                </div>
+                                <h3 class="section-title">Item Details</h3>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="category">Category *</label>
+                                <select id="category" name="category" th:field="*{category}" required>
+                                    <option value="">Select item category</option>
+                                    <option value="FURNITURE">Furniture (Sofas, Tables, Chairs)</option>
+                                    <option value="APPLIANCES">Appliances (TV, Refrigerator, Washing Machine)</option>
+                                    <option value="ELECTRONICS">Electronics (Computer, Printer, Mobile)</option>
+                                    <option value="MATTRESS">Mattress & Bedding</option>
+                                    <option value="CONSTRUCTION">Construction Waste</option>
+                                    <option value="YARD">Yard Waste (Branches, Leaves)</option>
+                                    <option value="OTHER">Other Large Items</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="description">Description *</label>
+                                <textarea id="description" name="description" th:field="*{description}" rows="3" 
+                                          placeholder="Describe your items in detail (size, weight, condition)..." required></textarea>
+                            </div>
                         </div>
-                        <h3 class="section-title">Item Details</h3>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="category">Category *</label>
-                        <select id="category" name="category" th:field="*{category}" required>
-                            <option value="">Select item category</option>
-                            <option value="FURNITURE">Furniture (Sofas, Tables, Chairs)</option>
-                            <option value="APPLIANCES">Appliances (TV, Refrigerator, Washing Machine)</option>
-                            <option value="ELECTRONICS">Electronics (Computer, Printer, Mobile)</option>
-                            <option value="MATTRESS">Mattress & Bedding</option>
-                            <option value="CONSTRUCTION">Construction Waste</option>
-                            <option value="YARD">Yard Waste (Branches, Leaves)</option>
-                            <option value="OTHER">Other Large Items</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="description">Description *</label>
-                        <textarea id="description" name="description" th:field="*{description}" rows="4" 
-                                  placeholder="Describe your items in detail (size, weight, condition)..." required></textarea>
-                    </div>
-                </div>
 
-                <!-- Pickup Address Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <div class="section-icon">
-                            <span class="material-icons">location_on</span>
+                        <!-- Upload Photos -->
+                        <div>
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <span class="material-icons">photo_camera</span>
+                                </div>
+                                <h3 class="section-title">Upload Photos</h3>
+                                <span style="background: #e9ecef; color: #6c757d; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; margin-left: auto;">Optional</span>
+                            </div>
+                            
+                            <div class="photo-upload">
+                                <button type="button" class="upload-btn" onclick="capturePhoto()">
+                                    <span class="material-icons">photo_camera</span>
+                                    <span style="font-weight: 500;">Camera</span>
+                                </button>
+                                <button type="button" class="upload-btn" onclick="selectFromGallery()">
+                                    <span class="material-icons">photo_library</span>
+                                    <span style="font-weight: 500;">Gallery</span>
+                                </button>
+                            </div>
+                            
+                            <div id="photoPreview" class="photo-preview">
+                                <!-- Photo previews will be added here -->
+                            </div>
                         </div>
-                        <h3 class="section-title">Pickup Address</h3>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="streetAddress">Street Address *</label>
-                        <input type="text" id="streetAddress" name="streetAddress" th:field="*{streetAddress}" 
-                               placeholder="Enter your street address" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="city">City *</label>
-                            <input type="text" id="city" name="city" th:field="*{city}" 
-                                   placeholder="City" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="zipCode">ZIP Code *</label>
-                            <input type="text" id="zipCode" name="zipCode" th:field="*{zipCode}" 
-                                   placeholder="ZIP" required>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Pickup Location Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <div class="section-icon">
-                            <span class="material-icons">place</span>
+                    <!-- Right Column -->
+                    <div class="right-column">
+                        <!-- Pickup Address -->
+                        <div>
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <span class="material-icons">location_on</span>
+                                </div>
+                                <h3 class="section-title">Pickup Address</h3>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="streetAddress">Street Address *</label>
+                                <input type="text" id="streetAddress" name="streetAddress" th:field="*{streetAddress}" 
+                                       placeholder="Enter your street address" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">City *</label>
+                                    <input type="text" id="city" name="city" th:field="*{city}" 
+                                           placeholder="City" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="zipCode">ZIP Code *</label>
+                                    <input type="text" id="zipCode" name="zipCode" th:field="*{zipCode}" 
+                                           placeholder="ZIP" required>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="section-title">Pickup Location</h3>
-                    </div>
-                    
-                    <div class="map-container">
-                        <div id="pickupMap"></div>
-                        <button type="button" class="location-btn" onclick="getCurrentLocation()" title="Use My Location">
-                            <span class="material-icons">my_location</span>
-                        </button>
-                    </div>
-                    <input type="hidden" id="latitude" name="latitude" th:field="*{latitude}">
-                    <input type="hidden" id="longitude" name="longitude" th:field="*{longitude}">
-                    <p style="color: #666; font-size: 0.9rem; display: flex; align-items: center; gap: 0.25rem;">
-                        <span style="width: 6px; height: 6px; background: #e91e63; border-radius: 50%;"></span>
-                        Drag the pin to mark the exact pickup location
-                    </p>
-                </div>
 
-                <!-- Upload Photos Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <div class="section-icon">
-                            <span class="material-icons">photo_camera</span>
+                        <!-- Pickup Location -->
+                        <div>
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <span class="material-icons">place</span>
+                                </div>
+                                <h3 class="section-title">Pickup Location</h3>
+                            </div>
+                            
+                            <div class="map-container">
+                                <div id="pickupMap"></div>
+                                <button type="button" class="location-btn" onclick="getCurrentLocation()" title="Use My Location">
+                                    <span class="material-icons">my_location</span>
+                                </button>
+                            </div>
+                            <input type="hidden" id="latitude" name="latitude" th:field="*{latitude}">
+                            <input type="hidden" id="longitude" name="longitude" th:field="*{longitude}">
+                            <p style="color: #666; font-size: 0.9rem; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.75rem;">
+                                <span style="width: 6px; height: 6px; background: #667eea; border-radius: 50%;"></span>
+                                Drag the pin to mark the exact pickup location
+                            </p>
                         </div>
-                        <h3 class="section-title">Upload Photos</h3>
-                        <span style="background: #e9ecef; color: #6c757d; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">Optional</span>
                     </div>
-                    
-                    <div class="photo-upload">
-                        <button type="button" class="upload-btn" onclick="capturePhoto()">
-                            <span class="material-icons">photo_camera</span>
-                            <span style="color: #e91e63; font-weight: 500;">Camera</span>
-                        </button>
-                        <button type="button" class="upload-btn" onclick="selectFromGallery()">
-                            <span class="material-icons">photo_library</span>
-                            <span style="color: #e91e63; font-weight: 500;">Gallery</span>
-                        </button>
-                    </div>
-                    
-                    <div id="photoPreview" class="photo-preview">
-                        <!-- Photo previews will be added here -->
-                    </div>
-                </div>
 
-                <!-- Fee Estimation -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <div class="section-icon">
-                            <span class="material-icons">calculate</span>
+                    <!-- Full Width Sections -->
+                    <div class="full-width" style="margin-top: 1.5rem;">
+                        <!-- Divider -->
+                        <div style="height: 1px; background: linear-gradient(to right, transparent, #e0e0e0, transparent); margin-bottom: 1.5rem;"></div>
+
+                        <!-- Fee Estimation -->
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <span class="material-icons">calculate</span>
+                            </div>
+                            <h3 class="section-title">Estimated Fee</h3>
                         </div>
-                        <h3 class="section-title">Estimated Fee</h3>
+                        
+                        <div class="fee-estimate">
+                            <div class="amount-label">Estimated Total Amount</div>
+                            <div id="feeAmount" class="fee-amount">LKR 0.00</div>
+                            <div id="feeBreakdown" class="fee-breakdown">Select category to see estimated cost</div>
+                        </div>
                     </div>
-                    
-                    <div class="fee-estimate">
-                        <div id="feeAmount" class="fee-amount">₹0.00</div>
-                        <div id="feeBreakdown" class="fee-breakdown">Select category to see estimated cost</div>
-                    </div>
-                </div>
 
-            </form>
+                </form>
+            </div>
             
             <!-- Action Buttons -->
             <div class="action-buttons">
