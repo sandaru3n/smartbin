@@ -328,6 +328,76 @@
             font-weight: 400;
         }
 
+        /* Card Details Section */
+        .card-details {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .card-details.active {
+            display: block;
+        }
+
+        .card-details h3 {
+            color: #202124;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-details h3 .material-icons {
+            color: #1a73e8;
+            font-size: 1.25rem;
+        }
+
+        .card-form-group {
+            margin-bottom: 1rem;
+        }
+
+        .card-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+
+        .card-form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            color: #202124;
+        }
+
+        .card-form-group input:focus {
+            border-color: #1a73e8;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .card-form-group input:hover {
+            border-color: #80868b;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+
         .security-badge {
             background: #e6f4ea;
             padding: 1rem;
@@ -543,7 +613,7 @@
                         </h3>
                         
                         <label class="payment-option">
-                            <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked onchange="selectPaymentMethod(this)">
+                            <input type="radio" name="paymentMethod" value="CREDIT_CARD" onchange="selectPaymentMethod(this)">
                             <span class="material-icons payment-icon">credit_card</span>
                             <div class="payment-info">
                                 <div class="payment-name">Credit/Debit Card</div>
@@ -579,6 +649,36 @@
                         </label>
                     </div>
 
+                    <!-- Card Details Section (shows only for Credit/Debit Card) -->
+                    <div class="card-details" id="cardDetailsSection">
+                        <h3>
+                            <span class="material-icons">credit_card</span>
+                            Card Details
+                        </h3>
+                        
+                        <div class="card-form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+                        </div>
+
+                        <div class="card-row">
+                            <div class="card-form-group">
+                                <label for="expiryDate">Expiry Date</label>
+                                <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+                            </div>
+                            
+                            <div class="card-form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="3" autocomplete="cc-csc">
+                            </div>
+                        </div>
+
+                        <div class="card-form-group">
+                            <label for="cardHolder">Cardholder Name</label>
+                            <input type="text" id="cardHolder" name="cardHolder" placeholder="Name as on card" autocomplete="cc-name">
+                        </div>
+                    </div>
+
                     <!-- Security Badge -->
                     <div class="security-badge">
                         <span class="material-icons">security</span>
@@ -612,18 +712,107 @@
             
             // Add selected class to chosen option
             radio.closest('.payment-option').classList.add('selected');
+
+            // Show/hide card details based on payment method
+            const cardDetailsSection = document.getElementById('cardDetailsSection');
+            if (radio.value === 'CREDIT_CARD') {
+                cardDetailsSection.classList.add('active');
+                // Make card fields required
+                document.getElementById('cardNumber').required = true;
+                document.getElementById('expiryDate').required = true;
+                document.getElementById('cvv').required = true;
+                document.getElementById('cardHolder').required = true;
+            } else {
+                cardDetailsSection.classList.remove('active');
+                // Remove required attribute
+                document.getElementById('cardNumber').required = false;
+                document.getElementById('expiryDate').required = false;
+                document.getElementById('cvv').required = false;
+                document.getElementById('cardHolder').required = false;
+            }
         }
 
-        // Set first option as selected on load
+        // Card number formatting - add space every 4 digits
         document.addEventListener('DOMContentLoaded', function() {
-            const firstRadio = document.querySelector('input[type="radio"][checked]');
-            if (firstRadio) {
-                firstRadio.closest('.payment-option').classList.add('selected');
-            }
+            const cardNumberInput = document.getElementById('cardNumber');
+            const expiryDateInput = document.getElementById('expiryDate');
+            const cvvInput = document.getElementById('cvv');
+
+            // Card Number - 16 digits with spaces
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, ''); // Remove spaces
+                value = value.replace(/\D/g, ''); // Remove non-digits
+                value = value.substring(0, 16); // Max 16 digits
+                
+                // Add space every 4 digits
+                let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formatted;
+            });
+
+            // Expiry Date - MM/YY format with auto /
+            expiryDateInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                
+                e.target.value = value;
+            });
+
+            // CVV - 3 digits only
+            cvvInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                e.target.value = value.substring(0, 3); // Max 3 digits
+            });
+
+            // No default selection - user must choose
         });
 
         // Form submission with loading state
         document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            const paymentMethodRadio = document.querySelector('input[name="paymentMethod"]:checked');
+            
+            if (!paymentMethodRadio) {
+                alert('Please select a payment method');
+                e.preventDefault();
+                return false;
+            }
+
+            const paymentMethod = paymentMethodRadio.value;
+            
+            // Validate card details if credit card is selected
+            if (paymentMethod === 'CREDIT_CARD') {
+                const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                const expiryDate = document.getElementById('expiryDate').value;
+                const cvv = document.getElementById('cvv').value;
+                const cardHolder = document.getElementById('cardHolder').value;
+
+                if (cardNumber.length !== 16) {
+                    alert('Please enter a valid 16-digit card number');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (!expiryDate.match(/^\d{2}\/\d{2}$/)) {
+                    alert('Please enter a valid expiry date (MM/YY)');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (cvv.length !== 3) {
+                    alert('Please enter a valid 3-digit CVV');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (!cardHolder.trim()) {
+                    alert('Please enter the cardholder name');
+                    e.preventDefault();
+                    return false;
+                }
+            }
+
             const payBtn = document.getElementById('payBtn');
             payBtn.innerHTML = '<span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span> Processing Payment...';
             payBtn.disabled = true;
