@@ -196,14 +196,12 @@
         }
 
         .section-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .section-icon .material-icons {
@@ -211,10 +209,31 @@
             font-size: 1.25rem;
         }
 
+        /* Different colors for each section */
+        .icon-blue {
+            background: #1a73e8;
+        }
+
+        .icon-purple {
+            background: #9334e6;
+        }
+
+        .icon-red {
+            background: #ea4335;
+        }
+
+        .icon-orange {
+            background: #f9ab00;
+        }
+
+        .icon-green {
+            background: #34a853;
+        }
+
         .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #202124;
             text-transform: none;
             letter-spacing: 0;
         }
@@ -227,9 +246,9 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.9rem;
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .form-group input,
@@ -237,27 +256,27 @@
         .form-group textarea {
             width: 100%;
             padding: 0.75rem 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
             background: white;
             font-family: 'Inter', sans-serif;
+            color: #202124;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            border-color: #667eea;
+            border-color: #1a73e8;
             outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
         }
 
         .form-group input:hover,
         .form-group select:hover,
         .form-group textarea:hover {
-            border-color: #c5cae9;
+            border-color: #80868b;
         }
 
         .form-row {
@@ -269,24 +288,24 @@
         /* Map Section */
         .map-container {
             height: 220px;
-            border-radius: 16px;
+            border-radius: 8px;
             position: relative;
             margin-bottom: 0.5rem;
             overflow: hidden;
-            border: 2px solid #dee2e6;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.3s;
+            border: 1px solid #dadce0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+            transition: all 0.2s;
         }
 
         .map-container:hover {
-            border-color: #667eea;
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+            border-color: #1a73e8;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         #pickupMap {
             width: 100%;
             height: 100%;
-            border-radius: 16px;
+            border-radius: 8px;
         }
 
         .location-btn {
@@ -298,13 +317,13 @@
             border-radius: 50%;
             background: white;
             border: none;
-            color: #667eea;
+            color: #1a73e8;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
             z-index: 1000;
         }
 
@@ -313,10 +332,10 @@
         }
 
         .location-btn:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a73e8;
             color: white;
-            transform: scale(1.15);
-            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
         }
 
         /* Photo Upload */
@@ -329,8 +348,8 @@
         }
 
         .upload-btn {
-            border: 2px dashed #667eea;
-            background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
+            border: 2px dashed #9334e6;
+            background: #faf5ff;
             border-radius: 12px;
             padding: 1rem;
             cursor: pointer;
@@ -339,47 +358,25 @@
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s;
             height: 100%;
         }
 
-        .upload-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-
         .upload-btn:hover {
-            background: linear-gradient(135deg, #eef1ff 0%, #e0e7ff 100%);
-            border-color: #764ba2;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
-        }
-
-        .upload-btn:hover::before {
-            opacity: 1;
+            background: #f3e8ff;
+            border-color: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(147, 51, 230, 0.2);
         }
 
         .upload-btn .material-icons {
             font-size: 2.5rem;
-            color: #667eea;
-            position: relative;
-            z-index: 1;
+            color: #9334e6;
         }
 
         .upload-btn span {
-            position: relative;
-            z-index: 1;
             font-weight: 600;
-            color: #667eea;
+            color: #9334e6;
             font-size: 0.9rem;
         }
 
@@ -404,9 +401,9 @@
         }
 
         .photo-item:hover {
-            border-color: #667eea;
+            border-color: #9334e6;
             transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 2px 8px rgba(147, 51, 230, 0.15);
         }
 
         .photo-item img {
@@ -423,7 +420,7 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: #ea4335;
             border: 2px solid white;
             color: white;
             cursor: pointer;
@@ -431,44 +428,26 @@
             align-items: center;
             justify-content: center;
             font-size: 1rem;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(234, 67, 53, 0.4);
             z-index: 10;
         }
 
         .remove-photo:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            background: #c5221f;
             transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6);
+            box-shadow: 0 4px 12px rgba(234, 67, 53, 0.6);
         }
 
-        /* Fee Estimation - Payment Page Style */
+        /* Fee Estimation */
         .fee-estimate {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #34a853;
             color: white;
             padding: 1.5rem;
-            border-radius: 16px;
+            border-radius: 12px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
             border: none;
-        }
-
-        .fee-estimate::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 60%);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-30%, -30%); }
         }
 
         @keyframes spin {
@@ -477,31 +456,24 @@
         }
 
         .amount-label {
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             opacity: 0.95;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            position: relative;
-            z-index: 1;
             color: white;
         }
 
         .fee-amount {
-            font-size: 2.25rem;
-            font-weight: 800;
+            font-size: 2rem;
+            font-weight: 600;
             color: white;
             margin-bottom: 0.5rem;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 1;
         }
 
         .fee-breakdown {
             color: white;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             line-height: 1.6;
-            position: relative;
-            z-index: 1;
             opacity: 0.95;
         }
 
@@ -528,75 +500,53 @@
         .btn {
             flex: 1;
             max-width: 300px;
-            padding: 0.9rem 1.25rem;
+            padding: 0.75rem 2rem;
             border: none;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 700;
+            border-radius: 24px;
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:active::before {
-            width: 300px;
-            height: 300px;
+            font-family: 'Inter', sans-serif;
         }
 
         .btn .material-icons {
-            position: relative;
-            z-index: 1;
+            font-size: 1.125rem;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #34a853;
             color: white;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         .btn-primary:disabled {
-            background: #9ca3af;
+            background: #dadce0;
+            color: #80868b;
             cursor: not-allowed;
-            transform: none;
             box-shadow: none;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            color: #374151;
-            border: 2px solid #d1d5db;
+            background: white;
+            color: #5f6368;
+            border: 1px solid #dadce0;
         }
 
         .btn-secondary:hover {
-            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-            border-color: #9ca3af;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+            border-color: #80868b;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         /* Desktop Layout - Two Column */
@@ -765,7 +715,7 @@
 
         .spinner {
             border: 2px solid #f3f3f3;
-            border-top: 2px solid #e91e63;
+            border-top: 2px solid #34a853;
             border-radius: 50%;
             width: 20px;
             height: 20px;
@@ -817,8 +767,8 @@
                         <!-- Item Details -->
                         <div>
                             <div class="section-header">
-                                <div class="section-icon">
-                                    <span class="material-icons">shopping_bag</span>
+                                <div class="section-icon icon-blue">
+                                    <span class="material-icons">inventory_2</span>
                                 </div>
                                 <h3 class="section-title">Item Details</h3>
                             </div>
@@ -847,8 +797,8 @@
                         <!-- Upload Photos -->
                         <div>
                             <div class="section-header">
-                                <div class="section-icon">
-                                    <span class="material-icons">photo_camera</span>
+                                <div class="section-icon icon-purple">
+                                    <span class="material-icons">add_photo_alternate</span>
                                 </div>
                                 <h3 class="section-title">Upload Photos</h3>
                                 <span style="background: #e9ecef; color: #6c757d; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; margin-left: auto;">Optional</span>
@@ -876,8 +826,8 @@
                         <!-- Pickup Address -->
                         <div>
                             <div class="section-header">
-                                <div class="section-icon">
-                                    <span class="material-icons">location_on</span>
+                                <div class="section-icon icon-red">
+                                    <span class="material-icons">home</span>
                                 </div>
                                 <h3 class="section-title">Pickup Address</h3>
                             </div>
@@ -905,8 +855,8 @@
                         <!-- Pickup Location -->
                         <div>
                             <div class="section-header">
-                                <div class="section-icon">
-                                    <span class="material-icons">place</span>
+                                <div class="section-icon icon-orange">
+                                    <span class="material-icons">pin_drop</span>
                                 </div>
                                 <h3 class="section-title">Pickup Location</h3>
                             </div>
@@ -919,8 +869,8 @@
                             </div>
                             <input type="hidden" id="latitude" name="latitude" th:field="*{latitude}">
                             <input type="hidden" id="longitude" name="longitude" th:field="*{longitude}">
-                            <p style="color: #666; font-size: 0.9rem; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.75rem;">
-                                <span style="width: 6px; height: 6px; background: #667eea; border-radius: 50%;"></span>
+                            <p style="color: #5f6368; font-size: 0.875rem; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.75rem;">
+                                <span style="width: 6px; height: 6px; background: #f9ab00; border-radius: 50%;"></span>
                                 Drag the pin to mark the exact pickup location
                             </p>
                         </div>
@@ -933,8 +883,8 @@
 
                         <!-- Fee Estimation -->
                         <div class="section-header">
-                            <div class="section-icon">
-                                <span class="material-icons">calculate</span>
+                            <div class="section-icon icon-green">
+                                <span class="material-icons">payments</span>
                             </div>
                             <h3 class="section-title">Estimated Fee</h3>
                         </div>
