@@ -616,7 +616,11 @@
         }
 
         .action-requests .icon {
-            background: #f9ab00;
+            background: transparent;
+        }
+
+        .action-requests .icon .material-icons {
+            color: #f9ab00;
         }
 
         .action-requests:hover {
@@ -626,10 +630,10 @@
         }
 
         .action-requests:hover .icon {
-            background: rgba(255, 255, 255, 0.2);
+            background: transparent;
         }
 
-        .action-btn[href="/resident/my-bulk-requests"]:hover .icon .material-icons {
+        .action-requests:hover .icon .material-icons {
             color: white;
         }
         
