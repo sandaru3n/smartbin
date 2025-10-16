@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Submitted - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: bounce 1s ease-in-out;
+        }
+
+        .success-icon .material-icons {
+            font-size: 3rem;
+            color: white;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .success-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .request-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            font-weight: 600;
+            color: #27ae60;
+            font-size: 1.1rem;
+        }
+
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .next-steps {
+            background: linear-gradient(135deg, #e91e63 0%, #f48fb1 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .next-steps h3 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .next-steps ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .next-steps li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .next-steps li:before {
+            content: "✓";
+            background: white;
+            color: #e91e63;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e91e63 0%, #f48fb1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #c2185b 0%, #e91e63 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .success-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .success-title {
+                font-size: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            <span class="material-icons">check_circle</span>
+        </div>
+        
+        <h1 class="success-title">Request Submitted Successfully!</h1>
+        <p class="success-message">
+            Your bulk collection request has been submitted and is now being processed. 
+            You will receive a confirmation SMS shortly with payment details.
+        </p>
+
+        <div class="request-details" th:if="${bulkRequest}">
+            <div class="detail-row">
+                <span class="detail-label">Request ID:</span>
+                <span class="detail-value" th:text="${bulkRequest.requestId}">BULK-123456789</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Category:</span>
+                <span class="detail-value" th:text="${bulkRequest.category.displayName}">Furniture</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Pickup Address:</span>
+                <span class="detail-value" th:text="${bulkRequest.streetAddress + ', ' + bulkRequest.city + ' ' + bulkRequest.zipCode}">456 University Ave, College Town 12345</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" th:text="${bulkRequest.status.displayName}">Pending</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Total Amount:</span>
+                <span class="detail-value" th:text="'LKR ' + ${#numbers.formatDecimal(bulkRequest.totalAmount, 1, 2)}">LKR 4,200.00</span>
+            </div>
+        </div>
+
+        <div class="next-steps">
+            <h3>
+                <span class="material-icons">info</span>
+                What happens next?
+            </h3>
+            <ul>
+                <li>Your request will be reviewed by our waste management authority</li>
+                <li>You'll receive payment instructions via SMS within 24 hours</li>
+                <li>Once payment is confirmed, a collector will be assigned</li>
+                <li>You'll receive collection schedule and collector details</li>
+                <li>Collection will be completed within 3-5 business days</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/resident/dashboard" class="btn btn-secondary">
+                <span class="material-icons">home</span>
+                Back to Dashboard
+            </a>
+            <a href="/resident/my-bulk-requests" class="btn btn-primary">
+                <span class="material-icons">list</span>
+                View All My Requests
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirect after 30 seconds (optional)
+        setTimeout(function() {
+            if (confirm('Would you like to return to the dashboard?')) {
+                window.location.href = '/resident/dashboard';
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
