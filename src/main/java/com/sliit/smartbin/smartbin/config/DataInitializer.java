@@ -42,7 +42,7 @@ public class DataInitializer implements CommandLineRunner {
                            RouteRepository routeRepository,
                            RouteBinRepository routeBinRepository,
                            RecyclingTransactionRepository recyclingTransactionRepository,
-                           WasteDisposalRepository wasteDisposalRepository) {
+                           WasteDisposalRepository wasteDisposalRepository,
                            BinAssignmentRepository binAssignmentRepository) {
 
         this.userRepository = userRepository;
