@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resident Dashboard - SmartBin</title>
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
@@ -17,10 +21,10 @@
         }
 
         .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2c3e50;
             color: white;
             padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-content {
@@ -34,6 +38,14 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo .material-icons {
+            font-size: 2rem;
+            color: white;
         }
 
         .user-info {
@@ -98,6 +110,116 @@
         .dashboard-card:hover {
             transform: translateY(-5px);
         }
+        
+        .stats-grid {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            align-items: flex-start;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            flex: 1;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.75rem;
+            border: 2px solid transparent;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 2rem;
+        }
+        
+        .stat-card-icon .material-icons {
+            font-size: 2rem;
+        }
+        
+        .stat-card-content {
+            width: 100%;
+        }
+        
+        .stat-card-title {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .stat-card-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .stat-card-alerts {
+            border-color: #e74c3c;
+        }
+        
+        .stat-card-alerts:hover {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+        
+        .stat-card-alerts .stat-card-icon {
+            background: #fee;
+            color: #e74c3c;
+        }
+        
+        .stat-card-recycling {
+            border-color: #27ae60;
+        }
+        
+        .stat-card-recycling:hover {
+            border-color: #27ae60;
+            background: #f0fdf4;
+        }
+        
+        .stat-card-recycling .stat-card-icon {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+        
+        .stat-card-disposals {
+            border-color: #3498db;
+        }
+        
+        .stat-card-disposals:hover {
+            border-color: #3498db;
+            background: #eff6ff;
+        }
+        
+        .stat-card-disposals .stat-card-icon {
+            background: #e3f2fd;
+            color: #3498db;
+        }
 
         .dashboard-card .icon {
             font-size: 3rem;
@@ -143,10 +265,17 @@
         
         .bin-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 2px solid #e9ecef;
+        }
+        
+        .bin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: #3498db;
         }
         
         .bin-header {
@@ -157,16 +286,17 @@
         }
         
         .bin-qr {
-            font-weight: bold;
-            color: #667eea;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
         }
         
         .bin-status {
             padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: none;
         }
         
         .status-FULL {
@@ -185,14 +315,59 @@
         }
         
         .status-OVERDUE {
-            background-color: #f5c6cb;
+            background-color: #f8d7da;
             color: #721c24;
+        }
+
+        /* Modal Form Enhancements */
+        #qrCode:focus {
+            border-color: #3498db !important;
+            background: white !important;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1) !important;
+        }
+
+        #notes:focus {
+            border-color: #9b59b6 !important;
+            background: white !important;
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1) !important;
+        }
+
+        button[type="button"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3) !important;
+        }
+
+        .modal-content {
+            border-radius: 16px !important;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+        }
+
+        /* Bulk Request Button Hover Effects */
+        button[onclick="proceedToPayment()"]:hover {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%) !important;
+            border-color: #f48fb1 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3) !important;
         }
         
         .bin-location {
             color: #666;
-            margin-bottom: 1rem;
-            font-weight: 500;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .bin-location .material-icons {
+            font-size: 18px;
+            color: #e74c3c;
         }
         
         .bin-fill {
@@ -201,39 +376,556 @@
         
         .fill-bar {
             background-color: #e9ecef;
-            border-radius: 10px;
+            border-radius: 6px;
             height: 20px;
             overflow: hidden;
         }
         
         .fill-level {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             transition: width 0.3s ease;
         }
         
+        .fill-level-low {
+            background: #27ae60;
+        }
+        
+        .fill-level-medium {
+            background: #f39c12;
+        }
+        
+        .fill-level-high {
+            background: #e74c3c;
+        }
+        
         .bin-type {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
             color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
         }
         
         .btn-small {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
+        
+        .points-badge {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .points-icon {
+            font-size: 3rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .points-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .points-badge .label {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .points-badge .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .points-subtext {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            margin-top: 0.25rem;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .quick-actions {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .action-btn {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .action-btn .icon {
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .action-btn .material-icons {
+            font-size: 3rem;
+        }
+        
+        /* Specific colors for each action */
+        .action-scan .icon {
+            color: #3498db;
+        }
+        
+        .action-scan:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .action-scan:hover .icon {
+            color: white;
+        }
+        
+        .action-recycle .icon {
+            color: #27ae60;
+        }
+        
+        .action-recycle:hover {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .action-recycle:hover .icon {
+            color: white;
+        }
+        
+        .action-search .icon {
+            color: #f39c12;
+        }
+        
+        .action-search:hover {
+            background: #f39c12;
+            color: white;
+            border-color: #f39c12;
+        }
+        
+        .action-search:hover .icon {
+            color: white;
+        }
+        
+        .action-history .icon {
+            color: #9b59b6;
+        }
+        
+        .action-history:hover {
+            background: #9b59b6;
+            color: white;
+            border-color: #9b59b6;
+        }
+        
+        .action-history:hover .icon {
+            color: white;
+        }
+
+        .action-bulk {
+            background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
+            border-color: #f8bbd9;
+            color: #e91e63;
+        }
+
+        .action-bulk:hover {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border-color: #f48fb1;
+            color: #e91e63;
+            transform: translateY(-2px);
+        }
+
+        .action-bulk:hover .icon .material-icons {
+            color: #e91e63;
+        }
+
+        .action-bulk .icon .material-icons {
+            color: #e91e63;
+        }
+        
+        .btn {
+            background: #2c3e50;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #34495e;
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            background: #3498db;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 12px;
+            max-width: 600px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: #2c3e50;
+            padding: 2rem;
+            color: white;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .modal-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.8;
+        }
+        
+        .close:hover {
+            opacity: 1;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-group small {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .slider-container {
+            margin-top: 1rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 10px;
+            background: #e9ecef;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            background: #2980b9;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .fill-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 1rem;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .activity-section {
+            margin-top: 3rem;
+        }
+        
+        .activity-section h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title .material-icons {
+            color: #3498db;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #3498db;
+            transition: all 0.3s;
+        }
+        
+        .activity-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .activity-card .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .activity-card .activity-type {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .activity-card .activity-date {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .activity-card .activity-details {
+            color: #666;
+        }
+        
+        .points-earned {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .map-container {
+            height: 400px;
+            background: #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                max-width: 100% !important;
+            }
+            
+            .stats-grid {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .points-badge {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .points-icon {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-card-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .stat-card-value {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar-content">
-            <div class="logo">🗑️ SmartBin - Resident Portal</div>
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin - Resident Portal
+            </div>
             <div class="user-info">
                 <span th:text="${user.name}">User</span>
                 <a href="/logout" class="btn-logout">Logout</a>
@@ -243,62 +935,911 @@
 
     <div class="container">
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
         <div class="welcome-card">
             <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
             <p>Manage your waste collection and contribute to a cleaner environment.</p>
-        </div>
-
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="icon">🗑️</div>
-                <h3>View Bins</h3>
-                <p>Browse all waste bins and their current status.</p>
-                <a href="/resident/bins" class="btn">View Bins</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">🔍</div>
-                <h3>Find Nearby Bins</h3>
-                <p>Search for bins near your location.</p>
-                <a href="/resident/search-bins" class="btn">Search Bins</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">⚠️</div>
-                <h3>Bin Alerts</h3>
-                <p th:text="'Alerted bins: ' + ${alertedBins.size()}">Alerted bins: 0</p>
-                <a href="/resident/bins" class="btn">View Alerts</a>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="icon">📊</div>
-                <h3>Reports</h3>
-                <p>View waste management statistics and reports.</p>
-                <a href="/resident/reports" class="btn">View Reports</a>
-            </div>
-        </div>
-        
-        <div class="nearby-bins-section" th:if="${nearbyBins != null and !nearbyBins.empty}">
-            <h2>Nearby Bins</h2>
-            <div class="bins-grid">
-                <div class="bin-card" th:each="bin : ${nearbyBins}">
-                    <div class="bin-header">
-                        <span class="bin-qr" th:text="${bin.qrCode}">QR001</span>
-                        <span class="bin-status" th:class="'status-' + ${bin.status}" th:text="${bin.status}">FULL</span>
+            
+            <div class="stats-grid">
+                <div class="points-badge">
+                    <div class="points-icon">
+                        <span class="material-icons" style="font-size: 3rem;">recycling</span>
                     </div>
-                    <div class="bin-location" th:text="${bin.location}">Colombo Fort</div>
-                    <div class="bin-fill">
-                        <div class="fill-bar">
-                            <div class="fill-level" th:style="'width: ' + ${bin.fillLevel} + '%'" th:text="${bin.fillLevel} + '%'">95%</div>
+                    <div class="points-info">
+                        <span class="label">Your Recycling Points</span>
+                        <span class="value" th:text="${recyclingPoints}">0.0</span>
+                        <span class="points-subtext">Keep recycling to earn more!</span>
+                    </div>
+                </div>
+                
+                <div class="stats-cards">
+                    <a href="/resident/bins" class="stat-card stat-card-alerts">
+                        <div class="stat-card-icon">
+                            <span class="material-icons">warning</span>
                         </div>
-                    </div>
-                    <div class="bin-type" th:text="${bin.binType}">STANDARD</div>
-                    <a th:href="@{/resident/bin/{id}(id=${bin.id})}" class="btn btn-small">View Details</a>
+                        <div class="stat-card-content">
+                            <div class="stat-card-title">Bin Alerts</div>
+                            <div class="stat-card-value" th:text="'Alerted bins: ' + ${alertedBins.size()}">Alerted bins: 6</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/resident/my-recycling" class="stat-card stat-card-recycling">
+                        <div class="stat-card-icon">
+                            <span class="material-icons">recycling</span>
+                        </div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-title">Recent Recycling</div>
+                            <div class="stat-card-value" th:text="'Transactions: ' + ${recentTransactions.size()}">Transactions: 0</div>
+                        </div>
+                    </a>
+                    
+                    <a href="/resident/bins" class="stat-card stat-card-disposals">
+                        <div class="stat-card-icon">
+                            <span class="material-icons">delete</span>
+                        </div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-title">Waste Disposals</div>
+                            <div class="stat-card-value" th:text="'Recent disposals: ' + ${recentDisposals.size()}">Recent disposals: 0</div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
+        
+        <!-- Quick Actions Section -->
+        <div style="margin-top: 2rem;">
+            <h2 style="color: #2c3e50; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-icons" style="color: #3498db;">flash_on</span>
+                Quick Actions
+            </h2>
+            <div class="quick-actions">
+                <a href="#" class="action-btn action-scan" onclick="openScanBinModal(); return false;">
+                    <div class="icon">
+                        <span class="material-icons">qr_code_scanner</span>
+                    </div>
+                    Scan Bin QR Code
+                </a>
+                <a href="/resident/recycling-units" class="action-btn action-recycle">
+                    <div class="icon">
+                        <span class="material-icons">recycling</span>
+                    </div>
+                    Find Recycling Units
+                </a>
+                <a href="/resident/search-bins" class="action-btn action-search">
+                    <div class="icon">
+                        <span class="material-icons">location_on</span>
+                    </div>
+                    Search Nearby Bins
+                </a>
+                <a href="/resident/my-recycling" class="action-btn action-history">
+                    <div class="icon">
+                        <span class="material-icons">history</span>
+                    </div>
+                    My Recycling History
+                </a>
+                <a href="/resident/bulk-request" class="action-btn action-bulk">
+                    <div class="icon">
+                        <span class="material-icons">shopping_cart</span>
+                    </div>
+                    Bulk Collection Request
+                </a>
+            </div>
+        </div>
+
+        <!-- Total Bins Section -->
+        <div th:if="${nearbyBins != null and !nearbyBins.empty}" style="margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="color: #2c3e50; margin: 0; font-size: 1.3rem; font-weight: 600;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #3498db;">delete_outline</span>
+                    Nearby Bins
+                </h2>
+                <a href="/resident/search-bins" class="btn btn-primary" style="text-decoration: none; font-size: 0.9rem;">
+                    <span class="material-icons" style="font-size: 18px; vertical-align: middle;">search</span>
+                    Search More Bins
+                </a>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Section -->
+        <div class="activity-section" th:if="${!recentTransactions.empty || !recentDisposals.empty}">
+            <h2 style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-icons" style="color: #3498db;">timeline</span>
+                Recent Activity
+            </h2>
+            
+            <div th:if="${!recentTransactions.empty}">
+                <h3 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 600;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #27ae60;">recycling</span>
+                    Recent Recycling Transactions
+                </h3>
+                <div th:each="transaction : ${recentTransactions}" class="activity-card">
+                    <div class="activity-header">
+                        <span class="activity-type" th:text="'♻️ ' + ${transaction.itemType}">Recycling</span>
+                        <span class="activity-date" th:text="${#temporals.format(transaction.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                    </div>
+                    <div class="activity-details">
+                        <span th:text="'Weight: ' + ${transaction.weight} + ' kg'">Weight</span> | 
+                        <span th:text="'Value: LKR ' + ${transaction.priceValue}">Value</span>
+                    </div>
+                    <div class="points-earned" th:text="'+ ' + ${transaction.pointsEarned} + ' points'">Points</div>
+                </div>
+            </div>
+            
+            <div th:if="${!recentDisposals.empty}" style="margin-top: 2rem;">
+                <h3 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 600;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #e74c3c;">delete</span>
+                    Recent Waste Disposals
+                </h3>
+                <div th:each="disposal : ${recentDisposals}" class="activity-card">
+                    <div class="activity-header">
+                        <span class="activity-type" th:text="'🗑️ Bin: ' + ${disposal.bin.qrCode}">Disposal</span>
+                        <span class="activity-date" th:text="${#temporals.format(disposal.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                    </div>
+                    <div class="activity-details">
+                        <span th:text="'Fill Level: ' + ${disposal.reportedFillLevel} + '%'">Fill Level</span> | 
+                        <span th:text="'Status: ' + ${disposal.status}">Status</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${nearbyBins != null and !nearbyBins.empty}">
+            <div class="bins-grid">
+                <a th:href="@{/resident/bin/{id}(id=${bin.id})}" class="bin-card" th:each="bin : ${nearbyBins}" style="text-decoration: none; color: inherit;">
+                    <div class="bin-header">
+                        <span class="bin-qr" th:text="${bin.qrCode}">QR001</span>
+                        <span class="bin-status" th:class="'status-' + ${bin.status}">
+                            <span th:if="${bin.status == 'EMPTY'}">Empty</span>
+                            <span th:if="${bin.status == 'PARTIAL'}">Partial</span>
+                            <span th:if="${bin.status == 'FULL'}">Full</span>
+                            <span th:if="${bin.status == 'OVERDUE'}">Overdue</span>
+                        </span>
+                    </div>
+                    <div class="bin-location">
+                        <span class="material-icons">location_on</span>
+                        <span th:text="${bin.location}">Colombo Fort</span>
+                    </div>
+                    <div class="bin-type">
+                        <span th:if="${bin.binType == 'STANDARD'}">Standard</span>
+                        <span th:if="${bin.binType == 'RECYCLING'}">Recycling</span>
+                        <span th:if="${bin.binType == 'BULK'}">Bulk</span>
+                    </div>
+                    <div class="bin-fill">
+                        <div class="fill-bar">
+                            <div class="fill-level" 
+                                 th:classappend="${bin.fillLevel < 50 ? 'fill-level-low' : (bin.fillLevel < 80 ? 'fill-level-medium' : 'fill-level-high')}"
+                                 th:style="'width: ' + ${bin.fillLevel} + '%'" 
+                                 th:text="${bin.fillLevel} + '%'">95%</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
+    
+    <!-- Scan Bin QR Code Modal -->
+    <div id="scanBinModal" class="modal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                <span class="close" onclick="closeScanBinModal()" style="color: white; font-size: 1.8rem;">&times;</span>
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem; display: flex; justify-content: center; align-items: center;">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">smartphone</span>
+                    </div>
+                    <h2 style="margin: 0; font-size: 1.3rem; font-weight: 600;">Scan Bin QR Code</h2>
+                    <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Enter or scan the QR code to report bin status</p>
+                </div>
+            </div>
+            
+            <div class="modal-body" style="padding: 1.5rem; background: white;">
+                <form action="/resident/submit-disposal" method="post">
+                
+                <!-- QR Code Input Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">qr_code_scanner</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Bin QR Code</h3>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div style="flex: 1; position: relative;">
+                            <input type="text" id="qrCode" name="qrCode" required 
+                                   placeholder="Enter QR code (e.g., BIN001)" 
+                                   pattern="BIN\d{3,4}"
+                                   title="QR code must be in format: BIN followed by 3-4 digits"
+                                   style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; transition: all 0.3s; background: #f8f9fa;">
+                            <small style="color: #6c757d; margin-top: 0.25rem; display: block; font-size: 0.75rem;">Format: BIN + numbers (e.g., BIN001, BIN1234)</small>
+                        </div>
+                        <button type="button" onclick="startQRScanner()" 
+                                style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; white-space: nowrap; font-size: 0.9rem; height: fit-content; margin-top: 0;">
+                            <span class="material-icons" style="font-size: 1rem;">camera_alt</span>
+                            Scan
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- QR Scanner Video -->
+                <div id="qrScanner" style="display: none; margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 1.25rem; border-radius: 12px; border: 1px solid #dee2e6; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <span class="material-icons" style="color: white; font-size: 1.1rem;">camera_alt</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #2c3e50; font-size: 1rem;">QR Code Scanner</strong>
+                                    <p style="margin: 0; color: #6c757d; font-size: 0.8rem;">Point camera at QR code</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="stopQRScanner()" 
+                                    style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                                <span class="material-icons" style="font-size: 1rem;">close</span>
+                                Close
+                            </button>
+                        </div>
+                        <div id="qrVideo" style="width: 100%; max-width: 350px; margin: 0 auto; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.15);"></div>
+                        <div id="scanResult" style="margin-top: 1rem; padding: 0.75rem; background: white; border-radius: 8px; display: none; text-align: center; font-weight: 500; border: 2px solid #27ae60; color: #27ae60; font-size: 0.9rem;"></div>
+                    </div>
+                </div>
+                
+                <!-- Fill Level Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">straighten</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Fill Level</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <input type="range" id="fillLevel" name="fillLevel" 
+                               class="slider" min="0" max="100" value="50" 
+                               oninput="updateFillDisplay(this.value)"
+                               style="width: 100%; margin-bottom: 0.75rem;">
+                        <div class="fill-display" id="fillDisplayContainer" style="text-align: center; padding: 0.75rem; background: white; border-radius: 8px; border: 2px solid #e9ecef;">
+                            <span id="fillLevelDisplay" style="font-size: 2rem; font-weight: 700; color: #2c3e50;">50</span>
+                            <span style="font-size: 1.2rem; color: #6c757d; margin-left: 0.5rem;">%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notes Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">note</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Additional Notes</h3>
+                        <span style="background: #e9ecef; color: #6c757d; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem;">Optional</span>
+                    </div>
+                    
+                    <textarea id="notes" name="notes" rows="2" 
+                              placeholder="Any additional observations about the bin condition..."
+                              style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; resize: vertical; transition: all 0.3s; background: #f8f9fa; font-family: inherit;"></textarea>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" 
+                        style="width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-icons" style="font-size: 1.1rem;">check_circle</span>
+                    Submit Waste Disposal Report
+                </button>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bulk Request Modal -->
+    <div id="bulkRequestModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%); color: #e91e63; border-radius: 12px 12px 0 0; padding: 1.5rem; border: 2px solid #f8bbd9;">
+                <span class="close" onclick="closeBulkRequestModal()" style="color: #e91e63; font-size: 1.8rem;">&times;</span>
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem; display: flex; justify-content: center; align-items: center;">
+                        <span class="material-icons" style="color: #e91e63; font-size: 2.5rem;">shopping_cart</span>
+                    </div>
+                    <h2 style="margin: 0; font-size: 1.3rem; font-weight: 600;">Bulk Collection Request</h2>
+                    <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Request special collection for bulky waste items</p>
+                </div>
+            </div>
+            
+            <div class="modal-body" style="padding: 1.5rem; background: white;">
+                <form id="bulkRequestForm">
+                
+                <!-- Item Details Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">shopping_bag</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Item Details</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">Category *</label>
+                            <select id="itemCategory" name="category" required style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                                <option value="">Select item category</option>
+                                <option value="furniture">Furniture (Sofas, Tables, Chairs)</option>
+                                <option value="appliances">Appliances (TV, Refrigerator, Washing Machine)</option>
+                                <option value="electronics">Electronics (Computer, Printer, Mobile)</option>
+                                <option value="mattress">Mattress & Bedding</option>
+                                <option value="construction">Construction Waste</option>
+                                <option value="yard">Yard Waste (Branches, Leaves)</option>
+                                <option value="other">Other Large Items</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">Description *</label>
+                            <textarea id="itemDescription" name="description" required rows="3" 
+                                      placeholder="Describe your items in detail (size, weight, condition)..."
+                                      style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; resize: vertical; background: white; font-family: inherit;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pickup Address Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">location_on</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Pickup Address</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">Street Address *</label>
+                            <input type="text" id="streetAddress" name="streetAddress" required 
+                                   placeholder="Enter your street address"
+                                   style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">City *</label>
+                                <input type="text" id="city" name="city" required 
+                                       placeholder="City"
+                                       style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50;">ZIP Code *</label>
+                                <input type="text" id="zipCode" name="zipCode" required 
+                                       placeholder="ZIP"
+                                       style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; background: white;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pickup Location Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">place</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Pickup Location</h3>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="background: #e9ecef; height: 200px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 0.75rem;">
+                            <span class="material-icons" style="font-size: 3rem; color: #3498db;">place</span>
+                            <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9rem; text-align: center;">Tap to set exact pickup point</p>
+                            <button type="button" onclick="getCurrentLocation()" style="position: absolute; bottom: 0.5rem; right: 0.5rem; width: 40px; height: 40px; border-radius: 50%; background: #3498db; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-icons" style="font-size: 1.2rem;">my_location</span>
+                            </button>
+                        </div>
+                        <p style="margin: 0; color: #666; font-size: 0.8rem; display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="width: 6px; height: 6px; background: #3498db; border-radius: 50%;"></span>
+                            Drag the pin to mark the exact pickup location
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Upload Photos Section -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-icons" style="color: white; font-size: 1rem;">photo_camera</span>
+                        </div>
+                        <h3 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Upload Photos</h3>
+                        <span style="background: #e9ecef; color: #6c757d; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem;">Optional</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                            <button type="button" onclick="capturePhoto()" style="border: 2px dashed #3498db; background: white; border-radius: 8px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s;">
+                                <span class="material-icons" style="font-size: 2rem; color: #3498db;">photo_camera</span>
+                                <span style="color: #3498db; font-weight: 500;">Camera</span>
+                            </button>
+                            <button type="button" onclick="selectFromGallery()" style="border: 2px dashed #3498db; background: white; border-radius: 8px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s;">
+                                <span class="material-icons" style="font-size: 2rem; color: #3498db;">photo_library</span>
+                                <span style="color: #3498db; font-weight: 500;">Gallery</span>
+                            </button>
+                        </div>
+                        
+                        <div id="photoPreview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                            <!-- Photo previews will be added here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fee Estimation -->
+                <div class="form-section" style="margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                            <span class="material-icons" style="color: #27ae60; font-size: 1.2rem;">calculate</span>
+                            <h4 style="margin: 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Estimated Fee</h4>
+                        </div>
+                        <div id="feeEstimate" style="text-align: center; padding: 0.75rem; background: white; border-radius: 8px; border: 2px solid #27ae60;">
+                            <span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹0.00</span>
+                            <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Select category to see estimated cost</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="button" onclick="proceedToPayment()" 
+                        style="width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%); color: #e91e63; border: 2px solid #f8bbd9; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-icons" style="font-size: 1.1rem;">payment</span>
+                    Submit Request
+                </button>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                <span class="close" onclick="closePaymentModal()" style="color: white; font-size: 1.8rem;">&times;</span>
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem; display: flex; justify-content: center; align-items: center;">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">payment</span>
+                    </div>
+                    <h2 style="margin: 0; font-size: 1.3rem; font-weight: 600;">Payment</h2>
+                    <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Complete your bulk collection request</p>
+                </div>
+            </div>
+            
+            <div class="modal-body" style="padding: 1.5rem; background: white;">
+                <!-- Amount to Pay -->
+                <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 2px solid #e9ecef; margin-bottom: 1.5rem; text-align: center;">
+                    <h3 style="margin: 0 0 0.5rem 0; color: #2c3e50; font-size: 1rem; font-weight: 500;">Amount to Pay</h3>
+                    <div style="font-size: 2.5rem; font-weight: 700; color: #27ae60; margin-bottom: 0.25rem;" id="totalAmount">₹125.00</div>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Collection Fee</p>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0 0 1rem 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Select Payment Method</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="card" style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #3498db;">credit_card</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">Credit/Debit Card</div>
+                                <div style="font-size: 0.8rem; color: #666;">Visa, Mastercard, RuPay</div>
+                            </div>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="wallet" style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #3498db;">account_balance_wallet</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">Digital Wallet</div>
+                                <div style="font-size: 0.8rem; color: #666;">Paytm, PhonePe, Google Pay</div>
+                            </div>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #27ae60; border-radius: 8px; cursor: pointer; transition: all 0.3s; background: #f8fff9;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="upi" checked style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #27ae60;">smartphone</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">UPI</div>
+                                <div style="font-size: 0.8rem; color: #666;">Pay using UPI ID</div>
+                            </div>
+                        </label>
+                        
+                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="payment-method">
+                            <input type="radio" name="paymentMethod" value="netbanking" style="margin: 0;">
+                            <span class="material-icons" style="font-size: 1.5rem; color: #3498db;">account_balance</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #2c3e50;">Net Banking</div>
+                                <div style="font-size: 0.8rem; color: #666;">All major banks</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Security Message -->
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-icons" style="font-size: 1.2rem; color: #27ae60;">security</span>
+                        <p style="margin: 0; color: #666; font-size: 0.8rem;">Your payment is secured with 256-bit SSL encryption. We don't store your payment details.</p>
+                    </div>
+                </div>
+                
+                <!-- Payment Summary -->
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 1rem 0; color: #2c3e50; font-size: 1rem; font-weight: 600;">Payment Summary</h4>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Service Fee:</span>
+                        <span id="serviceFee">₹100.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #666;">Processing Fee:</span>
+                        <span id="processingFee">₹20.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                        <span style="color: #666;">Tax (GST):</span>
+                        <span id="taxAmount">₹5.00</span>
+                    </div>
+                    <hr style="border: none; border-top: 1px solid #dee2e6; margin: 0.75rem 0;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: #2c3e50;">
+                        <span>Total Amount:</span>
+                        <span id="paymentTotal">₹125.00</span>
+                    </div>
+                </div>
+                
+                <!-- Pay Button -->
+                <button type="button" onclick="processPayment()" 
+                        style="width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span class="material-icons" style="font-size: 1.1rem;">lock</span>
+                    Pay ₹125.00
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- QR Code Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <script>
+        let html5QrCode = null;
+        
+        function openScanBinModal() {
+            document.getElementById('scanBinModal').style.display = 'block';
+        }
+        
+        function closeScanBinModal() {
+            document.getElementById('scanBinModal').style.display = 'none';
+            stopQRScanner();
+            // Clear input
+            document.getElementById('qrCode').value = '';
+        }
+        
+        function updateFillDisplay(value) {
+            const display = document.getElementById('fillLevelDisplay');
+            const container = document.getElementById('fillDisplayContainer');
+            
+            display.textContent = value;
+            
+            // Update colors based on fill level
+            if (value < 30) {
+                // Low fill - Green
+                container.style.borderColor = '#27ae60';
+                container.style.backgroundColor = '#d4edda';
+                display.style.color = '#27ae60';
+            } else if (value < 70) {
+                // Medium fill - Orange
+                container.style.borderColor = '#f39c12';
+                container.style.backgroundColor = '#fff3cd';
+                display.style.color = '#f39c12';
+            } else {
+                // High fill - Red
+                container.style.borderColor = '#e74c3c';
+                container.style.backgroundColor = '#f8d7da';
+                display.style.color = '#e74c3c';
+            }
+        }
+        
+        function startQRScanner() {
+            const scannerDiv = document.getElementById('qrScanner');
+            const scanResult = document.getElementById('scanResult');
+            
+            scannerDiv.style.display = 'block';
+            scanResult.style.display = 'none';
+            
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qrVideo");
+            }
+            
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText, decodedResult) => {
+                    // Success callback
+                    document.getElementById('qrCode').value = decodedText;
+                    scanResult.innerHTML = `<span style="color: #27ae60;">✓ Scanned: ${decodedText}</span>`;
+                    scanResult.style.display = 'block';
+                    
+                    // Auto-close scanner after 2 seconds
+                    setTimeout(() => {
+                        stopQRScanner();
+                    }, 2000);
+                },
+                (errorMessage) => {
+                    // Error callback - ignore continuous scanning errors
+                }
+            ).catch((err) => {
+                scanResult.innerHTML = `<span style="color: #e74c3c;">Error: ${err}</span>`;
+                scanResult.style.display = 'block';
+                console.error("Unable to start scanner:", err);
+            });
+        }
+        
+        function stopQRScanner() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('qrScanner').style.display = 'none';
+                }).catch((err) => {
+                    console.error("Error stopping scanner:", err);
+                });
+            } else {
+                document.getElementById('qrScanner').style.display = 'none';
+            }
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('scanBinModal');
+            if (event.target == modal) {
+                closeScanBinModal();
+            }
+        }
+        
+        // Initialize fill level display color on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFillDisplay(50); // Initialize with default value
+            
+            // Initialize bulk request form
+            initializeBulkRequest();
+        });
+
+        // Bulk Request System
+        const bulkRequestData = {
+            categories: {
+                furniture: { basePrice: 150, name: 'Furniture' },
+                appliances: { basePrice: 200, name: 'Appliances' },
+                electronics: { basePrice: 100, name: 'Electronics' },
+                mattress: { basePrice: 120, name: 'Mattress' },
+                construction: { basePrice: 300, name: 'Construction Waste' },
+                yard: { basePrice: 80, name: 'Yard Waste' },
+                other: { basePrice: 100, name: 'Other Large Items' }
+            },
+            processingFee: 20,
+            taxRate: 0.05 // 5% GST
+        };
+
+        function initializeBulkRequest() {
+            // Add event listeners
+            document.getElementById('itemCategory').addEventListener('change', updateFeeEstimate);
+            
+            // Initialize with mock address data
+            document.getElementById('streetAddress').value = '456 University Ave';
+            document.getElementById('city').value = 'College Town';
+            document.getElementById('zipCode').value = '12345';
+        }
+
+        function openBulkRequestModal() {
+            document.getElementById('bulkRequestModal').style.display = 'block';
+        }
+
+        function closeBulkRequestModal() {
+            document.getElementById('bulkRequestModal').style.display = 'none';
+            // Reset form
+            document.getElementById('bulkRequestForm').reset();
+            document.getElementById('feeEstimate').innerHTML = '<span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹0.00</span><p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Select category to see estimated cost</p>';
+            document.getElementById('photoPreview').innerHTML = '';
+        }
+
+        function updateFeeEstimate() {
+            const category = document.getElementById('itemCategory').value;
+            const feeEstimate = document.getElementById('feeEstimate');
+            
+            if (category && bulkRequestData.categories[category]) {
+                const basePrice = bulkRequestData.categories[category].basePrice;
+                const processingFee = bulkRequestData.processingFee;
+                const tax = (basePrice + processingFee) * bulkRequestData.taxRate;
+                const total = basePrice + processingFee + tax;
+                
+                feeEstimate.innerHTML = `
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹${total.toFixed(2)}</span>
+                    <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Base: ₹${basePrice} + Processing: ₹${processingFee} + Tax: ₹${tax.toFixed(2)}</p>
+                `;
+            } else {
+                feeEstimate.innerHTML = '<span style="font-size: 1.5rem; font-weight: 700; color: #27ae60;">₹0.00</span><p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.8rem;">Select category to see estimated cost</p>';
+            }
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        alert(`Location captured!\nLatitude: ${position.coords.latitude.toFixed(6)}\nLongitude: ${position.coords.longitude.toFixed(6)}`);
+                    },
+                    function(error) {
+                        alert('Unable to get current location. Please set location manually.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function capturePhoto() {
+            alert('Camera feature would open here. In a real implementation, this would access the device camera.');
+            // Mock photo addition
+            addPhotoPreview('camera');
+        }
+
+        function selectFromGallery() {
+            alert('Gallery feature would open here. In a real implementation, this would access the device gallery.');
+            // Mock photo addition
+            addPhotoPreview('gallery');
+        }
+
+        function addPhotoPreview(source) {
+            const photoPreview = document.getElementById('photoPreview');
+            const photoCount = photoPreview.children.length;
+            
+            if (photoCount < 3) {
+                const photoDiv = document.createElement('div');
+                photoDiv.style.cssText = 'background: #e9ecef; border-radius: 8px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;';
+                photoDiv.innerHTML = `
+                    <span class="material-icons" style="font-size: 2rem; color: #666;">photo</span>
+                    <span style="font-size: 0.7rem; color: #666; margin-top: 0.25rem;">Photo ${photoCount + 1}</span>
+                    <button onclick="removePhoto(this)" style="position: absolute; top: 0.25rem; right: 0.25rem; width: 20px; height: 20px; border-radius: 50%; background: #e74c3c; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">×</button>
+                `;
+                photoPreview.appendChild(photoDiv);
+            } else {
+                alert('Maximum 3 photos allowed.');
+            }
+        }
+
+        function removePhoto(button) {
+            button.parentElement.remove();
+        }
+
+        function proceedToPayment() {
+            // Validate form
+            const category = document.getElementById('itemCategory').value;
+            const description = document.getElementById('itemDescription').value;
+            const streetAddress = document.getElementById('streetAddress').value;
+            const city = document.getElementById('city').value;
+            const zipCode = document.getElementById('zipCode').value;
+            
+            if (!category || !description || !streetAddress || !city || !zipCode) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Calculate final fee
+            const basePrice = bulkRequestData.categories[category].basePrice;
+            const processingFee = bulkRequestData.processingFee;
+            const tax = (basePrice + processingFee) * bulkRequestData.taxRate;
+            const total = basePrice + processingFee + tax;
+            
+            // Update payment modal with calculated amounts
+            document.getElementById('totalAmount').textContent = `₹${total.toFixed(2)}`;
+            document.getElementById('serviceFee').textContent = `₹${basePrice.toFixed(2)}`;
+            document.getElementById('processingFee').textContent = `₹${processingFee.toFixed(2)}`;
+            document.getElementById('taxAmount').textContent = `₹${tax.toFixed(2)}`;
+            document.getElementById('paymentTotal').textContent = `₹${total.toFixed(2)}`;
+            
+            // Update pay button
+            const payButton = document.querySelector('#paymentModal button[onclick="processPayment()"]');
+            payButton.innerHTML = `<span class="material-icons" style="font-size: 1.1rem;">lock</span>Pay ₹${total.toFixed(2)}`;
+            
+            // Close bulk request modal and open payment modal
+            closeBulkRequestModal();
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function processPayment() {
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            
+            // Show loading state
+            const payButton = document.querySelector('#paymentModal button[onclick="processPayment()"]');
+            const originalText = payButton.innerHTML;
+            payButton.innerHTML = '<span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span>Processing...';
+            payButton.disabled = true;
+            
+            // Mock payment processing
+            setTimeout(() => {
+                // Simulate payment success (90% success rate)
+                if (Math.random() > 0.1) {
+                    // Payment successful
+                    alert('Payment successful! Your bulk collection request has been submitted.\n\nRequest ID: BULK-' + Math.random().toString(36).substr(2, 9).toUpperCase() + '\n\nA collector will be assigned and you will receive a confirmation SMS.');
+                    closePaymentModal();
+                    
+                    // In a real implementation, this would:
+                    // 1. Save the request to database
+                    // 2. Notify the authority
+                    // 3. Send confirmation to user
+                    // 4. Update user's request history
+                } else {
+                    // Payment failed
+                    alert('Payment failed. Please try again or use a different payment method.');
+                    payButton.innerHTML = originalText;
+                    payButton.disabled = false;
+                }
+            }, 2000);
+        }
+
+        // Payment method selection styling
+        document.addEventListener('change', function(e) {
+            if (e.target.name === 'paymentMethod') {
+                // Remove previous selection styling
+                document.querySelectorAll('.payment-method').forEach(method => {
+                    method.style.borderColor = '#e9ecef';
+                    method.style.backgroundColor = 'white';
+                });
+                
+                // Add selection styling to chosen method
+                const selectedMethod = e.target.closest('.payment-method');
+                selectedMethod.style.borderColor = '#27ae60';
+                selectedMethod.style.backgroundColor = '#f8fff9';
+            }
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const bulkModal = document.getElementById('bulkRequestModal');
+            const paymentModal = document.getElementById('paymentModal');
+            const scanModal = document.getElementById('scanBinModal');
+            
+            if (event.target == bulkModal) {
+                closeBulkRequestModal();
+            }
+            if (event.target == paymentModal) {
+                closePaymentModal();
+            }
+            if (event.target == scanModal) {
+                closeScanBinModal();
+            }
+        }
+
+        // Add spin animation for loading states
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Auto-close alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            });
+        }, 5000);
+    </script>
 </body>
 </html>
+
+
 

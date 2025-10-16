@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Collection Request - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .header .material-icons {
+            font-size: 3rem;
+            color: #e91e63;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        .nav-breadcrumb {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .nav-breadcrumb a:hover {
+            color: #2980b9;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e91e63 0%, #f48fb1 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-icon .material-icons {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #e91e63;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Map Section */
+        .map-container {
+            height: 350px;
+            border-radius: 12px;
+            position: relative;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border: 2px solid #e9ecef;
+        }
+
+        #pickupMap {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        .location-btn {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e91e63;
+            color: #e91e63;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .location-btn:hover {
+            background: #e91e63;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Photo Upload */
+        .photo-upload {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-btn {
+            border: 2px dashed #e91e63;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #fce4ec;
+            border-color: #f48fb1;
+        }
+
+        .upload-btn .material-icons {
+            font-size: 2.5rem;
+            color: #e91e63;
+        }
+
+        .photo-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            background: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e74c3c;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Fee Estimation */
+        .fee-estimate {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e91e63;
+            text-align: center;
+        }
+
+        .fee-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e91e63;
+            margin-bottom: 0.5rem;
+        }
+
+        .fee-breakdown {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
+            color: #e91e63;
+            border: 2px solid #f8bbd9;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border-color: #f48fb1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-upload {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #e91e63;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <span class="material-icons">shopping_cart</span>
+                Bulk Collection Request
+            </h1>
+            <p>Request special collection for bulky waste items</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-breadcrumb">
+            <a href="/resident/dashboard">
+                <span class="material-icons">home</span>
+                Dashboard
+            </a>
+            <span style="margin: 0 0.5rem; color: #999;">/</span>
+            <span style="color: #666;">Bulk Collection Request</span>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form id="bulkRequestForm" th:action="@{/resident/bulk-request}" th:object="${bulkRequest}" method="post">
+                
+                <!-- Item Details Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <span class="material-icons">shopping_bag</span>
+                        </div>
+                        <h3 class="section-title">Item Details</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" name="category" th:field="*{category}" required>
+                            <option value="">Select item category</option>
+                            <option value="FURNITURE">Furniture (Sofas, Tables, Chairs)</option>
+                            <option value="APPLIANCES">Appliances (TV, Refrigerator, Washing Machine)</option>
+                            <option value="ELECTRONICS">Electronics (Computer, Printer, Mobile)</option>
+                            <option value="MATTRESS">Mattress & Bedding</option>
+                            <option value="CONSTRUCTION">Construction Waste</option>
+                            <option value="YARD">Yard Waste (Branches, Leaves)</option>
+                            <option value="OTHER">Other Large Items</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description *</label>
+                        <textarea id="description" name="description" th:field="*{description}" rows="4" 
+                                  placeholder="Describe your items in detail (size, weight, condition)..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Pickup Address Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <span class="material-icons">location_on</span>
+                        </div>
+                        <h3 class="section-title">Pickup Address</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="streetAddress">Street Address *</label>
+                        <input type="text" id="streetAddress" name="streetAddress" th:field="*{streetAddress}" 
+                               placeholder="Enter your street address" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" th:field="*{city}" 
+                                   placeholder="City" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="zipCode">ZIP Code *</label>
+                            <input type="text" id="zipCode" name="zipCode" th:field="*{zipCode}" 
+                                   placeholder="ZIP" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pickup Location Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <span class="material-icons">place</span>
+                        </div>
+                        <h3 class="section-title">Pickup Location</h3>
+                    </div>
+                    
+                    <div class="map-container">
+                        <div id="pickupMap"></div>
+                        <button type="button" class="location-btn" onclick="getCurrentLocation()" title="Use My Location">
+                            <span class="material-icons">my_location</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="latitude" name="latitude" th:field="*{latitude}">
+                    <input type="hidden" id="longitude" name="longitude" th:field="*{longitude}">
+                    <p style="color: #666; font-size: 0.9rem; display: flex; align-items: center; gap: 0.25rem;">
+                        <span style="width: 6px; height: 6px; background: #e91e63; border-radius: 50%;"></span>
+                        Drag the pin to mark the exact pickup location
+                    </p>
+                </div>
+
+                <!-- Upload Photos Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <span class="material-icons">photo_camera</span>
+                        </div>
+                        <h3 class="section-title">Upload Photos</h3>
+                        <span style="background: #e9ecef; color: #6c757d; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">Optional</span>
+                    </div>
+                    
+                    <div class="photo-upload">
+                        <button type="button" class="upload-btn" onclick="capturePhoto()">
+                            <span class="material-icons">photo_camera</span>
+                            <span style="color: #e91e63; font-weight: 500;">Camera</span>
+                        </button>
+                        <button type="button" class="upload-btn" onclick="selectFromGallery()">
+                            <span class="material-icons">photo_library</span>
+                            <span style="color: #e91e63; font-weight: 500;">Gallery</span>
+                        </button>
+                    </div>
+                    
+                    <div id="photoPreview" class="photo-preview">
+                        <!-- Photo previews will be added here -->
+                    </div>
+                </div>
+
+                <!-- Fee Estimation -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <span class="material-icons">calculate</span>
+                        </div>
+                        <h3 class="section-title">Estimated Fee</h3>
+                    </div>
+                    
+                    <div class="fee-estimate">
+                        <div id="feeAmount" class="fee-amount">₹0.00</div>
+                        <div id="feeBreakdown" class="fee-breakdown">Select category to see estimated cost</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="/resident/dashboard" class="btn btn-secondary">
+                        <span class="material-icons">arrow_back</span>
+                        Back to Dashboard
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="material-icons">payment</span>
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Fee calculation data (in LKR)
+        const feeData = {
+            categories: {
+                FURNITURE: { basePrice: 3500, name: 'Furniture' },
+                APPLIANCES: { basePrice: 5000, name: 'Appliances' },
+                ELECTRONICS: { basePrice: 2500, name: 'Electronics' },
+                MATTRESS: { basePrice: 3000, name: 'Mattress' },
+                CONSTRUCTION: { basePrice: 4500, name: 'Construction Waste' },
+                YARD: { basePrice: 1500, name: 'Yard Waste' },
+                OTHER: { basePrice: 2000, name: 'Other Large Items' }
+            },
+            processingFee: 500,
+            taxRate: 0.05 // 5% GST
+        };
+
+        // Map variables
+        let pickupMap;
+        let pickupMarker;
+        let defaultLocation = [6.9271, 79.8612]; // Colombo, Sri Lanka
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map
+            initializeMap();
+            
+            // Add event listeners
+            document.getElementById('category').addEventListener('change', updateFeeEstimate);
+            
+            // Pre-fill address if available
+            prefillAddress();
+        });
+
+        function initializeMap() {
+            // Initialize the map
+            pickupMap = L.map('pickupMap').setView(defaultLocation, 13);
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(pickupMap);
+            
+            // Custom pink marker icon
+            const pinkIcon = L.icon({
+                iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNSIgaGVpZ2h0PSI0MSIgdmlld0JveD0iMCAwIDI1IDQxIj48cGF0aCBmaWxsPSIjZTkxZTYzIiBkPSJNMTIuNSAwQzUuNiAwIDAgNS42IDAgMTIuNWMwIDEuNCAwLjIgMi43IDAuNyAzLjlsMTEuOCAyNC42IDExLjgtMjQuNmMwLjQtMS4yIDAuNy0yLjUgMC43LTMuOUMyNSA1LjYgMTkuNCAwIDEyLjUgMHptMCAxNy41Yy0yLjggMC01LTIuMi01LTVzMi4yLTUgNS01IDUgMi4yIDUgNS0yLjIgNS01IDV6Ii8+PC9zdmc+',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34]
+            });
+            
+            // Add draggable marker
+            pickupMarker = L.marker(defaultLocation, {
+                draggable: true,
+                icon: pinkIcon
+            }).addTo(pickupMap);
+            
+            pickupMarker.bindPopup('<b>Pickup Location</b><br>Drag to set exact location').openPopup();
+            
+            // Update coordinates when marker is dragged
+            pickupMarker.on('dragend', function(e) {
+                const position = e.target.getLatLng();
+                updateLocationFields(position.lat, position.lng);
+                pickupMarker.setPopupContent('<b>Pickup Location</b><br>Lat: ' + position.lat.toFixed(6) + '<br>Lng: ' + position.lng.toFixed(6)).openPopup();
+            });
+            
+            // Click on map to move marker
+            pickupMap.on('click', function(e) {
+                pickupMarker.setLatLng(e.latlng);
+                updateLocationFields(e.latlng.lat, e.latlng.lng);
+                pickupMarker.setPopupContent('<b>Pickup Location</b><br>Lat: ' + e.latlng.lat.toFixed(6) + '<br>Lng: ' + e.latlng.lng.toFixed(6)).openPopup();
+            });
+            
+            // Set initial coordinates
+            updateLocationFields(defaultLocation[0], defaultLocation[1]);
+        }
+
+        function updateLocationFields(lat, lng) {
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
+        }
+
+        function prefillAddress() {
+            // Mock address data - in real app, this would come from user profile
+            document.getElementById('streetAddress').value = '456 University Ave';
+            document.getElementById('city').value = 'College Town';
+            document.getElementById('zipCode').value = '12345';
+        }
+
+        function updateFeeEstimate() {
+            const category = document.getElementById('category').value;
+            const feeAmount = document.getElementById('feeAmount');
+            const feeBreakdown = document.getElementById('feeBreakdown');
+            
+            if (category && feeData.categories[category]) {
+                const basePrice = feeData.categories[category].basePrice;
+                const processingFee = feeData.processingFee;
+                const tax = (basePrice + processingFee) * feeData.taxRate;
+                const total = basePrice + processingFee + tax;
+                
+                feeAmount.textContent = `LKR ${formatCurrency(total)}`;
+                feeBreakdown.textContent = `Base: LKR ${formatCurrency(basePrice)} + Processing: LKR ${formatCurrency(processingFee)} + Tax (5%): LKR ${formatCurrency(tax)}`;
+            } else {
+                feeAmount.textContent = 'LKR 0.00';
+                feeBreakdown.textContent = 'Select category to see estimated cost';
+            }
+        }
+
+        function formatCurrency(amount) {
+            return amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                const btn = document.querySelector('.location-btn');
+                btn.innerHTML = '<div class="spinner"></div>';
+                btn.disabled = true;
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // Update map
+                        pickupMap.setView([lat, lng], 15);
+                        pickupMarker.setLatLng([lat, lng]);
+                        pickupMarker.setPopupContent('<b>Your Current Location</b><br>Lat: ' + lat.toFixed(6) + '<br>Lng: ' + lng.toFixed(6)).openPopup();
+                        
+                        // Update form fields
+                        updateLocationFields(lat, lng);
+                        
+                        // Reset button
+                        btn.innerHTML = '<span class="material-icons">my_location</span>';
+                        btn.disabled = false;
+                    },
+                    function(error) {
+                        alert('Unable to get current location. Please set location manually by clicking on the map.');
+                        btn.innerHTML = '<span class="material-icons">my_location</span>';
+                        btn.disabled = false;
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function capturePhoto() {
+            alert('Camera feature would open here. In a real implementation, this would access the device camera.');
+            addPhotoPreview('camera');
+        }
+
+        function selectFromGallery() {
+            alert('Gallery feature would open here. In a real implementation, this would access the device gallery.');
+            addPhotoPreview('gallery');
+        }
+
+        function addPhotoPreview(source) {
+            const photoPreview = document.getElementById('photoPreview');
+            const photoCount = photoPreview.children.length;
+            
+            if (photoCount < 3) {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-item';
+                photoDiv.innerHTML = `
+                    <span class="material-icons" style="font-size: 2rem; color: #666;">photo</span>
+                    <span style="font-size: 0.8rem; color: #666; margin-top: 0.25rem;">Photo ${photoCount + 1}</span>
+                    <button class="remove-photo" onclick="removePhoto(this)">×</button>
+                `;
+                photoPreview.appendChild(photoDiv);
+            } else {
+                alert('Maximum 3 photos allowed.');
+            }
+        }
+
+        function removePhoto(button) {
+            button.parentElement.remove();
+        }
+
+        // Form submission with loading state
+        const form = document.getElementById('bulkRequestForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Add form submit handler for debugging
+        form.addEventListener('submit', function(e) {
+            console.log('Form submit event triggered');
+            console.log('Form action:', form.action);
+            console.log('Form method:', form.method);
+            
+            // Log form data
+            const formData = new FormData(form);
+            console.log('Form data:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+        });
+        
+        submitBtn.addEventListener('click', function(e) {
+            console.log('Submit button clicked');
+            
+            // Validate required fields manually
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            const streetAddress = document.getElementById('streetAddress').value;
+            const city = document.getElementById('city').value;
+            const zipCode = document.getElementById('zipCode').value;
+            
+            if (!category) {
+                alert('Please select a category');
+                e.preventDefault();
+                return false;
+            }
+            if (!description) {
+                alert('Please enter a description');
+                e.preventDefault();
+                return false;
+            }
+            if (!streetAddress) {
+                alert('Please enter street address');
+                e.preventDefault();
+                return false;
+            }
+            if (!city) {
+                alert('Please enter city');
+                e.preventDefault();
+                return false;
+            }
+            if (!zipCode) {
+                alert('Please enter ZIP code');
+                e.preventDefault();
+                return false;
+            }
+            
+            console.log('All validations passed, form will submit...');
+            
+            // Show loading state
+            submitBtn.innerHTML = '<div class="spinner"></div> Processing...';
+            submitBtn.disabled = true;
+            
+            // Form will submit naturally
+        });
+    </script>
+</body>
+</html>
