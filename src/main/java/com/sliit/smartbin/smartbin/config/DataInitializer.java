@@ -6,6 +6,7 @@ import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.RouteBin;
 import com.sliit.smartbin.smartbin.model.User;
 import com.sliit.smartbin.smartbin.repository.BinRepository;
+import com.sliit.smartbin.smartbin.repository.BulkRequestRepository;
 import com.sliit.smartbin.smartbin.repository.CollectionRepository;
 import com.sliit.smartbin.smartbin.repository.RecyclingTransactionRepository;
 import com.sliit.smartbin.smartbin.repository.RouteBinRepository;
@@ -32,6 +33,7 @@ public class DataInitializer implements CommandLineRunner {
     private final RecyclingTransactionRepository recyclingTransactionRepository;
     private final WasteDisposalRepository wasteDisposalRepository;
     private final BinAssignmentRepository binAssignmentRepository;
+    private final BulkRequestRepository bulkRequestRepository;
 
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -43,7 +45,8 @@ public class DataInitializer implements CommandLineRunner {
                            RouteBinRepository routeBinRepository,
                            RecyclingTransactionRepository recyclingTransactionRepository,
                            WasteDisposalRepository wasteDisposalRepository,
-                           BinAssignmentRepository binAssignmentRepository) {
+                           BinAssignmentRepository binAssignmentRepository,
+                           BulkRequestRepository bulkRequestRepository) {
 
         this.userRepository = userRepository;
         this.binRepository = binRepository;
@@ -53,6 +56,7 @@ public class DataInitializer implements CommandLineRunner {
         this.recyclingTransactionRepository = recyclingTransactionRepository;
         this.wasteDisposalRepository = wasteDisposalRepository;
         this.binAssignmentRepository = binAssignmentRepository;
+        this.bulkRequestRepository = bulkRequestRepository;
     }
 
     @Override
@@ -69,6 +73,9 @@ public class DataInitializer implements CommandLineRunner {
         // Delete new waste management tables
         wasteDisposalRepository.deleteAll();
         recyclingTransactionRepository.deleteAll();
+        
+        // Delete bulk requests before users (FK constraint)
+        bulkRequestRepository.deleteAll();
         
         binRepository.deleteAll();
         userRepository.deleteAll();

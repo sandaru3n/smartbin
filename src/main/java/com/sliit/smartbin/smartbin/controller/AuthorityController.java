@@ -1,9 +1,12 @@
 package com.sliit.smartbin.smartbin.controller;
 
 import com.sliit.smartbin.smartbin.dto.ReportDTO;
+import com.sliit.smartbin.smartbin.dto.BulkRequestDTO;
 import com.sliit.smartbin.smartbin.model.Bin;
 import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.User;
+import com.sliit.smartbin.smartbin.model.BulkRequestStatus;
+import com.sliit.smartbin.smartbin.model.PaymentStatus;
 import com.sliit.smartbin.smartbin.service.BinService;
 import com.sliit.smartbin.smartbin.service.ReportService;
 import com.sliit.smartbin.smartbin.service.RouteService;
@@ -11,6 +14,7 @@ import com.sliit.smartbin.smartbin.service.UserService;
 import com.sliit.smartbin.smartbin.service.NotificationService;
 import com.sliit.smartbin.smartbin.service.BinAssignmentService;
 import com.sliit.smartbin.smartbin.service.CollectionService;
+import com.sliit.smartbin.smartbin.service.BulkRequestService;
 import com.sliit.smartbin.smartbin.model.BinAssignment;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -40,6 +44,7 @@ public class AuthorityController {
     private final NotificationService notificationService;
     private final BinAssignmentService binAssignmentService;
     private final CollectionService collectionService;
+    private final BulkRequestService bulkRequestService;
 
     public AuthorityController(BinService binService,
                                RouteService routeService,
@@ -47,7 +52,8 @@ public class AuthorityController {
                                UserService userService,
                                NotificationService notificationService,
                                BinAssignmentService binAssignmentService,
-                               CollectionService collectionService) {
+                               CollectionService collectionService,
+                               BulkRequestService bulkRequestService) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
@@ -55,6 +61,7 @@ public class AuthorityController {
         this.notificationService = notificationService;
         this.binAssignmentService = binAssignmentService;
         this.collectionService = collectionService;
+        this.bulkRequestService = bulkRequestService;
     }
 
     @GetMapping("/dashboard")
@@ -89,6 +96,20 @@ public class AuthorityController {
         // Get available collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
         model.addAttribute("collectors", collectors);
+        
+        // Get bulk requests statistics
+        long pendingBulkRequests = bulkRequestService.getRequestCountByPaymentStatus(PaymentStatus.PENDING);
+        long paidBulkRequests = bulkRequestService.getRequestCountByStatus(BulkRequestStatus.PAYMENT_COMPLETED);
+        long scheduledBulkRequests = bulkRequestService.getRequestCountByStatus(BulkRequestStatus.SCHEDULED);
+        
+        model.addAttribute("pendingBulkRequests", pendingBulkRequests);
+        model.addAttribute("paidBulkRequests", paidBulkRequests);
+        model.addAttribute("scheduledBulkRequests", scheduledBulkRequests);
+        
+        // Get recent bulk requests (last 5)
+        List<BulkRequestDTO> recentBulkRequests = bulkRequestService.getRecentRequests(7);
+        model.addAttribute("recentBulkRequests", 
+            recentBulkRequests.size() > 5 ? recentBulkRequests.subList(0, 5) : recentBulkRequests);
         
         return "authority/dashboard";
     }
@@ -998,6 +1019,188 @@ public class AuthorityController {
             response.put("message", "Failed to clear assignments: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+    
+    // ======================== Bulk Request Management Endpoints ========================
+    
+    /**
+     * View all bulk requests
+     */
+    @GetMapping("/bulk-requests")
+    public String manageBulkRequests(HttpSession session, Model model,
+                                    @RequestParam(required = false) String status) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        List<BulkRequestDTO> bulkRequests;
+        
+        if (status != null && !status.isEmpty()) {
+            try {
+                BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+                bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            } catch (IllegalArgumentException e) {
+                bulkRequests = bulkRequestService.getRecentRequests(30);
+            }
+        } else {
+            bulkRequests = bulkRequestService.getRecentRequests(30);
+        }
+        
+        model.addAttribute("bulkRequests", bulkRequests);
+        model.addAttribute("user", user);
+        model.addAttribute("selectedStatus", status);
+        
+        // Get available collectors
+        List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        model.addAttribute("collectors", collectors);
+        
+        return "authority/bulk-requests";
+    }
+    
+    /**
+     * Get requests requiring collector assignment (AJAX)
+     */
+    @GetMapping("/api/bulk-requests/requiring-assignment")
+    @ResponseBody
+    public ResponseEntity<List<BulkRequestDTO>> getRequestsRequiringAssignment(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        List<BulkRequestDTO> requests = bulkRequestService.getRequestsRequiringCollectorAssignment();
+        return ResponseEntity.ok(requests);
+    }
+    
+    /**
+     * Assign collector to bulk request
+     */
+    @PostMapping("/bulk-requests/{requestId}/assign-collector")
+    public String assignCollectorToBulkRequest(@PathVariable Long requestId,
+                                               @RequestParam Long collectorId,
+                                               HttpSession session,
+                                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            bulkRequestService.assignCollector(requestId, collectorId);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Collector assigned successfully to bulk request!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to assign collector: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
+    }
+    
+    /**
+     * Schedule pickup for bulk request
+     */
+    @PostMapping("/bulk-requests/{requestId}/schedule")
+    public String scheduleBulkPickup(@PathVariable Long requestId,
+                                     @RequestParam String scheduledDateTime,
+                                     @RequestParam(required = false) Long collectorId,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            LocalDateTime scheduledDate = LocalDateTime.parse(scheduledDateTime);
+            bulkRequestService.scheduleAndNotifyPickup(requestId, scheduledDate, collectorId);
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Bulk collection pickup scheduled successfully! User has been notified.");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to schedule pickup: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
+    }
+    
+    /**
+     * Update bulk request status
+     */
+    @PostMapping("/bulk-requests/{requestId}/update-status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateBulkRequestStatus(@PathVariable Long requestId,
+                                                                       @RequestParam String status,
+                                                                       HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+            BulkRequestDTO updatedRequest = bulkRequestService.updateRequestStatus(requestId, requestStatus);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Bulk request status updated successfully");
+            response.put("request", updatedRequest);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to update status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get bulk request details (AJAX)
+     */
+    @GetMapping("/api/bulk-requests/{requestId}/details")
+    @ResponseBody
+    public ResponseEntity<BulkRequestDTO> getBulkRequestDetails(@PathVariable Long requestId,
+                                                                HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Optional<BulkRequestDTO> request = bulkRequestService.getBulkRequestById(requestId);
+        return request.map(ResponseEntity::ok)
+                     .orElse(ResponseEntity.notFound().build());
+    }
+    
+    /**
+     * Complete bulk collection
+     */
+    @PostMapping("/bulk-requests/{requestId}/complete")
+    public String completeBulkCollection(@PathVariable Long requestId,
+                                        @RequestParam(required = false) String notes,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            bulkRequestService.completeCollection(requestId, notes);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Bulk collection marked as completed successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to complete collection: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
     }
 }
 

@@ -85,4 +85,10 @@ public interface BulkRequestService {
     
     // Convert DTO to entity
     BulkRequest convertToEntity(BulkRequestDTO bulkRequestDTO, User user);
+    
+    // Confirm collector assignment
+    BulkRequestDTO confirmCollectorAssignment(Long requestId);
+    
+    // Schedule and notify pickup
+    BulkRequestDTO scheduleAndNotifyPickup(Long requestId, LocalDateTime scheduledDate, Long collectorId);
 }
