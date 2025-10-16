@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resident Dashboard - SmartBin</title>
     
-    <!-- Material Icons -->
+    <!-- Google Fonts & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
@@ -16,15 +17,19 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            min-height: 100vh;
         }
 
         .navbar {
-            background: #2c3e50;
-            color: white;
+            background: white;
             padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .navbar-content {
@@ -36,8 +41,9 @@
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #202124;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -45,51 +51,64 @@
         
         .logo .material-icons {
             font-size: 2rem;
-            color: white;
+            color: #34a853;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
         }
 
         .btn-logout {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid white;
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
             padding: 0.5rem 1.5rem;
-            border-radius: 20px;
+            border-radius: 24px;
             text-decoration: none;
-            font-weight: 500;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
         }
 
         .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
         .welcome-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
         }
 
         .welcome-card h1 {
-            color: #333;
+            color: #202124;
+            font-size: 1.75rem;
+            font-weight: 400;
             margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
         }
 
         .welcome-card p {
-            color: #666;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .dashboard-grid {
@@ -101,14 +120,15 @@
 
         .dashboard-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
         }
 
         .dashboard-card:hover {
-            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
         }
         
         .stats-grid {
@@ -121,17 +141,18 @@
         .stats-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
+            gap: 1rem;
             flex: 1;
         }
         
         .stat-card {
             background: white;
             border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             text-decoration: none;
             color: inherit;
             display: flex;
@@ -139,27 +160,25 @@
             align-items: center;
             text-align: center;
             gap: 0.75rem;
-            border: 2px solid transparent;
         }
         
         .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
         }
         
         .stat-card-icon {
-            width: 55px;
-            height: 55px;
-            border-radius: 10px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            font-size: 2rem;
         }
         
         .stat-card-icon .material-icons {
             font-size: 2rem;
+            color: white;
         }
         
         .stat-card-content {
@@ -167,58 +186,42 @@
         }
         
         .stat-card-title {
-            font-size: 0.8rem;
-            color: #666;
+            font-size: 0.75rem;
+            color: #5f6368;
             margin-bottom: 0.25rem;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .stat-card-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #2c3e50;
-        }
-        
-        .stat-card-alerts {
-            border-color: #e74c3c;
-        }
-        
-        .stat-card-alerts:hover {
-            border-color: #e74c3c;
-            background: #fff5f5;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #202124;
         }
         
         .stat-card-alerts .stat-card-icon {
-            background: #fee;
-            color: #e74c3c;
+            background: #ea4335;
         }
         
-        .stat-card-recycling {
-            border-color: #27ae60;
-        }
-        
-        .stat-card-recycling:hover {
-            border-color: #27ae60;
-            background: #f0fdf4;
+        .stat-card-alerts:hover {
+            border-color: #ea4335;
         }
         
         .stat-card-recycling .stat-card-icon {
-            background: #e8f5e9;
-            color: #27ae60;
+            background: #34a853;
         }
         
-        .stat-card-disposals {
-            border-color: #3498db;
-        }
-        
-        .stat-card-disposals:hover {
-            border-color: #3498db;
-            background: #eff6ff;
+        .stat-card-recycling:hover {
+            border-color: #34a853;
         }
         
         .stat-card-disposals .stat-card-icon {
-            background: #e3f2fd;
-            color: #3498db;
+            background: #1a73e8;
+        }
+        
+        .stat-card-disposals:hover {
+            border-color: #1a73e8;
         }
 
         .dashboard-card .icon {
@@ -227,12 +230,15 @@
         }
 
         .dashboard-card h3 {
-            color: #333;
+            color: #202124;
+            font-size: 1.125rem;
+            font-weight: 500;
             margin-bottom: 0.5rem;
         }
 
         .dashboard-card p {
-            color: #666;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .alert {
@@ -242,9 +248,9 @@
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: #e6f4ea;
+            color: #137333;
+            border: 1px solid #c8e6c9;
         }
         
         .nearby-bins-section {
@@ -252,7 +258,9 @@
         }
         
         .nearby-bins-section h2 {
-            color: #333;
+            color: #202124;
+            font-size: 1.5rem;
+            font-weight: 500;
             margin-bottom: 1.5rem;
             text-align: center;
         }
@@ -267,15 +275,14 @@
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-            border: 2px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
         }
         
         .bin-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-color: #3498db;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
+            border-color: #34a853;
         }
         
         .bin-header {
@@ -286,88 +293,84 @@
         }
         
         .bin-qr {
-            font-weight: 700;
-            color: #2c3e50;
-            font-size: 1.1rem;
+            font-weight: 600;
+            color: #202124;
+            font-size: 1rem;
         }
         
         .bin-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 8px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
             font-size: 0.75rem;
             font-weight: 500;
             text-transform: none;
         }
         
         .status-FULL {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #fce8e6;
+            color: #c5221f;
         }
         
         .status-PARTIAL {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: #fef7e0;
+            color: #b06000;
         }
         
         .status-EMPTY {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #e6f4ea;
+            color: #137333;
         }
         
         .status-OVERDUE {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #fce8e6;
+            color: #c5221f;
         }
 
         /* Modal Form Enhancements */
         #qrCode:focus {
-            border-color: #3498db !important;
+            border-color: #1a73e8 !important;
             background: white !important;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1) !important;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1) !important;
         }
 
         #notes:focus {
-            border-color: #9b59b6 !important;
+            border-color: #1a73e8 !important;
             background: white !important;
-            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1) !important;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1) !important;
         }
 
         button[type="button"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16) !important;
         }
 
         button[type="submit"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16) !important;
         }
 
         .modal-content {
-            border-radius: 16px !important;
+            border-radius: 12px !important;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
         }
 
         /* Bulk Request Button Hover Effects */
         button[onclick="proceedToPayment()"]:hover {
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%) !important;
-            border-color: #f48fb1 !important;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3) !important;
+            background: #2d904a !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16) !important;
         }
         
         .bin-location {
-            color: #666;
+            color: #5f6368;
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
         
         .bin-location .material-icons {
             font-size: 18px;
-            color: #e74c3c;
+            color: #ea4335;
         }
         
         .bin-fill {
@@ -375,9 +378,9 @@
         }
         
         .fill-bar {
-            background-color: #e9ecef;
+            background-color: #e0e0e0;
             border-radius: 6px;
-            height: 20px;
+            height: 18px;
             overflow: hidden;
         }
         
@@ -388,29 +391,29 @@
             justify-content: center;
             color: white;
             font-size: 0.75rem;
-            font-weight: bold;
+            font-weight: 600;
             transition: width 0.3s ease;
         }
         
         .fill-level-low {
-            background: #27ae60;
+            background: #34a853;
         }
         
         .fill-level-medium {
-            background: #f39c12;
+            background: #fbbc04;
         }
         
         .fill-level-high {
-            background: #e74c3c;
+            background: #ea4335;
         }
         
         .bin-type {
             display: inline-block;
             background: #f8f9fa;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            color: #666;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            color: #5f6368;
             margin-bottom: 0.75rem;
             font-weight: 500;
         }
@@ -421,15 +424,15 @@
         }
         
         .points-badge {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: #34a853;
             color: white;
             padding: 1.5rem 2rem;
             border-radius: 12px;
             display: inline-flex;
             align-items: center;
             gap: 1.5rem;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
+            border: 1px solid #e0e0e0;
         }
         
         .points-icon {
@@ -451,17 +454,16 @@
         }
         
         .points-badge .label {
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             opacity: 0.95;
             font-weight: 500;
             letter-spacing: 0.5px;
         }
         
         .points-badge .value {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 2.25rem;
+            font-weight: 600;
             line-height: 1;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .points-subtext {
@@ -591,30 +593,36 @@
             color: white;
         }
 
-        .action-bulk {
-            background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
-            border-color: #f8bbd9;
-            color: #e91e63;
-        }
-
-        .action-bulk:hover {
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
-            border-color: #f48fb1;
-            color: #e91e63;
-            transform: translateY(-2px);
-        }
-
-        .action-bulk:hover .icon .material-icons {
-            color: #e91e63;
+        .action-bulk .icon {
+            background: white;
         }
 
         .action-bulk .icon .material-icons {
-            color: #e91e63;
+            color: #ea4335;
         }
 
-        .action-btn[href="/resident/my-bulk-requests"]:hover {
-            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%) !important;
-            transform: translateY(-2px);
+        .action-bulk:hover {
+            border-color: #ea4335;
+            background: #ea4335;
+            color: white;
+        }
+
+        .action-bulk:hover .icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-requests .icon {
+            background: #f9ab00;
+        }
+
+        .action-requests:hover {
+            border-color: #f9ab00;
+            background: #f9ab00;
+            color: white;
+        }
+
+        .action-requests:hover .icon {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .action-btn[href="/resident/my-bulk-requests"]:hover .icon .material-icons {
@@ -663,9 +671,9 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0, 0, 0, 0.5);
             overflow-y: auto;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(3px);
             animation: fadeIn 0.2s ease-out;
         }
 
@@ -697,21 +705,22 @@
         }
         
         .modal-header {
-            background: #2c3e50;
-            padding: 2rem;
-            color: white;
+            background: white;
+            padding: 1.5rem;
+            color: #202124;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         .modal-header h2 {
             margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 500;
         }
         
         .modal-header p {
-            margin: 0.5rem 0 0 0;
-            opacity: 0.9;
-            font-size: 0.95rem;
+            margin: 0.25rem 0 0 0;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
         
         .modal-body {
@@ -719,17 +728,17 @@
         }
         
         .close {
-            color: white;
+            color: #5f6368;
             float: right;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
             line-height: 1;
-            opacity: 0.8;
+            transition: all 0.2s;
         }
         
         .close:hover {
-            opacity: 1;
+            color: #202124;
         }
         
         .form-group {
@@ -739,33 +748,42 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.9rem;
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
         
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: all 0.3s;
+            padding: 0.75rem 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            color: #202124;
         }
         
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #80868b;
         }
         
         .form-group small {
-            color: #666;
-            font-size: 0.85rem;
+            color: #5f6368;
+            font-size: 0.75rem;
         }
         
         .slider-container {
@@ -776,7 +794,7 @@
             width: 100%;
             height: 6px;
             border-radius: 10px;
-            background: #e9ecef;
+            background: #dadce0;
             outline: none;
             appearance: none;
             -webkit-appearance: none;
@@ -788,34 +806,37 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #3498db;
+            background: #1a73e8;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         .slider::-webkit-slider-thumb:hover {
             transform: scale(1.1);
-            background: #2980b9;
+            background: #1557b0;
         }
         
         .slider::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #3498db;
+            background: #1a73e8;
             cursor: pointer;
             border: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         .fill-display {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2c3e50;
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: #202124;
             text-align: center;
             margin-top: 1rem;
-            background: #f8f9fa;
+            background: white;
             padding: 1rem;
             border-radius: 8px;
+            border: 1px solid #dadce0;
         }
         
         .activity-section {
@@ -823,10 +844,10 @@
         }
         
         .activity-section h2 {
-            color: #2c3e50;
+            color: #202124;
             margin-bottom: 1.5rem;
-            font-size: 1.3rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 500;
         }
         
         .section-header {
@@ -837,17 +858,17 @@
         }
         
         .section-title {
-            color: #2c3e50;
+            color: #202124;
             margin: 0;
-            font-size: 1.3rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
         
         .section-title .material-icons {
-            color: #3498db;
+            color: #34a853;
         }
         
         .activity-card {
@@ -855,14 +876,14 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #3498db;
-            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #1a73e8;
+            transition: all 0.2s;
         }
         
         .activity-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
         
         .activity-card .activity-header {
@@ -874,28 +895,30 @@
         
         .activity-card .activity-type {
             font-weight: 600;
-            color: #2c3e50;
+            color: #202124;
+            font-size: 0.875rem;
         }
         
         .activity-card .activity-date {
-            color: #999;
-            font-size: 0.9rem;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
         
         .activity-card .activity-details {
-            color: #666;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
         
         .points-earned {
-            color: #28a745;
-            font-weight: bold;
-            font-size: 1.1rem;
+            color: #34a853;
+            font-weight: 600;
+            font-size: 1rem;
         }
         
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #f9dedc;
         }
         
         .map-container {
@@ -958,7 +981,7 @@
         <div class="navbar-content">
             <div class="logo">
                 <span class="material-icons">delete_outline</span>
-                SmartBin - Resident Portal
+                SmartBin
             </div>
             <div class="user-info">
                 <span th:text="${user.name}">User</span>
@@ -1027,8 +1050,8 @@
         
         <!-- Quick Actions Section -->
         <div style="margin-top: 2rem;">
-            <h2 style="color: #2c3e50; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                <span class="material-icons" style="color: #3498db;">flash_on</span>
+            <h2 style="color: #202124; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="material-icons" style="color: #34a853;">flash_on</span>
                 Quick Actions
             </h2>
             <div class="quick-actions">
@@ -1062,7 +1085,7 @@
                     </div>
                     Bulk Collection Request
                 </a>
-                <a href="/resident/my-bulk-requests" class="action-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
+                <a href="/resident/my-bulk-requests" class="action-btn action-requests">
                     <div class="icon">
                         <span class="material-icons">list_alt</span>
                     </div>
@@ -1074,8 +1097,8 @@
         <!-- Total Bins Section -->
         <div th:if="${nearbyBins != null and !nearbyBins.empty}" style="margin-top: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 style="color: #2c3e50; margin: 0; font-size: 1.3rem; font-weight: 600;">
-                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #3498db;">delete_outline</span>
+                <h2 style="color: #202124; margin: 0; font-size: 1.5rem; font-weight: 500;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #34a853;">delete_outline</span>
                     Nearby Bins
                 </h2>
                 <a href="/resident/search-bins" class="btn btn-primary" style="text-decoration: none; font-size: 0.9rem;">
@@ -1087,14 +1110,14 @@
         
         <!-- Recent Activity Section -->
         <div class="activity-section" th:if="${!recentTransactions.empty || !recentDisposals.empty}">
-            <h2 style="display: flex; align-items: center; gap: 0.5rem;">
-                <span class="material-icons" style="color: #3498db;">timeline</span>
+            <h2 style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 500; color: #202124;">
+                <span class="material-icons" style="color: #1a73e8;">timeline</span>
                 Recent Activity
             </h2>
             
             <div th:if="${!recentTransactions.empty}">
-                <h3 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 600;">
-                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #27ae60;">recycling</span>
+                <h3 style="color: #202124; margin-bottom: 1rem; font-weight: 500; font-size: 1.125rem;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #34a853;">recycling</span>
                     Recent Recycling Transactions
                 </h3>
                 <div th:each="transaction : ${recentTransactions}" class="activity-card">
@@ -1111,8 +1134,8 @@
             </div>
             
             <div th:if="${!recentDisposals.empty}" style="margin-top: 2rem;">
-                <h3 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 600;">
-                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #e74c3c;">delete</span>
+                <h3 style="color: #202124; margin-bottom: 1rem; font-weight: 500; font-size: 1.125rem;">
+                    <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem; color: #ea4335;">delete</span>
                     Recent Waste Disposals
                 </h3>
                 <div th:each="disposal : ${recentDisposals}" class="activity-card">
