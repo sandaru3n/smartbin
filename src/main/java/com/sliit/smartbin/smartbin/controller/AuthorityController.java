@@ -16,6 +16,8 @@ import com.sliit.smartbin.smartbin.service.BinAssignmentService;
 import com.sliit.smartbin.smartbin.service.CollectionService;
 import com.sliit.smartbin.smartbin.service.BulkRequestService;
 import com.sliit.smartbin.smartbin.model.BinAssignment;
+import com.sliit.smartbin.smartbin.model.RegionAssignment;
+import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,6 +47,7 @@ public class AuthorityController {
     private final BinAssignmentService binAssignmentService;
     private final CollectionService collectionService;
     private final BulkRequestService bulkRequestService;
+    private final RegionAssignmentRepository regionAssignmentRepository;
 
     public AuthorityController(BinService binService,
                                RouteService routeService,
@@ -53,7 +56,8 @@ public class AuthorityController {
                                NotificationService notificationService,
                                BinAssignmentService binAssignmentService,
                                CollectionService collectionService,
-                               BulkRequestService bulkRequestService) {
+                               BulkRequestService bulkRequestService,
+                               RegionAssignmentRepository regionAssignmentRepository) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
@@ -62,6 +66,7 @@ public class AuthorityController {
         this.binAssignmentService = binAssignmentService;
         this.collectionService = collectionService;
         this.bulkRequestService = bulkRequestService;
+        this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
     @GetMapping("/dashboard")
@@ -255,6 +260,19 @@ public class AuthorityController {
         
         // Get all collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        
+        // Ensure collectors is never null
+        if (collectors == null) {
+            collectors = new java.util.ArrayList<>();
+        }
+        
+        System.out.println("=== MANAGE COLLECTORS DEBUG ===");
+        System.out.println("Total collectors found: " + collectors.size());
+        for (User collector : collectors) {
+            System.out.println("  - " + collector.getName() + " (" + collector.getEmail() + ") ID: " + collector.getId());
+        }
+        System.out.println("================================");
+        
         model.addAttribute("collectors", collectors);
         model.addAttribute("user", user);
         
@@ -270,10 +288,18 @@ public class AuthorityController {
         }
         
         try {
+            System.out.println("=== API: Getting collectors ===");
             List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+            
+            if (collectors == null) {
+                collectors = new ArrayList<>();
+            }
+            
+            System.out.println("API: Found " + collectors.size() + " collectors");
             List<Map<String, Object>> collectorData = new ArrayList<>();
             
             for (User collector : collectors) {
+                System.out.println("API: Processing collector " + collector.getName());
                 Map<String, Object> collectorInfo = new HashMap<>();
                 collectorInfo.put("id", collector.getId());
                 collectorInfo.put("name", collector.getName());
@@ -371,12 +397,23 @@ public class AuthorityController {
                     collectorInfo.put("currentActivity", "Available for assignment");
                 }
                 
+                // Add performance rating (0-5 stars based on completion rate)
+                double performanceRating = (completionRate / 100.0) * 5;
+                collectorInfo.put("performanceRating", Math.round(performanceRating * 10) / 10.0);
+                
                 collectorData.add(collectorInfo);
             }
             
+            System.out.println("API: Successfully processed " + collectorData.size() + " collectors");
             return ResponseEntity.ok(collectorData);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            System.err.println("=== API ERROR ===");
+            System.err.println("Error fetching collectors: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("=================");
+            
+            // Return empty list instead of error to prevent frontend crashes
+            return ResponseEntity.ok(new ArrayList<>());
         }
     }
 
@@ -450,14 +487,37 @@ public class AuthorityController {
             Long collectorId = Long.valueOf(request.get("collectorId").toString());
             String region = request.get("region").toString();
             
+            System.out.println("=== REGION ASSIGNMENT ===");
             System.out.println("Assigning collector ID: " + collectorId + " to region: " + region);
             
             User collector = userService.findById(collectorId)
                 .orElseThrow(() -> new RuntimeException("Collector not found"));
             
-            System.out.println("Found collector: " + collector.getName() + ", current region: " + collector.getRegion());
+            String previousRegion = collector.getRegion();
+            System.out.println("Found collector: " + collector.getName() + ", current region: " + previousRegion);
             
-            // Update collector region assignment
+            // Save assignment history before updating
+            RegionAssignment assignment = new RegionAssignment();
+            assignment.setCollector(collector);
+            assignment.setAssignedBy(user);
+            assignment.setPreviousRegion(previousRegion);
+            assignment.setNewRegion(region);
+            assignment.setStatus(RegionAssignment.AssignmentStatus.ACTIVE);
+            assignment.setNotes("Assigned via Manage Collectors interface");
+            
+            // Mark previous assignments as superseded
+            List<RegionAssignment> previousAssignments = regionAssignmentRepository
+                .findByCollectorAndStatus(collector, RegionAssignment.AssignmentStatus.ACTIVE);
+            for (RegionAssignment prev : previousAssignments) {
+                prev.setStatus(RegionAssignment.AssignmentStatus.SUPERSEDED);
+                regionAssignmentRepository.save(prev);
+            }
+            
+            // Save new assignment
+            RegionAssignment savedAssignment = regionAssignmentRepository.save(assignment);
+            System.out.println("Saved assignment history with ID: " + savedAssignment.getId());
+            
+            // Update collector region assignment in User table
             collector.setRegion(region);
             User updatedCollector = userService.updateUser(collector);
             
@@ -467,17 +527,72 @@ public class AuthorityController {
             notificationService.sendRegionAssignmentNotification(collector, region);
             
             System.out.println("Sent notification to collector");
+            System.out.println("=== ASSIGNMENT COMPLETE ===");
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Collector " + collector.getName() + " assigned to " + region + " successfully!");
+            response.put("previousRegion", previousRegion);
+            response.put("newRegion", region);
+            response.put("assignmentId", savedAssignment.getId());
+            response.put("assignedBy", user.getName());
+            response.put("timestamp", savedAssignment.getAssignedAt().toString());
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("ERROR in region assignment: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Failed to assign collector: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/api/region-assignments")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getRegionAssignments(
+            @RequestParam(required = false) Long collectorId,
+            HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<RegionAssignment> assignments;
+            
+            if (collectorId != null) {
+                // Get assignments for specific collector
+                User collector = userService.findById(collectorId)
+                    .orElseThrow(() -> new RuntimeException("Collector not found"));
+                assignments = regionAssignmentRepository.findByCollectorOrderByAssignedAtDesc(collector);
+            } else {
+                // Get all assignments
+                assignments = regionAssignmentRepository.findAll();
+                assignments.sort((a, b) -> b.getAssignedAt().compareTo(a.getAssignedAt()));
+            }
+            
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (RegionAssignment assignment : assignments) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", assignment.getId());
+                data.put("collectorId", assignment.getCollector().getId());
+                data.put("collectorName", assignment.getCollector().getName());
+                data.put("assignedById", assignment.getAssignedBy().getId());
+                data.put("assignedByName", assignment.getAssignedBy().getName());
+                data.put("previousRegion", assignment.getPreviousRegion());
+                data.put("newRegion", assignment.getNewRegion());
+                data.put("assignedAt", assignment.getAssignedAt().toString());
+                data.put("status", assignment.getStatus().toString());
+                data.put("notes", assignment.getNotes());
+                response.add(data);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("ERROR fetching region assignments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
