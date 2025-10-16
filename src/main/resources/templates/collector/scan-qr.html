@@ -20,36 +20,99 @@
             line-height: 1.5;
         }
 
+        /* Header Section - Google Material Design */
         .header {
             background: #fff;
             color: #202124;
-            padding: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            padding: 0 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             border-bottom: 1px solid #dadce0;
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
         }
 
         .header-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 24px;
+            padding: 1rem 0;
             min-height: 64px;
+            gap: 1.5rem;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 2rem;
+            flex: 1;
         }
 
-        .back-btn {
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5f6368;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #5f6368;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+        }
+
+        .header-btn {
             background: none;
-            border: none;
+            border: 1px solid #dadce0;
             color: #5f6368;
             width: 40px;
             height: 40px;
@@ -58,23 +121,138 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
-            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
-        .back-btn:hover {
-            background: #f1f3f4;
-            color: #202124;
-            text-decoration: none;
+        .header-btn:hover {
+            border-color: #5f6368;
         }
 
-        .header-title {
-            font-size: 22px;
-            font-weight: 400;
-            color: #202124;
+        .header-btn .material-icons {
+            font-size: 1.375rem;
+            color: #5f6368;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ea4335;
+            color: white;
+            border-radius: 10px;
+            min-width: 18px;
+            height: 18px;
+            font-size: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .profile-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #202124;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+        }
+
+        .dropdown-item.logout .material-icons {
+            color: #ea4335;
         }
 
         .container {
@@ -298,8 +476,37 @@
                 padding: 0 16px;
             }
 
+            .header {
+                padding: 0 1rem;
+            }
+
             .header-content {
-                padding: 8px 16px;
+                padding: 0.75rem 0;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
             }
 
             .scanner-grid {
@@ -320,13 +527,64 @@
     <header class="header">
         <div class="header-content">
             <div class="header-left">
-                <a href="/collector/dashboard" class="back-btn">
-                    <span class="material-icons">arrow_back</span>
-                </a>
-                <h1 class="header-title">
-                    <span class="material-icons">qr_code_scanner</span>
+                <div class="logo">
                     QR Code Scanner
-                </h1>
+                </div>
+                <div class="nav-links">
+                    <a href="/collector/dashboard" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                        Dashboard
+                    </a>
+                    <a href="/collector/routes" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">route</span>
+                        My Routes
+                    </a>
+                    <a href="/collector/scan-qr" class="nav-link active">
+                        <span class="material-icons" style="font-size: 18px;">qr_code_scanner</span>
+                        QR Code Scanner
+                    </a>
+                    <a href="/collector/collections" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">inventory_2</span>
+                        Your Collection Records
+                    </a>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="notification-icon header-btn">
+                        <span class="material-icons">notifications</span>
+                        <span class="notification-badge" th:if="${newNotifications > 0}" th:text="${newNotifications}">2</span>
+                    </div>
+                    <span class="user-name" th:text="${user.name}">Collector</span>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="user-icon profile-btn" onclick="toggleProfileDropdown()">
+                            <span th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'C'}">C</span>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-user-name" th:text="${user.name}">Collector</div>
+                                <div class="dropdown-user-email" th:text="${user.email}">collector@smartbin.com</div>
+                            </div>
+                            <a href="/collector/dashboard" class="dropdown-item">
+                                <span class="material-icons">dashboard</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="/collector/profile" class="dropdown-item">
+                                <span class="material-icons">person</span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/collector/settings" class="dropdown-item">
+                                <span class="material-icons">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout" class="dropdown-item logout">
+                                <span class="material-icons">logout</span>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -448,6 +706,34 @@
             // Convert to uppercase and remove spaces
             e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
         });
+
+        // Profile Dropdown Functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const isClickInside = dropdown && dropdown.contains(event.target);
+            
+            if (!isClickInside && dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                // Allow links to navigate
+                if (event.target.tagName === 'A' || event.target.closest('a')) {
+                    return;
+                }
+                event.stopPropagation();
+            });
+        }
     </script>
 </body>
 </html>
