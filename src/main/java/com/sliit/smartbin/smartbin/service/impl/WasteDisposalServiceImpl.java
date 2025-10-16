@@ -98,16 +98,16 @@ public class WasteDisposalServiceImpl implements WasteDisposalService {
             }
         }
         
-        // All retries failed - create failed record
-        Bin bin = binRepository.findByQrCode(binQrCode).orElse(null);
-        WasteDisposal failedDisposal = new WasteDisposal();
-        failedDisposal.setUser(user);
-        failedDisposal.setBin(bin);
-        failedDisposal.setReportedFillLevel(fillLevel);
-        failedDisposal.setNotes("FAILED: " + (lastException != null ? lastException.getMessage() : "Unknown error"));
-        failedDisposal.setStatus(WasteDisposal.DisposalStatus.FAILED);
-        
-        return wasteDisposalRepository.save(failedDisposal);
+        // All retries failed - throw exception
+        String errorMessage = "Unable to submit disposal";
+        if (lastException != null) {
+            if (lastException.getMessage().contains("Bin not found")) {
+                errorMessage = "Bin not found. Please check the QR code and try again.";
+            } else {
+                errorMessage = lastException.getMessage();
+            }
+        }
+        throw new RuntimeException(errorMessage);
     }
     
     @Override
@@ -117,11 +117,11 @@ public class WasteDisposalServiceImpl implements WasteDisposalService {
     
     @Override
     public boolean validateBinQrCode(String qrCode) {
-        // Validate format: BIN followed by 3-4 digits
+        // Validate format: QR followed by 3-4 digits
         if (qrCode == null || qrCode.isEmpty()) {
             return false;
         }
-        return qrCode.matches("BIN\\d{3,4}");
+        return qrCode.matches("QR\\d{3,4}");
     }
     
     @Override
