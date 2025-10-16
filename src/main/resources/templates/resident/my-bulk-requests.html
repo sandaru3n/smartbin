@@ -341,6 +341,11 @@
                 flex-direction: column;
             }
         }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -568,9 +573,144 @@
 
         function proceedToPayment(button) {
             const requestId = button.getAttribute('data-request-id');
-            if (confirm('Proceed to payment?')) {
-                window.location.href = '/resident/bulk-request/' + requestId + '/payment';
+            
+            // Get request details first - use numeric ID endpoint
+            fetch('/resident/bulk-request/by-id/' + requestId + '/details')
+                .then(response => response.json())
+                .then(data => {
+                    // Show payment modal
+                    showPaymentModal(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load request details. Please try again.');
+                });
+        }
+        
+        function showPaymentModal(request) {
+            // Create modal HTML
+            const modalHTML = `
+                <div id="paymentModal" style="display: block; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+                    <div style="background: white; margin: 5% auto; padding: 0; border-radius: 16px; max-width: 500px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                        <div style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%); color: white; padding: 2rem; border-radius: 16px 16px 0 0;">
+                            <h2 style="margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+                                <span class="material-icons">payment</span>
+                                Complete Payment
+                            </h2>
+                            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Request ID: ${request.requestId}</p>
+                        </div>
+                        
+                        <div style="padding: 2rem;">
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
+                                <h3 style="margin: 0 0 0.5rem 0; color: #666; font-size: 1rem;">Amount to Pay</h3>
+                                <div style="font-size: 2.5rem; font-weight: 700; color: #27ae60;">LKR ${request.totalAmount.toFixed(2)}</div>
+                                <p style="margin: 0.5rem 0 0 0; color: #999; font-size: 0.9rem;">Category: ${request.category.displayName}</p>
+                            </div>
+                            
+                            <form id="paymentForm" onsubmit="return processPayment(event, ${request.id})">
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="display: block; margin-bottom: 1rem; font-weight: 600; color: #2c3e50;">Select Payment Method</label>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer;">
+                                            <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked>
+                                            <span class="material-icons" style="color: #3498db;">credit_card</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600;">Credit/Debit Card</div>
+                                                <div style="font-size: 0.85rem; color: #666;">Visa, Mastercard</div>
+                                            </div>
+                                        </label>
+                                        
+                                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer;">
+                                            <input type="radio" name="paymentMethod" value="UPI">
+                                            <span class="material-icons" style="color: #27ae60;">smartphone</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600;">UPI</div>
+                                                <div style="font-size: 0.85rem; color: #666;">Google Pay, PhonePe, Paytm</div>
+                                            </div>
+                                        </label>
+                                        
+                                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer;">
+                                            <input type="radio" name="paymentMethod" value="NET_BANKING">
+                                            <span class="material-icons" style="color: #3498db;">account_balance</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600;">Net Banking</div>
+                                                <div style="font-size: 0.85rem; color: #666;">All major banks</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; gap: 1rem;">
+                                    <button type="button" onclick="closePaymentModal()" style="flex: 1; padding: 1rem; background: #e9ecef; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: #2c3e50;">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" style="flex: 1; padding: 1rem; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                        <span class="material-icons">lock</span>
+                                        Pay LKR ${request.totalAmount.toFixed(2)}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function closePaymentModal() {
+            const modal = document.getElementById('paymentModal');
+            if (modal) {
+                modal.remove();
             }
+        }
+        
+        function processPayment(event, requestId) {
+            event.preventDefault();
+            
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const paymentReference = 'PAY-' + Date.now();
+            
+            // Show loading
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span> Processing...';
+            submitBtn.disabled = true;
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('paymentMethod', paymentMethod);
+            formData.append('paymentReference', paymentReference);
+            
+            // Submit payment
+            fetch('/resident/bulk-request/' + requestId + '/payment', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    return response.text();
+                }
+            })
+            .then(result => {
+                if (result) {
+                    alert('Payment successful! Your request is being processed.');
+                    closePaymentModal();
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Payment processing failed. Please try again.');
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+            });
+            
+            return false;
         }
 
         function cancelRequest(button) {

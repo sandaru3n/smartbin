@@ -1,6 +1,7 @@
 package com.sliit.smartbin.smartbin.service.impl;
 
 import com.sliit.smartbin.smartbin.model.Bin;
+import com.sliit.smartbin.smartbin.model.BulkRequest;
 import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.User;
 import com.sliit.smartbin.smartbin.service.NotificationService;
@@ -140,6 +141,153 @@ public class NotificationServiceImpl implements NotificationService {
             
         } catch (Exception e) {
             logger.error("Failed to send system notification: {}", e.getMessage());
+        }
+    }
+
+    @Override
+    public void notifyUserBulkRequest(User user, String statusMessage, BulkRequest bulkRequest) {
+        try {
+            String message = String.format(
+                "Bulk Request Update - Request ID: %s\n" +
+                "Status: %s\n" +
+                "Message: %s\n" +
+                "Category: %s\n" +
+                "Location: %s, %s",
+                bulkRequest.getRequestId(),
+                bulkRequest.getStatus().getDisplayName(),
+                statusMessage,
+                bulkRequest.getCategory().getDisplayName(),
+                bulkRequest.getStreetAddress(),
+                bulkRequest.getCity()
+            );
+            
+            logger.info("Bulk request notification sent to user {}: {}", user.getName(), statusMessage);
+            logNotification("BULK_REQUEST_UPDATE", user.getEmail(), message);
+            
+        } catch (Exception e) {
+            logger.error("Failed to send bulk request notification to user {}: {}", 
+                        user.getName(), e.getMessage());
+        }
+    }
+
+    @Override
+    public void notifyAuthorityBulkPayment(BulkRequest bulkRequest) {
+        try {
+            String message = String.format(
+                "New Bulk Collection Payment Received\n" +
+                "Request ID: %s\n" +
+                "User: %s (%s)\n" +
+                "Category: %s\n" +
+                "Amount: LKR %.2f\n" +
+                "Payment Method: %s\n" +
+                "Payment Reference: %s\n" +
+                "Location: %s, %s\n" +
+                "Status: Payment Completed - Awaiting Collector Assignment",
+                bulkRequest.getRequestId(),
+                bulkRequest.getUser().getName(),
+                bulkRequest.getUser().getEmail(),
+                bulkRequest.getCategory().getDisplayName(),
+                bulkRequest.getTotalAmount(),
+                bulkRequest.getPaymentMethod(),
+                bulkRequest.getPaymentReference(),
+                bulkRequest.getStreetAddress(),
+                bulkRequest.getCity()
+            );
+            
+            logger.info("Bulk request payment notification sent to authority for request: {}", 
+                       bulkRequest.getRequestId());
+            logNotification("BULK_REQUEST_PAYMENT", "authority@smartbin.com", message);
+            
+        } catch (Exception e) {
+            logger.error("Failed to send bulk payment notification to authority for request {}: {}", 
+                        bulkRequest.getRequestId(), e.getMessage());
+        }
+    }
+
+    @Override
+    public void sendPickupScheduleNotification(User user, BulkRequest bulkRequest) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm a");
+            String scheduledTime = bulkRequest.getScheduledDate() != null ? 
+                                  bulkRequest.getScheduledDate().format(formatter) : 
+                                  "To be confirmed";
+            
+            String message = String.format(
+                "Bulk Collection Pickup Scheduled!\n\n" +
+                "Request ID: %s\n" +
+                "Category: %s\n" +
+                "Pickup Location: %s, %s, %s\n" +
+                "Scheduled Date & Time: %s\n" +
+                "Collector: %s\n\n" +
+                "Please ensure:\n" +
+                "- Items are ready at the specified location\n" +
+                "- Access is clear for the collection vehicle\n" +
+                "- Someone is available during pickup time\n\n" +
+                "Thank you for using SmartBin Bulk Collection Service!",
+                bulkRequest.getRequestId(),
+                bulkRequest.getCategory().getDisplayName(),
+                bulkRequest.getStreetAddress(),
+                bulkRequest.getCity(),
+                bulkRequest.getZipCode(),
+                scheduledTime,
+                bulkRequest.getCollectorAssigned() != null ? 
+                    "Assigned (ID: " + bulkRequest.getCollectorAssigned() + ")" : 
+                    "To be assigned"
+            );
+            
+            logger.info("Pickup schedule notification sent to user {} for request: {}", 
+                       user.getName(), bulkRequest.getRequestId());
+            logNotification("BULK_PICKUP_SCHEDULE", user.getEmail(), message);
+            
+        } catch (Exception e) {
+            logger.error("Failed to send pickup schedule notification to user {} for request {}: {}", 
+                        user.getName(), bulkRequest.getRequestId(), e.getMessage());
+        }
+    }
+
+    @Override
+    public void notifyCollectorBulkAssignment(User collector, BulkRequest bulkRequest) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm a");
+            String scheduledTime = bulkRequest.getScheduledDate() != null ? 
+                                  bulkRequest.getScheduledDate().format(formatter) : 
+                                  "Not scheduled yet";
+            
+            String message = String.format(
+                "New Bulk Collection Assignment\n\n" +
+                "Request ID: %s\n" +
+                "Category: %s\n" +
+                "Description: %s\n" +
+                "Pickup Location: %s, %s, %s\n" +
+                "Coordinates: %.6f, %.6f\n" +
+                "Scheduled Date & Time: %s\n" +
+                "Estimated Weight: %s kg\n" +
+                "Estimated Dimensions: %s\n" +
+                "Amount Collected: LKR %.2f\n\n" +
+                "Please check your dashboard for complete details and update status upon completion.",
+                bulkRequest.getRequestId(),
+                bulkRequest.getCategory().getDisplayName(),
+                bulkRequest.getDescription(),
+                bulkRequest.getStreetAddress(),
+                bulkRequest.getCity(),
+                bulkRequest.getZipCode(),
+                bulkRequest.getLatitude() != null ? bulkRequest.getLatitude() : 0.0,
+                bulkRequest.getLongitude() != null ? bulkRequest.getLongitude() : 0.0,
+                scheduledTime,
+                bulkRequest.getEstimatedWeight() != null ? 
+                    String.format("%.2f", bulkRequest.getEstimatedWeight()) : "N/A",
+                bulkRequest.getEstimatedDimensions() != null ? 
+                    bulkRequest.getEstimatedDimensions() : "N/A",
+                bulkRequest.getTotalAmount()
+            );
+            
+            logger.info("Bulk collection assignment notification sent to collector {} for request: {}", 
+                       collector.getName(), bulkRequest.getRequestId());
+            logNotification("BULK_COLLECTOR_ASSIGNMENT", collector.getEmail(), message);
+            
+        } catch (Exception e) {
+            logger.error("Failed to send bulk assignment notification to collector {} for request {}: {}", 
+                        collector.getName(), bulkRequest.getRequestId(), e.getMessage());
         }
     }
 

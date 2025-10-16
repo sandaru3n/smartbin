@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .payment-container {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .payment-header {
+            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .payment-header .material-icons {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .payment-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .payment-body {
+            padding: 2.5rem 2rem;
+        }
+
+        .request-summary {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .request-summary h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #666;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .amount-card {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .amount-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .amount-value {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .payment-methods {
+            margin-bottom: 2rem;
+        }
+
+        .payment-methods h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .payment-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .payment-option input[type="radio"]:checked ~ .payment-info {
+            color: #27ae60;
+        }
+
+        .payment-option.selected {
+            border-color: #27ae60;
+            background: #f1f9f5;
+        }
+
+        .payment-icon {
+            font-size: 2rem;
+            color: #3498db;
+        }
+
+        .payment-info {
+            flex: 1;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .payment-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .security-badge {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .security-badge .material-icons {
+            color: #27ae60;
+            font-size: 1.5rem;
+        }
+
+        .security-badge p {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1.25rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <span class="material-icons">payment</span>
+            <h1>Complete Your Payment</h1>
+            <p>Secure payment for your bulk collection request</p>
+        </div>
+
+        <div class="payment-body">
+            <!-- Request Summary -->
+            <div class="request-summary">
+                <h3>Request Summary</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Request ID:</span>
+                    <span class="summary-value" th:text="${bulkRequest.requestId}">BULK-123</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Category:</span>
+                    <span class="summary-value" th:text="${bulkRequest.category.displayName}">Furniture</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Location:</span>
+                    <span class="summary-value" th:text="${bulkRequest.city}">Colombo</span>
+                </div>
+            </div>
+
+            <!-- Amount to Pay -->
+            <div class="amount-card">
+                <div class="amount-label">Total Amount</div>
+                <div class="amount-value">LKR <span th:text="${#numbers.formatDecimal(bulkRequest.totalAmount, 1, 2)}">4,200.00</span></div>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
+                    Base: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.basePrice, 1, 2)}">3,500</span> + 
+                    Processing: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.processingFee, 1, 2)}">500</span> + 
+                    Tax: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.taxAmount, 1, 2)}">200</span>
+                </p>
+            </div>
+
+            <!-- Payment Methods -->
+            <form th:action="@{/resident/bulk-request/{id}/payment(id=${bulkRequest.id})}" method="post" id="paymentForm">
+                <div class="payment-methods">
+                    <h3>Select Payment Method</h3>
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked onchange="selectPaymentMethod(this)">
+                        <span class="material-icons payment-icon">credit_card</span>
+                        <div class="payment-info">
+                            <div class="payment-name">Credit/Debit Card</div>
+                            <div class="payment-desc">Visa, Mastercard, RuPay</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="UPI" onchange="selectPaymentMethod(this)">
+                        <span class="material-icons payment-icon">smartphone</span>
+                        <div class="payment-info">
+                            <div class="payment-name">UPI</div>
+                            <div class="payment-desc">Google Pay, PhonePe, Paytm</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="NET_BANKING" onchange="selectPaymentMethod(this)">
+                        <span class="material-icons payment-icon">account_balance</span>
+                        <div class="payment-info">
+                            <div class="payment-name">Net Banking</div>
+                            <div class="payment-desc">All major banks supported</div>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="DIGITAL_WALLET" onchange="selectPaymentMethod(this)">
+                        <span class="material-icons payment-icon">account_balance_wallet</span>
+                        <div class="payment-info">
+                            <div class="payment-name">Digital Wallet</div>
+                            <div class="payment-desc">Paytm, Amazon Pay</div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Security Badge -->
+                <div class="security-badge">
+                    <span class="material-icons">security</span>
+                    <p>Your payment is secured with 256-bit SSL encryption. We don't store your card details.</p>
+                </div>
+
+                <input type="hidden" name="paymentReference" th:value="${'PAY-' + #dates.format(#dates.createNow(), 'yyyyMMddHHmmss')}">
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="/resident/my-bulk-requests" class="btn btn-secondary">
+                        <span class="material-icons">arrow_back</span>
+                        Back
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="payBtn">
+                        <span class="material-icons">lock</span>
+                        Pay Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function selectPaymentMethod(radio) {
+            // Remove selected class from all options
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to chosen option
+            radio.closest('.payment-option').classList.add('selected');
+        }
+
+        // Set first option as selected on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstRadio = document.querySelector('input[type="radio"][checked]');
+            if (firstRadio) {
+                firstRadio.closest('.payment-option').classList.add('selected');
+            }
+        });
+
+        // Form submission with loading state
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            const payBtn = document.getElementById('payBtn');
+            payBtn.innerHTML = '<span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span> Processing Payment...';
+            payBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>
+
