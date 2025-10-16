@@ -100,6 +100,7 @@ public class BulkRequest {
     public BulkRequest() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.requestId = generateRequestId();
     }
     
     public BulkRequest(User user, BulkCategory category, String description, 
