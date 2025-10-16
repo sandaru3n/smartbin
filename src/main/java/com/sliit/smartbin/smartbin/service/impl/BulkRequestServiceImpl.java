@@ -15,10 +15,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN BULK REQUEST SERVICE IMPLEMENTATION
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This class ONLY handles bulk request operations (create, update, schedule, assign).
+ *     Notification logic delegated to NotificationService, not handled here.
+ * 
+ * O - Open/Closed Principle (OCP):
+ *     Open for extension (new categories can be added to enum, new statuses supported)
+ *     Closed for modification (core request processing logic remains stable).
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Depends on Repository and NotificationService INTERFACES, not implementations.
+ *     Can swap database or notification provider without changing this code.
+ */
 @Service
 @Transactional
 public class BulkRequestServiceImpl implements BulkRequestService {
     
+    // DIP: Depend on repository and service abstractions
     @Autowired
     private BulkRequestRepository bulkRequestRepository;
     
@@ -28,6 +44,7 @@ public class BulkRequestServiceImpl implements BulkRequestService {
     @Autowired
     private UserRepository userRepository;
     
+    // OCP: Configuration constants can be externalized without modifying core logic
     private static final double PROCESSING_FEE = 500.0; // LKR 500
     private static final double TAX_RATE = 0.05; // 5% GST
     
@@ -177,6 +194,8 @@ public class BulkRequestServiceImpl implements BulkRequestService {
         return convertToDTO(updatedRequest);
     }
     
+    // SRP: This method ONLY assigns collector, notification logic delegated to NotificationService
+    // DIP: Uses NotificationService interface, doesn't know HOW notifications are sent
     @Override
     public BulkRequestDTO assignCollector(Long requestId, Long collectorId) {
         BulkRequest bulkRequest = bulkRequestRepository.findById(requestId)
@@ -190,10 +209,10 @@ public class BulkRequestServiceImpl implements BulkRequestService {
         
         BulkRequest updatedRequest = bulkRequestRepository.save(bulkRequest);
         
-        // Notify collector about assignment
+        // SRP: Notification responsibility delegated to dedicated service
+        // DIP: NotificationService can be email, SMS, push notification - we don't care
         notificationService.notifyCollectorBulkAssignment(collector, updatedRequest);
         
-        // Notify user about collector assignment
         notificationService.notifyUserBulkRequest(
             updatedRequest.getUser(),
             "A collector has been assigned to your bulk collection request. Pickup will be scheduled shortly.",
@@ -447,6 +466,8 @@ public class BulkRequestServiceImpl implements BulkRequestService {
         return convertToDTO(updatedRequest);
     }
     
+    // SRP: Method handles scheduling and assignment, notifications delegated to service
+    // OCP: New notification types can be added without modifying this method
     @Override
     public BulkRequestDTO scheduleAndNotifyPickup(Long requestId, LocalDateTime scheduledDate, Long collectorId) {
         BulkRequest bulkRequest = bulkRequestRepository.findById(requestId)
@@ -459,7 +480,7 @@ public class BulkRequestServiceImpl implements BulkRequestService {
             
             bulkRequest.setCollectorAssigned(collectorId);
             
-            // Notify collector about assignment
+            // SRP: Notification logic delegated to NotificationService
             notificationService.notifyCollectorBulkAssignment(collector, bulkRequest);
         }
         
@@ -469,7 +490,7 @@ public class BulkRequestServiceImpl implements BulkRequestService {
         
         BulkRequest updatedRequest = bulkRequestRepository.save(bulkRequest);
         
-        // Send pickup schedule notification to user
+        // DIP: Don't know if notification is email, SMS, or push - depends on interface
         notificationService.sendPickupScheduleNotification(updatedRequest.getUser(), updatedRequest);
         
         return convertToDTO(updatedRequest);

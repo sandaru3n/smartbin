@@ -33,10 +33,27 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.HashMap;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN AUTHORITY CONTROLLER
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This controller has ONE responsibility: Handle HTTP requests for authority features.
+ *     Each method handles one specific endpoint. Business logic delegated to service layer.
+ * 
+ * I - Interface Segregation Principle (ISP):
+ *     Controller depends on multiple focused service interfaces (BinService, RouteService, etc.)
+ *     rather than one giant service. Each service has specific responsibilities.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controller depends on Service INTERFACES, not concrete implementations.
+ *     All dependencies injected via constructor for loose coupling and testability.
+ */
 @Controller
 @RequestMapping("/authority")
 public class AuthorityController {
 
+    // DIP: Depend on service abstractions (interfaces), not concrete classes
+    // ISP: Multiple focused services instead of one monolithic service
     private final BinService binService;
     private final RouteService routeService;
     private final ReportService reportService;
@@ -46,6 +63,7 @@ public class AuthorityController {
     private final CollectionService collectionService;
     private final BulkRequestService bulkRequestService;
 
+    // DIP: Constructor injection for loose coupling and easy testing/mocking
     public AuthorityController(BinService binService,
                                RouteService routeService,
                                ReportService reportService,
@@ -1010,11 +1028,15 @@ public class AuthorityController {
     // ======================== Bulk Request Management Endpoints ========================
     
     /**
+     * SRP: This method has ONE job - display bulk requests page
+     * OCP: New filters can be added without modifying core display logic
+     * 
      * View all bulk requests
      */
     @GetMapping("/bulk-requests")
     public String manageBulkRequests(HttpSession session, Model model,
                                     @RequestParam(required = false) String status) {
+        // SRP: Authentication/validation extracted to helper method
         User user = validateAuthorityUser(session);
         if (user == null) {
             return "redirect:/authority/login";
@@ -1022,6 +1044,7 @@ public class AuthorityController {
         
         List<BulkRequestDTO> bulkRequests;
         
+        // DIP: Controller doesn't know HOW data is fetched, just calls service methods
         if (status != null && !status.isEmpty()) {
             try {
                 BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
@@ -1074,6 +1097,9 @@ public class AuthorityController {
     }
     
     /**
+     * SRP: Method only handles HTTP request/response, assignment logic in service
+     * DIP: Depends on BulkRequestService interface for assignment processing
+     * 
      * Assign collector to bulk request
      */
     @PostMapping("/bulk-requests/{requestId}/assign-collector")
@@ -1087,6 +1113,8 @@ public class AuthorityController {
         }
         
         try {
+            // SRP: Business logic (validation, notification) handled in service layer
+            // DIP: Controller doesn't know implementation details of assignment
             bulkRequestService.assignCollector(requestId, collectorId);
             redirectAttributes.addFlashAttribute("successMessage", 
                 "Collector assigned successfully to bulk request!");
@@ -1100,6 +1128,9 @@ public class AuthorityController {
     }
     
     /**
+     * SRP: Only handles HTTP request/response, scheduling and notification in service
+     * OCP: New scheduling types can be added in service without modifying controller
+     * 
      * Schedule pickup for bulk request
      */
     @PostMapping("/bulk-requests/{requestId}/schedule")
@@ -1115,6 +1146,8 @@ public class AuthorityController {
         
         try {
             LocalDateTime scheduledDate = LocalDateTime.parse(scheduledDateTime);
+            // SRP: Notification and scheduling logic encapsulated in service
+            // DIP: Controller doesn't know how notifications are sent
             bulkRequestService.scheduleAndNotifyPickup(requestId, scheduledDate, collectorId);
             
             redirectAttributes.addFlashAttribute("successMessage", 
@@ -1129,6 +1162,9 @@ public class AuthorityController {
     }
     
     /**
+     * SRP: Method only handles status update HTTP endpoint
+     * OCP: New statuses can be added to enum without modifying this method
+     * 
      * Update bulk request status
      */
     @PostMapping("/bulk-requests/{requestId}/update-status")
@@ -1143,6 +1179,7 @@ public class AuthorityController {
         
         try {
             BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+            // DIP: Status update logic handled in service layer
             BulkRequestDTO updatedRequest = bulkRequestService.updateRequestStatus(requestId, requestStatus);
             
             Map<String, Object> response = new HashMap<>();

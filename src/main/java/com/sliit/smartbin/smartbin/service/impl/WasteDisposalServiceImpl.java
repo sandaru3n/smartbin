@@ -14,20 +14,34 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Implementation of WasteDisposalService
- * Following Open/Closed Principle - open for extension, closed for modification
+ * SOLID PRINCIPLES APPLIED IN WASTE DISPOSAL SERVICE IMPLEMENTATION
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This class ONLY handles waste disposal submission and validation.
+ *     Bin updates delegated to BinService, notifications to NotificationService.
+ * 
+ * O - Open/Closed Principle (OCP):
+ *     Open for extension (can add new validation rules via methods)
+ *     Closed for modification (core disposal logic remains stable).
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Depends on Repository and Service interfaces, not concrete implementations.
+ *     BinService and NotificationService can be swapped without changes here.
  */
 @Service
 public class WasteDisposalServiceImpl implements WasteDisposalService {
     
+    // DIP: Depend on abstractions (interfaces), not concrete classes
     private final WasteDisposalRepository wasteDisposalRepository;
     private final BinRepository binRepository;
     private final BinService binService;
     private final NotificationService notificationService;
     
+    // OCP: Configuration constants can be extended without modifying core logic
     private static final int FULL_THRESHOLD = 80;
     private static final int MAX_RETRIES = 3;
     
+    // DIP: Constructor injection promotes loose coupling and testability
     public WasteDisposalServiceImpl(WasteDisposalRepository wasteDisposalRepository,
                                     BinRepository binRepository,
                                     BinService binService,
@@ -67,7 +81,7 @@ public class WasteDisposalServiceImpl implements WasteDisposalService {
                 // Save disposal
                 WasteDisposal savedDisposal = wasteDisposalRepository.save(disposal);
                 
-                // Update bin fill level
+                // SRP: Bin update logic is in BinService, not here
                 binService.updateBinFillLevel(bin.getId(), fillLevel);
                 
                 // Confirm disposal
@@ -76,6 +90,7 @@ public class WasteDisposalServiceImpl implements WasteDisposalService {
                 
                 // Check if bin needs collection
                 if (checkIfBinNeedsCollection(bin.getId())) {
+                    // SRP: Notification logic delegated to NotificationService
                     sendCollectionNotification(bin);
                 }
                 
