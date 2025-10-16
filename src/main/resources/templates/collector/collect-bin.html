@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collect Bin - SmartBin Collector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #fafafa;
+            color: #202124;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: #fff;
+            color: #202124;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            border-bottom: 1px solid #dadce0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 24px;
+            min-height: 64px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #5f6368;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #f1f3f4;
+            color: #202124;
+            text-decoration: none;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 400;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        .bin-info-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+            margin-bottom: 24px;
+        }
+
+        .bin-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #dadce0;
+        }
+
+        .bin-icon {
+            width: 56px;
+            height: 56px;
+            background: #e8f0fe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a73e8;
+        }
+
+        .bin-details h2 {
+            color: #202124;
+            font-size: 24px;
+            margin-bottom: 4px;
+            font-weight: 400;
+        }
+
+        .bin-id {
+            color: #5f6368;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .bin-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dadce0;
+        }
+
+        .info-label {
+            color: #5f6368;
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #202124;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .collection-form-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+            margin-bottom: 24px;
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #202124;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .waste-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .waste-type-option {
+            position: relative;
+        }
+
+        .waste-type-option input[type="radio"] {
+            display: none;
+        }
+
+        .waste-type-option label {
+            display: block;
+            padding: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        .waste-type-option input[type="radio"]:checked + label {
+            border-color: #1a73e8;
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        .waste-type-option label:hover {
+            border-color: #1a73e8;
+            background: #f8f9fa;
+        }
+
+        .waste-level-slider {
+            margin: 1rem 0;
+        }
+
+        .slider-container {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a73e8;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a73e8;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .current-level {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 400;
+            color: #1a73e8;
+            margin: 16px 0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 24px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            margin-top: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 4px rgba(0,0,0,.2);
+        }
+
+        .btn-secondary {
+            background: #5f6368;
+            margin-top: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #494949;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background-color: #e6f4ea;
+            color: #137333;
+            border-color: #34a853;
+        }
+
+        .alert-error {
+            background-color: #fce8e6;
+            color: #d93025;
+            border-color: #ea4335;
+        }
+
+        .gps-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .unlock-status {
+            background: #e6f4ea;
+            border: 1px solid #34a853;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .unlock-status.unlocked {
+            background: #e6f4ea;
+            border-color: #34a853;
+        }
+
+        .unlock-status.locked {
+            background: #fef7e0;
+            border-color: #ea8600;
+        }
+
+        .unlock-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .unlocked .unlock-icon {
+            color: #34a853;
+        }
+
+        .locked .unlock-icon {
+            color: #ea8600;
+        }
+
+        .unlock-status h3 {
+            color: #202124;
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .unlock-status p {
+            color: #5f6368;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header-content {
+                padding: 8px 16px;
+            }
+
+            .bin-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .waste-type-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/collector/scan-qr" class="back-btn">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1 class="header-title">
+                    <span class="material-icons">delete</span>
+                    Collect Bin
+                </h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success">
+            <span class="material-icons">check_circle</span>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <span class="material-icons">error</span>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Bin Information Card -->
+        <div class="bin-info-card">
+            <div class="bin-header">
+                <div class="bin-icon">
+                    <span class="material-icons">delete</span>
+                </div>
+                <div class="bin-details">
+                    <h2 th:text="${bin.location}">Colombo Central Market</h2>
+                    <div class="bin-id">Bin ID: <span th:text="${bin.qrCode}">BIN-001-ABC123</span></div>
+                </div>
+            </div>
+            
+            <div class="bin-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Type:</span>
+                    <span class="info-value" th:text="${bin.binType}">Standard</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Fill Level:</span>
+                    <span class="info-value" th:text="${bin.fillLevel} + '%'">75%</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value" th:text="${bin.status}">Active</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Location:</span>
+                    <span class="info-value" th:text="${bin.location}">Colombo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPS Navigation Card -->
+        <div class="bin-info-card">
+            <h2 class="form-title">
+                <span class="material-icons">navigation</span>
+                GPS Navigation
+            </h2>
+            <div class="gps-info">
+                <div class="info-item">
+                    <span class="info-label">Latitude:</span>
+                    <span class="info-value" th:text="${bin.latitude}">6.9271</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Longitude:</span>
+                    <span class="info-value" th:text="${bin.longitude}">79.8612</span>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="openGoogleMaps()" style="margin-top: 16px;">
+                <span class="material-icons">directions</span>
+                Get Directions (GPS)
+            </button>
+        </div>
+
+        <!-- Unlock Status -->
+        <div class="unlock-status unlocked">
+            <div class="unlock-icon">
+                <span class="material-icons">lock_open</span>
+            </div>
+            <h3>Bin Unlocked Successfully</h3>
+            <p>You can now collect waste from this bin. Complete the collection form below.</p>
+        </div>
+
+        <!-- Collection Form -->
+        <div class="collection-form-card">
+            <h2 class="form-title">
+                <span class="material-icons">assignment</span>
+                Waste Collection Form
+            </h2>
+            
+            <form th:action="@{/collector/bin/{id}/collect(id=${bin.id})}" method="post">
+                <!-- Waste Type Selection -->
+                <div class="form-group">
+                    <label>Waste Type</label>
+                    <div class="waste-type-grid">
+                        <div class="waste-type-option">
+                            <input type="radio" id="general" name="wasteType" value="GENERAL" required>
+                            <label for="general">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">delete</span>
+                                General Waste
+                            </label>
+                        </div>
+                        <div class="waste-type-option">
+                            <input type="radio" id="recyclable" name="wasteType" value="RECYCLABLE" required>
+                            <label for="recyclable">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">recycling</span>
+                                Recyclable
+                            </label>
+                        </div>
+                        <div class="waste-type-option">
+                            <input type="radio" id="organic" name="wasteType" value="ORGANIC" required>
+                            <label for="organic">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">eco</span>
+                                Organic
+                            </label>
+                        </div>
+                        <div class="waste-type-option">
+                            <input type="radio" id="hazardous" name="wasteType" value="HAZARDOUS" required>
+                            <label for="hazardous">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">warning</span>
+                                Hazardous
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waste Level -->
+                <div class="form-group">
+                    <label>Waste Level Found</label>
+                    <div class="waste-level-slider">
+                        <div class="slider-container">
+                            <input type="range" 
+                                   id="wasteLevel" 
+                                   name="wasteLevel" 
+                                   min="0" 
+                                   max="100" 
+                                   value="75" 
+                                   class="slider"
+                                   required>
+                            <div class="slider-labels">
+                                <span>Empty</span>
+                                <span>Half Full</span>
+                                <span>Full</span>
+                            </div>
+                        </div>
+                        <div class="current-level">
+                            <span id="levelDisplay">75%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collection Notes -->
+                <div class="form-group">
+                    <label for="notes">Collection Notes (Optional)</label>
+                    <textarea id="notes" 
+                              name="notes" 
+                              placeholder="Add any notes about the collection (e.g., bin condition, issues encountered, etc.)"></textarea>
+                </div>
+
+                <!-- Submit Buttons -->
+                <button type="submit" class="btn">
+                    <span class="material-icons">check_circle</span>
+                    Complete Collection
+                </button>
+                
+                <a href="/collector/dashboard" class="btn btn-secondary">
+                    <span class="material-icons">cancel</span>
+                    Cancel Collection
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Update waste level display
+        const slider = document.getElementById('wasteLevel');
+        const levelDisplay = document.getElementById('levelDisplay');
+
+        slider.addEventListener('input', function() {
+            levelDisplay.textContent = this.value + '%';
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const wasteType = document.querySelector('input[name="wasteType"]:checked');
+            const wasteLevel = document.getElementById('wasteLevel').value;
+
+            if (!wasteType) {
+                e.preventDefault();
+                alert('Please select a waste type');
+                return;
+            }
+
+            if (!wasteLevel || wasteLevel < 0 || wasteLevel > 100) {
+                e.preventDefault();
+                alert('Please set a valid waste level');
+                return;
+            }
+
+            // Show confirmation
+            const confirmed = confirm(`Confirm collection:\nWaste Type: ${wasteType.value}\nLevel: ${wasteLevel}%`);
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        });
+
+        // Auto-select waste type based on bin type (if applicable)
+        document.addEventListener('DOMContentLoaded', function() {
+            // This could be enhanced to pre-select based on bin type
+            console.log('Collection form loaded');
+        });
+
+        // 5a. Collector navigates to each recycle bin using GPS
+        // 5b. GPS provides directions to the collector
+        function openGoogleMaps() {
+            const latitude = /*[[${bin.latitude}]]*/ '6.9271';
+            const longitude = /*[[${bin.longitude}]]*/ '79.8612';
+            const location = /*[[${bin.location}]]*/ 'Bin Location';
+            
+            // Check if user is on mobile device
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Open Google Maps app if available
+                window.location.href = `geo:${latitude},${longitude}?q=${latitude},${longitude}(${encodeURIComponent(location)})`;
+            } else {
+                // Open Google Maps in browser
+                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+                window.open(mapsUrl, '_blank');
+            }
+            
+            // Log navigation event
+            console.log(`GPS Navigation started to: ${location} (${latitude}, ${longitude})`);
+        }
+
+        // Get current location and calculate distance
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const binLat = /*[[${bin.latitude}]]*/ 6.9271;
+                    const binLng = /*[[${bin.longitude}]]*/ 79.8612;
+                    
+                    const distance = calculateDistance(userLat, userLng, binLat, binLng);
+                    console.log(`Distance to bin: ${distance.toFixed(2)} km`);
+                }, function(error) {
+                    console.error('Error getting location:', error);
+                });
+            }
+        }
+
+        // Calculate distance between two coordinates (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of Earth in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Initialize location tracking when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            getCurrentLocation();
+        });
+    </script>
+</body>
+</html>

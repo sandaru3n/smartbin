@@ -10,6 +10,7 @@ import com.sliit.smartbin.smartbin.repository.CollectionRepository;
 import com.sliit.smartbin.smartbin.repository.RouteBinRepository;
 import com.sliit.smartbin.smartbin.repository.RouteRepository;
 import com.sliit.smartbin.smartbin.repository.UserRepository;
+import com.sliit.smartbin.smartbin.repository.BinAssignmentRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
     private final CollectionRepository collectionRepository;
     private final RouteRepository routeRepository;
     private final RouteBinRepository routeBinRepository;
+    private final BinAssignmentRepository binAssignmentRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -32,12 +34,14 @@ public class DataInitializer implements CommandLineRunner {
                            BinRepository binRepository,
                            CollectionRepository collectionRepository,
                            RouteRepository routeRepository,
-                           RouteBinRepository routeBinRepository) {
+                           RouteBinRepository routeBinRepository,
+                           BinAssignmentRepository binAssignmentRepository) {
         this.userRepository = userRepository;
         this.binRepository = binRepository;
         this.collectionRepository = collectionRepository;
         this.routeRepository = routeRepository;
         this.routeBinRepository = routeBinRepository;
+        this.binAssignmentRepository = binAssignmentRepository;
     }
 
     @Override
@@ -46,6 +50,7 @@ public class DataInitializer implements CommandLineRunner {
         
         // Clear existing data to ensure fresh start
         System.out.println("Clearing existing data...");
+        binAssignmentRepository.deleteAll(); // Delete bin assignments first (has FK to users)
         routeBinRepository.deleteAll();
         collectionRepository.deleteAll();
         routeRepository.deleteAll();
@@ -108,6 +113,15 @@ public class DataInitializer implements CommandLineRunner {
             User.UserRole.COLLECTOR
         );
 
+        createUser(
+            "Collector One",
+            "collecter1@gmail.com",
+            "password123",
+            "+94 771234567",
+            "Collector Street, Colombo",
+            User.UserRole.COLLECTOR
+        );
+
         // Create sample authority users
         createUser(
             "Admin Authority",
@@ -166,6 +180,7 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("  Email: david.collector@smartbin.com");
         System.out.println("  Email: emma.collector@smartbin.com");
         System.out.println("  Email: james.collector@smartbin.com");
+        System.out.println("  Email: collecter1@gmail.com");
         System.out.println("\nAUTHORITY ACCOUNTS:");
         System.out.println("  Email: admin.authority@smartbin.com");
         System.out.println("  Email: lisa.authority@smartbin.com");
@@ -337,6 +352,25 @@ public class DataInitializer implements CommandLineRunner {
             }
             
             System.out.println("✓ Created " + collectionCount + " sample collections");
+            
+            // Ensure specific collector (collecter1@gmail.com) has collections for testing
+            User testCollector = userRepository.findByEmail("collecter1@gmail.com").orElse(null);
+            if (testCollector != null && bins.size() >= 10) {
+                // Add 10 more collections specifically for this collector
+                for (int i = 0; i < 10; i++) {
+                    Bin bin = bins.get(i);
+                    Collection.CollectionType type = (i % 3 == 0) ? Collection.CollectionType.RECYCLING : 
+                                                     (i % 3 == 1) ? Collection.CollectionType.BULK : 
+                                                     Collection.CollectionType.STANDARD;
+                    int daysAgo = i / 3; // 0, 0, 0, 1, 1, 1, 2, 2, 2, 3
+                    createCollection(bin, testCollector, type, 
+                                   Collection.CollectionStatus.COMPLETED, 
+                                   type == Collection.CollectionType.RECYCLING ? "Recyclables" : 
+                                   type == Collection.CollectionType.BULK ? "Bulk waste" : "Mixed waste", 
+                                   85 + i, daysAgo);
+                }
+                System.out.println("✓ Added 10 collections for test collector (collecter1@gmail.com)");
+            }
         }
     }
     

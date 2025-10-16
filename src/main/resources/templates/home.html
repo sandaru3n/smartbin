@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartBin - Waste Management System</title>
+    <title>SmartBin - Intelligent Waste Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,203 +14,830 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Roboto', Arial, sans-serif;
+            background: #ffffff;
+            color: #202124;
+            line-height: 1.6;
         }
 
-        .navbar {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .navbar-content {
+        .header-content {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .nav-links a {
-            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
             text-decoration: none;
-            margin-left: 2rem;
-            font-weight: 500;
-            transition: color 0.3s;
         }
 
-        .nav-links a:hover {
-            color: #667eea;
-        }
-
-        .container {
-            flex: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-            text-align: center;
-        }
-
-        .hero {
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 75%, #ea4335 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            margin-bottom: 4rem;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .card h3 {
-            color: #333;
-            margin-bottom: 1rem;
             font-size: 1.5rem;
         }
 
-        .card p {
-            color: #666;
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: #f8f9fa;
+            color: #202124;
+        }
+
+        .nav-links .btn-signin {
+            background: #1a73e8;
+            color: white;
+            padding: 0.625rem 1.5rem;
+        }
+
+        .nav-links .btn-signin:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 5rem 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 400;
             margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-hero-primary {
+            background: white;
+            color: #1a73e8;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .btn-hero-primary:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        .btn-hero-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn-hero-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            background: #fafafa;
+        }
+
+        .features-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            font-size: 1.125rem;
+            color: #5f6368;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .feature-icon.blue {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .feature-icon.green {
+            background: #e6f4ea;
+            color: #34a853;
+        }
+
+        .feature-icon.yellow {
+            background: #fef7e0;
+            color: #fbbc04;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: #5f6368;
+            font-size: 0.875rem;
             line-height: 1.6;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 0.8rem 2rem;
+        /* Portal Cards Section */
+        .portals {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .portals-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .portals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .portal-card {
+            background: white;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4285f4, #34a853, #fbbc04, #ea4335);
+        }
+
+        .portal-card:hover {
+            box-shadow: 0 2px 8px 0 rgba(60,64,67,.3), 0 8px 16px 4px rgba(60,64,67,.15);
+            transform: translateY(-8px);
+            border-color: #1a73e8;
+        }
+
+        .portal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .portal-icon.resident {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: none;
-            cursor: pointer;
         }
 
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
+        .portal-icon.collector {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
+        .portal-icon.authority {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .portal-card h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #202124;
             margin-bottom: 1rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+        }
+
+        .portal-card p {
+            color: #5f6368;
+            font-size: 0.9375rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-portal {
+            padding: 0.75rem 2rem;
+            background: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .btn-portal:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 2rem;
+            background: #f8f9fa;
+        }
+
+        .stats-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dadce0;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #5f6368;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background: #f8f9fa;
+            border-top: 1px solid #dadce0;
+            padding: 3rem 2rem;
+            color: #5f6368;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            color: #202124;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-section a {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: #1a73e8;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid #dadce0;
+            text-align: center;
+            font-size: 0.8125rem;
+            color: #5f6368;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f6368;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background: #1a73e8;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.125rem;
+            }
+
+            .features-grid,
+            .portals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Alert */
+        .alert {
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #e6f4ea;
+            color: #137333;
+            border: 1px solid #34a853;
         }
 
-        footer {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 2rem;
-            text-align: center;
-            color: #666;
+        .alert .material-icons {
+            font-size: 1.5rem;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="logo">🗑️ SmartBin</div>
-            <div class="nav-links">
-                <a href="/home">Home</a>
-                <a href="/signup">Sign Up</a>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <span class="material-icons">delete</span>
+                </div>
+                <span>SmartBin</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#portals">Portals</a>
+                <a href="#about">About</a>
+                <a href="/signup" class="btn-signin">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Success Message -->
+    <div th:if="${success}" class="alert alert-success">
+        <span class="material-icons">check_circle</span>
+        <span th:text="${success}"></span>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Intelligent Waste Management<br>for a Cleaner Tomorrow</h1>
+            <p>Smart bin monitoring, optimized collection routes, and real-time analytics for efficient waste management</p>
+            <div class="hero-buttons">
+                <a href="/signup" class="btn-hero btn-hero-primary">
+                    <span class="material-icons">rocket_launch</span>
+                    Get Started Free
+                </a>
+                <a href="#features" class="btn-hero btn-hero-secondary">
+                    <span class="material-icons">play_circle</span>
+                    Learn More
+                </a>
             </div>
         </div>
-    </nav>
+    </section>
 
-    <div class="container">
-        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
-        <div class="hero">
-            <h1>Welcome to SmartBin</h1>
-            <p>Intelligent Waste Management for a Cleaner Tomorrow</p>
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="features-content">
+            <div class="section-title">
+                <h2>Powerful Features</h2>
+                <p>Everything you need for efficient waste management</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon blue">
+                        <span class="material-icons">sensors</span>
+                    </div>
+                    <h3>Smart Bin Monitoring</h3>
+                    <p>Real-time fill level tracking with IoT sensors and automated alerts for optimized collection schedules</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon green">
+                        <span class="material-icons">route</span>
+                    </div>
+                    <h3>Optimized Routes</h3>
+                    <p>AI-powered route optimization for waste collectors to minimize fuel costs and collection time</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon yellow">
+                        <span class="material-icons">qr_code_scanner</span>
+                    </div>
+                    <h3>QR Code Scanning</h3>
+                    <p>Quick bin identification and collection tracking using QR codes for accurate record keeping</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon blue">
+                        <span class="material-icons">analytics</span>
+                    </div>
+                    <h3>Real-Time Analytics</h3>
+                    <p>Comprehensive dashboards and reports for data-driven decision making and performance tracking</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon green">
+                        <span class="material-icons">location_on</span>
+                    </div>
+                    <h3>GPS Navigation</h3>
+                    <p>Turn-by-turn navigation for collectors to reach bins efficiently with real-time location tracking</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon yellow">
+                        <span class="material-icons">notifications_active</span>
+                    </div>
+                    <h3>Smart Notifications</h3>
+                    <p>Automated alerts for full bins, missed pickups, and route assignments to keep operations smooth</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="cards-container">
-            <div class="card">
-                <div class="card-icon">🏠</div>
+    <!-- Portals Section -->
+    <section id="portals" class="portals">
+        <div class="portals-content">
+            <div class="section-title">
+                <h2>Choose Your Portal</h2>
+                <p>Select your role to access the appropriate dashboard</p>
+            </div>
+            <div class="portals-grid">
+                <div class="portal-card">
+                    <div class="portal-icon resident">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">home</span>
+        </div>
                 <h3>Resident Portal</h3>
-                <p>Manage your waste collection schedules, track pickups, and contribute to a cleaner environment.</p>
-                <a href="/resident/login" class="btn">Resident Login</a>
+                    <p>Track your waste collection schedules, view pickup history, and manage your household waste efficiently</p>
+                    <a href="/resident/login" class="btn-portal">
+                        <span class="material-icons">login</span>
+                        Resident Login
+                    </a>
             </div>
 
-            <div class="card">
-                <div class="card-icon">🚛</div>
+                <div class="portal-card">
+                    <div class="portal-icon collector">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">local_shipping</span>
+                    </div>
                 <h3>Waste Collector</h3>
-                <p>Access collection routes, update pickup status, and optimize waste collection efficiency.</p>
-                <a href="/collector/login" class="btn">Collector Login</a>
+                    <p>Access your collection routes, scan QR codes, update bin status, and track daily performance metrics</p>
+                    <a href="/collector/login" class="btn-portal">
+                        <span class="material-icons">login</span>
+                        Collector Login
+                    </a>
             </div>
 
-            <div class="card">
-                <div class="card-icon">🏛️</div>
+                <div class="portal-card">
+                    <div class="portal-icon authority">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">admin_panel_settings</span>
+                    </div>
                 <h3>Management Authority</h3>
-                <p>Monitor operations, analyze data, and manage the waste management system effectively.</p>
-                <a href="/authority/login" class="btn">Authority Login</a>
+                    <p>Monitor city-wide operations, assign routes, analyze data, and manage the entire waste management system</p>
+                    <a href="/authority/login" class="btn-portal">
+                        <span class="material-icons">login</span>
+                        Authority Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-content">
+            <div class="section-title">
+                <h2>Making an Impact</h2>
+                <p>Our platform is driving sustainable waste management</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="10K+">0</div>
+                    <div class="stat-label">Bins Monitored</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="500+">0</div>
+                    <div class="stat-label">Active Collectors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="50K+">0</div>
+                    <div class="stat-label">Collections Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="95%">0</div>
+                    <div class="stat-label">Efficiency Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="about">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About SmartBin</h4>
+                <p style="color: #5f6368; font-size: 0.875rem; line-height: 1.6;">
+                    SmartBin is an intelligent waste management system that leverages IoT technology, 
+                    real-time analytics, and optimized routing to create cleaner, more sustainable cities.
+                </p>
+                <div class="social-links" style="margin-top: 1.5rem;">
+                    <a href="#" class="social-link">
+                        <span class="material-icons">facebook</span>
+                    </a>
+                    <a href="#" class="social-link">
+                        <span class="material-icons">link</span>
+                    </a>
+                    <a href="#" class="social-link">
+                        <span class="material-icons">mail</span>
+                    </a>
             </div>
         </div>
 
-        <div style="margin-top: 3rem;">
-            <a href="/signup" class="btn btn-secondary" style="font-size: 1.2rem; padding: 1rem 3rem;">Get Started - Sign Up Now</a>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#portals">Portals</a></li>
+                    <li><a href="/signup">Sign Up</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Portals</h4>
+                <ul>
+                    <li><a href="/resident/login">Resident Portal</a></li>
+                    <li><a href="/collector/login">Collector Portal</a></li>
+                    <li><a href="/authority/login">Authority Portal</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2025 SmartBin - Waste Management System. All rights reserved.</p>
+        <div class="footer-bottom">
+            <p>&copy; 2025 SmartBin - Intelligent Waste Management System. All rights reserved.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+                Powered by IoT Technology | Made with <span style="color: #ea4335;">♥</span> for a Cleaner Future
+            </p>
+        </div>
     </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animate counting numbers
+        function animateNumber(element, target, duration = 2000, suffix = '') {
+            const start = 0;
+            const increment = target / (duration / 16); // 60fps
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                // Format number with K suffix if needed
+                let displayValue;
+                if (suffix === 'K+') {
+                    displayValue = Math.floor(current / 1000) + 'K+';
+                } else if (suffix === '%') {
+                    displayValue = Math.floor(current) + '%';
+                } else if (suffix === '+') {
+                    displayValue = Math.floor(current) + '+';
+                } else {
+                    displayValue = Math.floor(current);
+                }
+                
+                element.textContent = displayValue;
+            }, 16);
+        }
+
+        // Animate stats on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    
+                    // Animate stat numbers
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(statNum => {
+                        const text = statNum.getAttribute('data-target');
+                        if (text === '10K+') {
+                            animateNumber(statNum, 10000, 2000, 'K+');
+                        } else if (text === '500+') {
+                            animateNumber(statNum, 500, 2000, '+');
+                        } else if (text === '50K+') {
+                            animateNumber(statNum, 50000, 2000, 'K+');
+                        } else if (text === '95%') {
+                            animateNumber(statNum, 95, 2000, '%');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe stats section
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Observe other cards
+        document.querySelectorAll('.stat-card, .feature-card, .portal-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            cardObserver.observe(card);
+        });
+    </script>
 </body>
 </html>
-
