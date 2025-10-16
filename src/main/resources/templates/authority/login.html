@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authority Login - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,9 +14,88 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 75%, #ea4335 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: #f8f9fa;
+            color: #202124;
+        }
+
+        .nav-links .btn-signup {
+            background: #1a73e8;
+            color: white;
+            padding: 0.625rem 1.5rem;
+        }
+
+        .nav-links .btn-signup:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .main-content {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -167,6 +248,26 @@
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <span class="material-icons">delete</span>
+                </div>
+                <span>SmartBin</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/#features">Features</a>
+                <a href="/#portals">Portals</a>
+                <a href="/#about">About</a>
+                <a href="/signup" class="btn-signup">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-content">
     <div class="login-container">
         <div class="login-sidebar">
             <div class="icon">🏛️</div>
@@ -197,9 +298,10 @@
 
             <div class="links">
                 <a href="/signup">Create Account</a> | 
-                <a href="/home">Back to Home</a>
+                <a href="/">Back to Home</a>
             </div>
         </div>
+    </div>
     </div>
 </body>
 </html>

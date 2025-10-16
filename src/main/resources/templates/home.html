@@ -52,13 +52,14 @@
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 75%, #ea4335 100%);
-            border-radius: 8px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .nav-links {
@@ -83,12 +84,23 @@
         }
 
         .nav-links .btn-signin {
+            background: transparent;
+            color: #1a73e8;
+            border: 1.5px solid #1a73e8;
+            padding: 0.5rem 1.25rem;
+        }
+
+        .nav-links .btn-signin:hover {
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-links .btn-getstarted {
             background: #1a73e8;
             color: white;
             padding: 0.625rem 1.5rem;
         }
 
-        .nav-links .btn-signin:hover {
+        .nav-links .btn-getstarted:hover {
             background: #1557b0;
             box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
@@ -470,6 +482,12 @@
         }
 
         /* Responsive */
+        @media (max-width: 968px) {
+            .nav-links a:not(.btn-signin):not(.btn-getstarted) {
+                display: none;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
@@ -486,6 +504,20 @@
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header-content {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 0.75rem;
+            }
+
+            .nav-links .btn-signin,
+            .nav-links .btn-getstarted {
+                padding: 0.5rem 1rem;
+                font-size: 0.8125rem;
             }
         }
 
@@ -522,10 +554,12 @@
                 <span>SmartBin</span>
             </a>
             <nav class="nav-links">
+                <a href="/">Home</a>
                 <a href="#features">Features</a>
                 <a href="#portals">Portals</a>
                 <a href="#about">About</a>
-                <a href="/signup" class="btn-signin">Get Started</a>
+                <a href="/login" class="btn-signin">Sign In</a>
+                <a href="/signup" class="btn-getstarted">Get Started</a>
             </nav>
         </div>
     </header>
@@ -622,7 +656,7 @@
         </div>
                 <h3>Resident Portal</h3>
                     <p>Track your waste collection schedules, view pickup history, and manage your household waste efficiently</p>
-                    <a href="/resident/login" class="btn-portal">
+                    <a href="/login" class="btn-portal">
                         <span class="material-icons">login</span>
                         Resident Login
                     </a>
@@ -634,7 +668,7 @@
                     </div>
                 <h3>Waste Collector</h3>
                     <p>Access your collection routes, scan QR codes, update bin status, and track daily performance metrics</p>
-                    <a href="/collector/login" class="btn-portal">
+                    <a href="/login" class="btn-portal">
                         <span class="material-icons">login</span>
                         Collector Login
                     </a>
@@ -646,7 +680,7 @@
                     </div>
                 <h3>Management Authority</h3>
                     <p>Monitor city-wide operations, assign routes, analyze data, and manage the entire waste management system</p>
-                    <a href="/authority/login" class="btn-portal">
+                    <a href="/login" class="btn-portal">
                         <span class="material-icons">login</span>
                         Authority Login
                     </a>
@@ -718,6 +752,7 @@
             <div class="footer-section">
                 <h4>Portals</h4>
                 <ul>
+                    <li><a href="/login">Sign In</a></li>
                     <li><a href="/resident/login">Resident Portal</a></li>
                     <li><a href="/collector/login">Collector Portal</a></li>
                     <li><a href="/authority/login">Authority Portal</a></li>
