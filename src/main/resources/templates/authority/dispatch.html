@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dispatch Collector - SmartBin Authority</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,17 +17,17 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Google Sans', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
             min-height: 100vh;
-            color: #333;
+            color: #202124;
+            line-height: 1.5;
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            background: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -38,130 +42,140 @@
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
         }
 
         .nav-breadcrumb {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #666;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .nav-breadcrumb a {
-            color: #3498db;
+            color: #1a73e8;
             text-decoration: none;
+            transition: all 0.2s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
         }
 
         .nav-breadcrumb a:hover {
-            text-decoration: underline;
+            background: rgba(26, 115, 232, 0.08);
         }
 
         .main-container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
         }
 
         .page-header {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .page-title {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .page-icon {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            font-size: 1.5rem;
+            background: #1a73e8;
             color: white;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            padding: 0.75rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
         }
 
         .page-title h1 {
-            font-size: 2rem;
-            color: #2c3e50;
+            font-size: 1.5rem;
+            color: #202124;
             margin: 0;
+            font-weight: 400;
         }
 
         .page-description {
-            color: #666;
-            font-size: 1.1rem;
+            color: #5f6368;
+            font-size: 0.875rem;
             line-height: 1.6;
         }
 
         .dispatch-form {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .form-section {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             padding: 1.5rem;
             background: #f8f9fa;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            border: 1px solid #dadce0;
         }
 
         .section-header {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #dadce0;
         }
 
         .step-number {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            width: 32px;
+            height: 32px;
+            background: #1a73e8;
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            font-weight: 500;
+            font-size: 0.875rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .section-title h3 {
             margin: 0;
-            color: #2c3e50;
-            font-size: 1.2rem;
-            font-weight: 600;
+            color: #202124;
+            font-size: 1rem;
+            font-weight: 400;
         }
 
         .section-title p {
             margin: 0.25rem 0 0 0;
-            color: #666;
-            font-size: 0.9rem;
+            color: #5f6368;
+            font-size: 0.75rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .select-wrapper {
@@ -170,30 +184,32 @@
 
         .select-wrapper select {
             width: 100%;
-            padding: 1rem 3rem 1rem 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 0.875rem;
             background: white;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             appearance: none;
             cursor: pointer;
+            font-family: inherit;
+            color: #202124;
         }
 
         .select-wrapper select:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
         }
 
         .select-arrow {
             position: absolute;
-            right: 1rem;
+            right: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #666;
+            color: #5f6368;
             pointer-events: none;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .filter-options {
@@ -267,7 +283,7 @@
         .bin-list {
             max-height: 400px;
             overflow-y: auto;
-            border: 1px solid #e9ecef;
+            border: 1px solid #dadce0;
             border-radius: 8px;
             background: white;
         }
@@ -276,14 +292,14 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1rem;
-            border-bottom: 1px solid #f8f9fa;
-            transition: all 0.3s ease;
+            padding: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
         .bin-item:hover {
-            background: #f8f9ff;
+            background: #f8f9fa;
         }
 
         .bin-item:last-child {
@@ -497,29 +513,34 @@
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: #f8f9fa;
+            border-color: #1a73e8;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: #1a73e8;
             color: white;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            background: #1557b0;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            transform: translateY(-1px);
         }
 
         .btn-primary:disabled {
-            opacity: 0.6;
+            background: #dadce0;
+            color: #5f6368;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .dispatch-btn {
@@ -561,17 +582,19 @@
 
         .notification {
             position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: #27ae60;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: #34a853;
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
             z-index: 2000;
             transform: translateX(400px);
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
             max-width: 400px;
+            font-size: 0.875rem;
+            font-weight: 400;
         }
 
         .notification.show {
@@ -579,7 +602,7 @@
         }
 
         .notification.error {
-            background: #e74c3c;
+            background: #d93025;
         }
 
         /* Responsive Design */
@@ -714,7 +737,7 @@
 
                 <!-- Bin List -->
                 <div class="bin-list" id="binList">
-                    <div th:each="bin : ${fullBins}" class="bin-item" th:data-status="${bin.status}" th:data-alert="${bin.alertFlag}">
+                    <div th:each="bin : ${fullBins}" class="bin-item" th:data-status="${bin.status}" th:data-alert="${bin.alertFlag}" th:data-bin-id="${bin.id}">
                         <label class="bin-checkbox-wrapper">
                             <input type="checkbox" class="bin-checkbox" th:value="${bin.id}" th:id="'bin_' + ${bin.id}" onchange="updateSelectionCount()">
                             <div class="bin-checkbox-custom"></div>
@@ -780,12 +803,93 @@
         </form>
     </div>
 
+    <!-- Assignment History Table -->
+    <div class="main-container" id="assignmentHistoryContainer" style="display: none; margin-top: 2rem;">
+        <div class="dispatch-form">
+            <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="color: #202124; font-size: 1.25rem; font-weight: 400; margin: 0;">
+                    <i class="fas fa-history"></i> Assignment History
+                </h2>
+                <button class="btn-secondary" onclick="clearAssignmentHistory()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                    <i class="fas fa-trash-alt"></i> Clear History
+                </button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="collectors-table" id="assignmentHistoryTable" style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 500; font-size: 0.875rem; color: #5f6368; border-bottom: 1px solid #dadce0;">Collector</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 500; font-size: 0.875rem; color: #5f6368; border-bottom: 1px solid #dadce0;">Bins Assigned</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 500; font-size: 0.875rem; color: #5f6368; border-bottom: 1px solid #dadce0;">Assigned By</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 500; font-size: 0.875rem; color: #5f6368; border-bottom: 1px solid #dadce0;">Date & Time</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 500; font-size: 0.875rem; color: #5f6368; border-bottom: 1px solid #dadce0;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignmentHistoryBody">
+                        <!-- Assignment rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
     <script>
+        // Track assigned bins
+        let assignedBins = new Set();
+        let assignmentHistory = [];
+
+        // Load assignment history from database
+        function loadAssignmentHistory() {
+            console.log('Loading assignment history from database...');
+            
+            fetch('/authority/api/assignments/all')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Loaded assignments from database:', data);
+                    
+                    // Convert database format to local format
+                    assignmentHistory = data.map(assignment => ({
+                        collectorId: assignment.collectorId,
+                        collectorName: assignment.collectorName,
+                        binIds: assignment.binIds,
+                        binLocations: assignment.binLocations,
+                        assignedBy: assignment.assignedBy,
+                        dateTime: new Date(assignment.assignedAt).toLocaleString(),
+                        status: assignment.status
+                    }));
+                    
+                    assignedBins = new Set(assignmentHistory.flatMap(a => a.binIds));
+                    
+                    // Also save to localStorage as backup
+                    saveAssignmentHistory();
+                    
+                    displayAssignmentHistory();
+                    removeAssignedBinsFromList();
+                })
+                .catch(error => {
+                    console.error('Failed to load assignments from database:', error);
+                    // Fallback to localStorage
+                    const saved = localStorage.getItem('binAssignmentHistory');
+                    if (saved) {
+                        assignmentHistory = JSON.parse(saved);
+                        assignedBins = new Set(assignmentHistory.flatMap(a => a.binIds));
+                        displayAssignmentHistory();
+                        removeAssignedBinsFromList();
+                    }
+                });
+        }
+
+        // Save assignment history to localStorage
+        function saveAssignmentHistory() {
+            localStorage.setItem('binAssignmentHistory', JSON.stringify(assignmentHistory));
+        }
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
+            loadAssignmentHistory();
             updateBinCounts();
             updateSelectionCount();
             initializeFilterButtons();
@@ -891,6 +995,105 @@
             }, 5000);
         }
 
+        function removeAssignedBinsFromList() {
+            assignedBins.forEach(binId => {
+                const binItem = document.querySelector(`.bin-item[data-bin-id="${binId}"]`);
+                if (binItem) {
+                    binItem.remove();
+                }
+            });
+            updateBinCounts();
+        }
+
+        function displayAssignmentHistory() {
+            const tbody = document.getElementById('assignmentHistoryBody');
+            const container = document.getElementById('assignmentHistoryContainer');
+            
+            if (assignmentHistory.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            
+            tbody.innerHTML = assignmentHistory.map((assignment, index) => `
+                <tr style="transition: background 0.2s ease;">
+                    <td style="padding: 0.75rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem; color: #202124;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 32px; height: 32px; background: #1a73e8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 500; font-size: 0.75rem;">
+                                ${assignment.collectorName.charAt(0)}
+                            </div>
+                            <strong>${assignment.collectorName}</strong>
+                        </div>
+                    </td>
+                    <td style="padding: 0.75rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem; color: #202124;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                            ${assignment.binLocations.map(loc => `
+                                <span style="background: #e8f0fe; color: #1a73e8; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
+                                    ${loc}
+                                </span>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top: 0.25rem; color: #5f6368; font-size: 0.75rem;">
+                            ${assignment.binIds.length} bin(s)
+                        </div>
+                    </td>
+                    <td style="padding: 0.75rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem; color: #202124;">
+                        ${assignment.assignedBy}
+                    </td>
+                    <td style="padding: 0.75rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem; color: #5f6368;">
+                        ${assignment.dateTime}
+                    </td>
+                    <td style="padding: 0.75rem; border-bottom: 1px solid #f0f0f0; font-size: 0.875rem;">
+                        <span style="background: #34a853; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                            <i class="fas fa-check-circle"></i> Assigned
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function clearAssignmentHistory() {
+            if (confirm('Are you sure you want to clear all assignment history? This will make all bins available for assignment again.')) {
+                // Clear from database
+                fetch('/authority/api/assignments/clear', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Database assignments cleared:', data);
+                    
+                    // Clear local data
+                    assignmentHistory = [];
+                    assignedBins = new Set();
+                    localStorage.removeItem('binAssignmentHistory');
+                    displayAssignmentHistory();
+                    
+                    showNotification('Assignment history cleared. Page will reload.', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Failed to clear assignments from database:', error);
+                    
+                    // Clear localStorage anyway
+                    assignmentHistory = [];
+                    assignedBins = new Set();
+                    localStorage.removeItem('binAssignmentHistory');
+                    displayAssignmentHistory();
+                    
+                    showNotification('Local history cleared. Page will reload.', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                });
+            }
+        }
+
         function showRoutePreview(routeData) {
             const routePreviewSection = document.getElementById('routePreviewSection');
             const routePreview = document.getElementById('routePreview');
@@ -968,15 +1171,84 @@
                 btnLoading.style.display = 'none';
                 
                 if (data.success) {
-                    showNotification('Route optimized and dispatched successfully!', 'success');
+                    // Get collector name
+                    const collectorSelect = document.getElementById('collectorSelect');
+                    const collectorName = collectorSelect.options[collectorSelect.selectedIndex].text;
                     
-                    // Show route preview
-                    showRoutePreview(data);
+                    // Get bin locations
+                    const binLocations = selectedBins.map(binId => {
+                        const binItem = document.querySelector(`.bin-item[data-bin-id="${binId}"]`);
+                        if (binItem) {
+                            return binItem.querySelector('.bin-location').textContent;
+                        }
+                        return `Bin #${binId}`;
+                    });
                     
-                    // Redirect to dashboard after 3 seconds
-                    setTimeout(() => {
-                        window.location.href = '/authority/dashboard';
-                    }, 3000);
+                    // Save assignment to database
+                    fetch('/authority/api/assignments/save', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            collectorId: collectorId,
+                            binIds: selectedBins,
+                            binLocations: binLocations,
+                            routeId: data.routeId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(assignmentData => {
+                        console.log('Assignment saved to database:', assignmentData);
+                        
+                        // Create assignment record for local display
+                        const assignment = {
+                            collectorId: collectorId,
+                            collectorName: collectorName,
+                            binIds: selectedBins,
+                            binLocations: binLocations,
+                            assignedBy: 'Authority User',
+                            dateTime: new Date().toLocaleString(),
+                            status: 'Assigned'
+                        };
+                        
+                        // Add to assignment history
+                        assignmentHistory.push(assignment);
+                        selectedBins.forEach(binId => assignedBins.add(binId));
+                        saveAssignmentHistory();
+                        
+                        // Remove assigned bins from the list
+                        selectedBins.forEach(binId => {
+                            const binItem = document.querySelector(`.bin-item[data-bin-id="${binId}"]`);
+                            if (binItem) {
+                                binItem.remove();
+                            }
+                        });
+                        
+                        // Update counts
+                        updateBinCounts();
+                        updateSelectionCount();
+                        
+                        // Display assignment history
+                        displayAssignmentHistory();
+                        
+                        showNotification(`Successfully assigned ${selectedBins.length} bin(s) to ${collectorName}!`, 'success');
+                        
+                        // Show route preview
+                        showRoutePreview(data);
+                        
+                        // Reset form
+                        document.getElementById('dispatchForm').reset();
+                        
+                        // Scroll to assignment history
+                        setTimeout(() => {
+                            document.getElementById('assignmentHistoryContainer').scrollIntoView({ behavior: 'smooth' });
+                        }, 500);
+                    })
+                    .catch(error => {
+                        console.error('Failed to save assignment to database:', error);
+                        showNotification('Assignment created but not saved to database', 'error');
+                    });
                 } else {
                     showNotification(data.message, 'error');
                 }

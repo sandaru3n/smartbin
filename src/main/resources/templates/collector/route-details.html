@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Details - SmartBin Collector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #fafafa;
+            color: #202124;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: white;
+            color: #202124;
+            padding: 1rem 0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: #f8f9fa;
+            border-color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .header-title {
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .route-header-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            margin-bottom: 1.5rem;
+            border: 1px solid #dadce0;
+        }
+
+        .route-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .route-name {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #202124;
+        }
+
+        .route-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-ASSIGNED {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-IN_PROGRESS {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-COMPLETED {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .route-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #1a73e8;
+        }
+
+        .info-label {
+            color: #5f6368;
+            font-weight: 400;
+            font-size: 0.875rem;
+        }
+
+        .info-value {
+            color: #202124;
+            font-weight: 500;
+        }
+
+        .route-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.625rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            font-size: 0.875rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .btn-success {
+            background: #34a853;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #fbbc04;
+            color: #202124;
+        }
+
+        .btn-info {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+        }
+
+        .btn:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            text-decoration: none;
+        }
+        
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+        
+        .btn-success:hover {
+            background: #2d8e47;
+        }
+        
+        .btn-warning:hover {
+            background: #f9ab00;
+        }
+        
+        .btn-info:hover {
+            background: #f8f9fa;
+            border-color: #1a73e8;
+        }
+
+        .map-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            margin-bottom: 1.5rem;
+            border: 1px solid #dadce0;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .map-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .map-container {
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder {
+            text-align: center;
+            color: #666;
+        }
+
+        .map-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #999;
+        }
+
+        .bins-list {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            border: 1px solid #dadce0;
+        }
+
+        .bins-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .bins-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bins-count {
+            background: #e8f0fe;
+            color: #1a73e8;
+            padding: 0.375rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+
+        .bin-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .bin-item:hover {
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.15);
+            border-color: #1a73e8;
+        }
+
+        .bin-item.completed {
+            background: #e8f5e9;
+            border-color: #34a853;
+        }
+
+        .bin-item.current {
+            background: #fff3e0;
+            border-color: #fbbc04;
+            box-shadow: 0 2px 4px 0 rgba(251,188,4,.3);
+        }
+
+        .bin-sequence {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .bin-sequence.completed {
+            background: #34a853;
+        }
+
+        .bin-sequence.current {
+            background: #fbbc04;
+            color: #202124;
+        }
+
+        .bin-info {
+            flex: 1;
+        }
+
+        .bin-location {
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .bin-details {
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+
+        .bin-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .progress-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .route-title {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .route-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .route-actions {
+                justify-content: center;
+            }
+
+            .bin-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .bin-actions {
+                justify-content: center;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/collector/routes" class="back-btn">
+                <span class="material-icons" style="font-size: 1.125rem;">arrow_back</span>
+                Back to Routes
+            </a>
+            <h1 class="header-title">Route Details</h1>
+            <div></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- Route Header -->
+        <div class="route-header-card">
+            <div class="route-title">
+                <h1 class="route-name" th:text="${route.routeName}">Colombo Central Route</h1>
+                <span class="route-status" th:class="'status-' + ${route.status}" th:text="${route.status}">ASSIGNED</span>
+            </div>
+            
+            <div class="route-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Estimated Duration:</span>
+                    <span class="info-value" th:text="${route.estimatedDurationMinutes} + ' minutes'">120 minutes</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Total Distance:</span>
+                    <span class="info-value" th:text="${route.totalDistanceKm} + ' km'">15.5 km</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Assigned Date:</span>
+                    <span class="info-value" th:text="${#temporals.format(route.assignedDate, 'MMM dd, yyyy HH:mm')}">Dec 15, 2024 09:00</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Total Bins:</span>
+                    <span class="info-value" th:text="${routeBins.size()}">8</span>
+                </div>
+            </div>
+
+            <div class="route-actions">
+                <form th:if="${route.status.name() == 'ASSIGNED'}" th:action="@{/collector/route/{id}/start(id=${route.id})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons" style="font-size: 1.125rem;">play_arrow</span>
+                        Start Route
+                    </button>
+                </form>
+                
+                <form th:if="${route.status.name() == 'IN_PROGRESS'}" th:action="@{/collector/route/{id}/complete(id=${route.id})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-success">
+                        <span class="material-icons" style="font-size: 1.125rem;">check_circle</span>
+                        Complete Route
+                    </button>
+                </form>
+                
+                <a href="#" class="btn btn-info" onclick="startNavigation()">
+                    <span class="material-icons" style="font-size: 1.125rem;">directions</span>
+                    Start GPS Navigation
+                </a>
+                
+                <a href="#" class="btn btn-warning">
+                    <span class="material-icons" style="font-size: 1.125rem;">map</span>
+                    View Full Map
+                </a>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <h2 class="progress-title">Route Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+            </div>
+            <div class="progress-stats">
+                <span>Completed: <span id="completedCount">2</span> / <span th:text="${routeBins.size()}">8</span> bins</span>
+                <span>Progress: <span id="progressPercent">25%</span></span>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="map-header">
+                <h2 class="map-title">Route Map</h2>
+                <button class="btn btn-info btn-small" onclick="centerMap()">
+                    <i class="fas fa-crosshairs"></i>
+                    Center Map
+                </button>
+            </div>
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Interactive Map</h3>
+                    <p>GPS navigation and route visualization</p>
+                    <button class="btn btn-primary" onclick="loadMap()">
+                        <i class="fas fa-map"></i>
+                        Load Map
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bins List -->
+        <div class="bins-list">
+            <div class="bins-header">
+                <h2 class="bins-title">
+                    <span class="material-icons" style="font-size: 1.5rem;">location_on</span>
+                    Collection Points
+                </h2>
+                <div class="bins-count" th:text="${routeBins.size()} + ' Bins'">8 Bins</div>
+            </div>
+            
+            <div th:each="routeBin, iterStat : ${routeBins}">
+                <div class="bin-item" th:classappend="${routeBin.status.name() == 'COMPLETED' ? 'completed' : (iterStat.index == 0 ? 'current' : '')}">
+                    <div class="bin-sequence" th:classappend="${routeBin.status.name() == 'COMPLETED' ? 'completed' : (iterStat.index == 0 ? 'current' : '')}" th:text="${routeBin.sequenceOrder}">1</div>
+                    
+                    <div class="bin-info">
+                        <div class="bin-location" th:text="${routeBin.bin.location}">Colombo Central Market</div>
+                        <div class="bin-details">
+                            <span th:text="${routeBin.bin.binType}">Standard Bin</span> • 
+                            <span th:text="${routeBin.bin.fillLevel} + '%'">75%</span> • 
+                            <span th:text="${routeBin.bin.qrCode}">BIN-001-ABC123</span> • 
+                            <span th:text="${routeBin.bin.status}">FULL</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bin-actions">
+                        <a th:href="@{/collector/scan-qr}" class="btn btn-primary btn-small">
+                            <span class="material-icons" style="font-size: 1rem;">qr_code_scanner</span>
+                            Scan QR
+                        </a>
+                        <button class="btn btn-info btn-small" onclick="navigateToBin(this)">
+                            <span class="material-icons" style="font-size: 1rem;">directions</span>
+                            Navigate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startNavigation() {
+            // In a real app, this would integrate with GPS
+            alert('GPS Navigation would start here. This would open your device\'s navigation app with the route.');
+        }
+
+        function loadMap() {
+            // In a real app, this would load an actual map
+            alert('Interactive map would load here with route visualization and bin locations.');
+        }
+
+        function centerMap() {
+            alert('Map would center on current location or route bounds.');
+        }
+
+        function navigateToBin(button) {
+            const binItem = button.closest('.bin-item');
+            const location = binItem.querySelector('.bin-location').textContent;
+            
+            // In a real app, this would start navigation to specific bin
+            alert(`Navigation to ${location} would start here.`);
+        }
+
+        // Update progress based on completed bins
+        function updateProgress() {
+            const completedBins = document.querySelectorAll('.bin-item.completed').length;
+            const totalBins = document.querySelectorAll('.bin-item').length;
+            const progressPercent = totalBins > 0 ? Math.round((completedBins / totalBins) * 100) : 0;
+            
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('completedCount').textContent = completedBins;
+            document.getElementById('progressPercent').textContent = progressPercent + '%';
+        }
+
+        // Simulate progress updates
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            
+            // In a real app, this would be updated when collections are completed
+            setInterval(updateProgress, 5000);
+        });
+
+        // Auto-refresh route status
+        setInterval(function() {
+            // In a real app, this would check for route updates
+            console.log('Checking for route updates...');
+        }, 30000);
+    </script>
+</body>
+</html>
