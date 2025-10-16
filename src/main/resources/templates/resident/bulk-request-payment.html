@@ -16,136 +16,192 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: white;
-            color: #2c3e50;
+            background: #f8f9fa;
+            color: #202124;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
         }
 
-        .payment-container {
+        .navbar {
             background: white;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .payment-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-
-        .payment-header::before {
-            content: '';
-            position: absolute;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 1000;
         }
 
-        .header-content {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .icon-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .payment-header .material-icons {
-            font-size: 3.5rem;
-            animation: pulse 2s ease-in-out infinite;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
-        }
-
-        .header-text h1 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-bottom: 0.25rem;
-        }
-
-        .header-text p {
-            opacity: 0.95;
-            font-size: 0.95rem;
-            font-weight: 400;
-        }
-
-        .payment-body {
-            padding: 3rem 4rem;
-            max-width: 1400px;
+        .navbar-content {
+            max-width: 1200px;
             margin: 0 auto;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: start;
-            background: white;
-            position: relative;
-            z-index: 1;
-        }
-
-        .left-column {
             display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .request-summary {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 1.75rem;
-            border-radius: 16px;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .request-summary h3 {
-            color: #2c3e50;
-            margin-bottom: 1.25rem;
-            font-size: 1.15rem;
-            font-weight: 700;
+        .logo {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #202124;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .request-summary h3::before {
-            content: '\e8b8';
-            font-family: 'Material Icons';
-            color: #667eea;
+        .logo .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .payment-container {
+            background: #f8f9fa;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 3rem 1.5rem;
+            width: 100%;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-link {
+            color: #5f6368;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #dadce0;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .back-link .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header h1 .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .page-header p {
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-top: 0.25rem;
+            margin-left: 56px;
+        }
+
+        .payment-body {
+            padding: 0 3rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .request-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        .request-summary h3 {
+            color: #202124;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .request-summary h3 .material-icons {
+            color: #1a73e8;
+            font-size: 1.25rem;
         }
 
         .summary-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-            transition: all 0.3s;
-        }
-
-        .summary-item:hover {
-            padding-left: 0.5rem;
-            background: rgba(102, 126, 234, 0.03);
-            margin: 0 -0.5rem;
-            padding-right: 0.5rem;
-            border-radius: 8px;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .summary-item:last-child {
@@ -153,283 +209,203 @@
         }
 
         .summary-label {
-            color: #6c757d;
-            font-size: 0.95rem;
+            color: #5f6368;
+            font-size: 0.875rem;
             font-weight: 500;
         }
 
         .summary-value {
-            font-weight: 700;
-            color: #2c3e50;
-            font-size: 1rem;
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
         }
 
         .amount-card {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #34a853;
             color: white;
             padding: 2rem;
-            border-radius: 20px;
+            border-radius: 12px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
-        }
-
-        .amount-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 60%);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-30%, -30%); }
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
         }
 
         .amount-label {
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             opacity: 0.95;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            position: relative;
-            z-index: 1;
         }
 
         .amount-value {
-            font-size: 2.75rem;
-            font-weight: 800;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 2.25rem;
+            font-weight: 600;
         }
 
         .amount-card p {
-            position: relative;
-            z-index: 1;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             margin-top: 0.75rem;
+            opacity: 0.95;
         }
 
         .payment-methods {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
         }
 
         .payment-methods h3 {
-            color: #2c3e50;
-            margin-bottom: 1.75rem;
-            font-size: 1.15rem;
-            font-weight: 700;
+            color: #202124;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .payment-methods h3::before {
-            content: '\e8d8';
-            font-family: 'Material Icons';
-            color: #667eea;
+        .payment-methods h3 .material-icons {
+            color: #34a853;
+            font-size: 1.25rem;
         }
 
         .payment-option {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1.15rem 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            margin-bottom: 0.85rem;
+            padding: 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: white;
-            position: relative;
-        }
-
-        .payment-option::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 14px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-            opacity: 0;
-            transition: opacity 0.4s;
+            transition: all 0.2s;
+            background: #f8f9fa;
         }
 
         .payment-option:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-        }
-
-        .payment-option:hover::after {
-            opacity: 1;
+            border-color: #34a853;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .payment-option input[type="radio"] {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
-            accent-color: #667eea;
-            position: relative;
-            z-index: 1;
-        }
-
-        .payment-option input[type="radio"]:checked ~ .payment-info {
-            color: #667eea;
+            accent-color: #34a853;
         }
 
         .payment-option.selected {
-            border-color: #10b981;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .payment-option.selected::after {
-            opacity: 0;
+            border-color: #34a853;
+            background: #e6f4ea;
+            box-shadow: 0 2px 6px rgba(52, 168, 83, 0.2);
         }
 
         .payment-option.selected .payment-icon {
-            color: #10b981;
+            color: #34a853;
         }
 
         .payment-icon {
-            font-size: 2rem;
-            color: #667eea;
-            transition: all 0.3s;
-            position: relative;
-            z-index: 1;
+            font-size: 1.75rem;
+            color: #5f6368;
+            transition: all 0.2s;
         }
 
         .payment-info {
             flex: 1;
-            position: relative;
-            z-index: 1;
         }
 
         .payment-name {
-            font-weight: 700;
-            color: #2c3e50;
+            font-weight: 600;
+            color: #202124;
             margin-bottom: 0.25rem;
-            font-size: 1rem;
+            font-size: 0.875rem;
         }
 
         .payment-desc {
-            font-size: 0.85rem;
-            color: #6c757d;
-            font-weight: 500;
+            font-size: 0.75rem;
+            color: #5f6368;
+            font-weight: 400;
         }
 
         .security-badge {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-            padding: 1.15rem;
-            border-radius: 12px;
+            background: #e6f4ea;
+            padding: 1rem;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 0.85rem;
-            border: 1px solid #a7f3d0;
+            gap: 0.75rem;
+            border: 1px solid #c8e6c9;
         }
 
         .security-badge .material-icons {
-            color: #10b981;
-            font-size: 1.5rem;
+            color: #34a853;
+            font-size: 1.25rem;
         }
 
         .security-badge p {
-            font-size: 0.85rem;
-            color: #065f46;
+            font-size: 0.875rem;
+            color: #137333;
             margin: 0;
-            font-weight: 500;
+            font-weight: 400;
             line-height: 1.5;
         }
 
         .action-buttons {
             display: flex;
             gap: 1rem;
+            margin-top: 1.5rem;
         }
 
         .btn {
             flex: 1;
-            padding: 1.15rem 1.35rem;
+            padding: 0.75rem 2rem;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
+            border-radius: 24px;
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:active::before {
-            width: 300px;
-            height: 300px;
+            font-family: 'Inter', sans-serif;
         }
 
         .btn .material-icons {
-            position: relative;
-            z-index: 1;
+            font-size: 1.125rem;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            color: #374151;
-            border: 2px solid #d1d5db;
+            background: white;
+            color: #5f6368;
+            border: 1px solid #dadce0;
         }
 
         .btn-secondary:hover {
-            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-            border-color: #9ca3af;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+            border-color: #80868b;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #34a853;
             color: white;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         .btn-primary:disabled {
-            background: #9ca3af;
+            background: #dadce0;
+            color: #80868b;
             cursor: not-allowed;
-            transform: none;
             box-shadow: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
         }
 
         @keyframes spin {
@@ -441,32 +417,45 @@
             .payment-body {
                 grid-template-columns: 1fr;
                 padding: 2rem;
-                gap: 2rem;
+                gap: 1.5rem;
             }
 
-            .payment-header {
-                padding: 2rem;
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .header-content {
-                flex-direction: column;
-                text-align: center;
+            .page-header {
+                padding: 1.5rem;
             }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .logo .material-icons {
+                font-size: 1.75rem;
+            }
+
+            .page-header {
+                padding: 1rem 1.25rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.375rem;
+            }
+
+            .page-header h1 .material-icons {
+                font-size: 1.75rem;
+            }
+
             .action-buttons {
                 flex-direction: column;
             }
 
             .amount-value {
-                font-size: 2.25rem;
-            }
-
-            .header-text h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
 
             .payment-body {
@@ -476,15 +465,33 @@
     </style>
 </head>
 <body>
-    <div class="payment-container">
-        <div class="payment-header">
-            <div class="header-content">
-                <span class="material-icons">payment</span>
-                <div class="header-text">
-                    <h1>Complete Your Payment</h1>
-                    <p>Secure payment for your bulk collection request</p>
-                </div>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin
             </div>
+            <div class="user-info">
+                <span th:text="${user != null ? user.name : 'Guest'}">Guest</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="payment-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <a href="/resident/my-bulk-requests" class="back-link">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1>
+                    <span class="material-icons">payment</span>
+                    Complete Payment
+                </h1>
+            </div>
+            <p>Secure payment for your bulk collection request</p>
         </div>
 
         <div class="payment-body">
@@ -492,7 +499,10 @@
             <div class="left-column">
                 <!-- Request Summary -->
                 <div class="request-summary">
-                    <h3>Request Summary</h3>
+                    <h3>
+                        <span class="material-icons">receipt_long</span>
+                        Request Summary
+                    </h3>
                     <div class="summary-item">
                         <span class="summary-label">Request ID:</span>
                         <span class="summary-value" th:text="${bulkRequest.requestId}">BULK-123</span>
@@ -527,7 +537,10 @@
             <div class="right-column">
                 <form th:action="@{/resident/bulk-request/{id}/payment(id=${bulkRequest.id})}" method="post" id="paymentForm">
                     <div class="payment-methods">
-                        <h3>Select Payment Method</h3>
+                        <h3>
+                            <span class="material-icons">payment</span>
+                            Select Payment Method
+                        </h3>
                         
                         <label class="payment-option">
                             <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked onchange="selectPaymentMethod(this)">
