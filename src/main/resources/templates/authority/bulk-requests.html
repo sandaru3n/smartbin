@@ -419,23 +419,20 @@
         <!-- Statistics -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" th:text="${bulkRequests.size()}">0</div>
+                <div class="stat-value" th:text="${bulkRequests != null ? bulkRequests.size() : 0}">0</div>
                 <div class="stat-label">Total Requests</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" style="color: #fbbc04;" 
-                     th:text="${#lists.size(#lists.select(bulkRequests, br.status.name() == 'PAYMENT_COMPLETED'))}">0</div>
+                <div class="stat-value" style="color: #fbbc04;" th:text="${pendingBulkRequests != null ? pendingBulkRequests : 0}">0</div>
+                <div class="stat-label">Pending Payment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: #ff9800;" th:text="${paidBulkRequests != null ? paidBulkRequests : 0}">0</div>
                 <div class="stat-label">Awaiting Assignment</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" style="color: #1a73e8;" 
-                     th:text="${#lists.size(#lists.select(bulkRequests, br.status.name() == 'SCHEDULED'))}">0</div>
+                <div class="stat-value" style="color: #1a73e8;" th:text="${scheduledBulkRequests != null ? scheduledBulkRequests : 0}">0</div>
                 <div class="stat-label">Scheduled</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" style="color: #34a853;" 
-                     th:text="${#lists.size(#lists.select(bulkRequests, br.status.name() == 'COMPLETED'))}">0</div>
-                <div class="stat-label">Completed</div>
             </div>
         </div>
 
@@ -516,7 +513,7 @@
                             <div class="detail-value">
                                 LKR <span th:text="${#numbers.formatDecimal(request.totalAmount, 0, 2)}">4,200.00</span>
                             </div>
-                            <div style="font-size: 0.8rem; color: #27ae60;" th:if="${request.paymentStatus.name() == 'COMPLETED'}">
+                            <div style="font-size: 0.8rem; color: #27ae60;" th:if="${request.paymentStatus.name == 'COMPLETED'}">
                                 <i class="fas fa-check-circle"></i> Paid
                             </div>
                         </div>
@@ -547,7 +544,7 @@
                 <!-- Action Buttons -->
                 <div class="request-actions">
                     <!-- Assign Collector Button -->
-                    <button th:if="${request.status.name() == 'PAYMENT_COMPLETED' and request.collectorAssigned == null}" 
+                    <button th:if="${request.status.name == 'PAYMENT_COMPLETED' and request.collectorAssigned == null}" 
                             class="btn btn-success btn-small"
                             onclick="openAssignModal(this)"
                             th:data-request-id="${request.id}"
@@ -566,7 +563,7 @@
                     </button>
 
                     <!-- Complete Button -->
-                    <button th:if="${request.status.name() == 'IN_PROGRESS'}" 
+                    <button th:if="${request.status.name == 'IN_PROGRESS'}" 
                             class="btn btn-success btn-small"
                             onclick="openCompleteModal(this)"
                             th:data-request-id="${request.id}"
@@ -724,7 +721,7 @@
                     details += `Customer: ${data.userName} (${data.userEmail})\n\n`;
                     details += `Pickup Address:\n${data.streetAddress}\n${data.city}, ${data.zipCode}\n\n`;
                     details += `Amount: LKR ${data.totalAmount.toFixed(2)}\n`;
-                    details += `Payment Status: ${data.paymentStatus.name()}\n`;
+                    details += `Payment Status: ${data.paymentStatus.name}\n`;
                     if (data.paymentMethod) {
                         details += `Payment Method: ${data.paymentMethod}\n`;
                     }

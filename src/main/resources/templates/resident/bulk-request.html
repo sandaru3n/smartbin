@@ -17,55 +17,63 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
             color: #2c3e50;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Header */
-        .header {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
+        /* Top Bar */
+        .top-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 1rem;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .header .material-icons {
-            font-size: 3rem;
-            color: #e91e63;
+        .top-bar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
         }
 
-        .header p {
-            color: #666;
-            font-size: 1.1rem;
+        .top-bar .material-icons {
+            font-size: 1.75rem;
         }
 
-        /* Navigation */
+        .back-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Navigation - Removed */
         .nav-breadcrumb {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: none;
         }
 
         .nav-breadcrumb a {
@@ -84,31 +92,40 @@
         /* Form Container */
         .form-container {
             background: white;
-            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .form-section {
-            margin-bottom: 2.5rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
+            margin-bottom: 0;
+            padding: 1.25rem;
+            background: #ffffff;
             border-radius: 12px;
             border: 1px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .form-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
         }
 
         .section-header {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
+            gap: 0.5rem;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.65rem;
+            border-bottom: 2px solid #f0f0f0;
         }
 
         .section-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #e91e63 0%, #f48fb1 100%);
-            border-radius: 10px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -116,18 +133,20 @@
 
         .section-icon .material-icons {
             color: white;
-            font-size: 1.2rem;
+            font-size: 0.95rem;
         }
 
         .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* Form Elements */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
@@ -165,10 +184,10 @@
 
         /* Map Section */
         .map-container {
-            height: 350px;
-            border-radius: 12px;
+            height: 250px;
+            border-radius: 10px;
             position: relative;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             overflow: hidden;
             border: 2px solid #e9ecef;
         }
@@ -213,26 +232,27 @@
         }
 
         .upload-btn {
-            border: 2px dashed #e91e63;
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
+            border: 2px dashed #667eea;
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 1.15rem;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             transition: all 0.3s;
         }
 
         .upload-btn:hover {
-            background: #fce4ec;
-            border-color: #f48fb1;
+            background: #eef1ff;
+            border-color: #764ba2;
+            transform: translateY(-2px);
         }
 
         .upload-btn .material-icons {
-            font-size: 2.5rem;
-            color: #e91e63;
+            font-size: 1.75rem;
+            color: #667eea;
         }
 
         .photo-preview {
@@ -286,15 +306,28 @@
         }
 
         .fee-amount {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #e91e63;
-            margin-bottom: 0.5rem;
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 0.65rem;
+            text-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
         }
 
         .fee-breakdown {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .fee-breakdown p {
+            margin: 0.25rem 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0.35rem 0;
+        }
+
+        .fee-breakdown strong {
+            color: #667eea;
         }
 
         /* Action Buttons */
@@ -306,10 +339,10 @@
         }
 
         .btn {
-            padding: 1rem 2rem;
+            padding: 0.85rem 1.5rem;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -320,16 +353,15 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
-            color: #e91e63;
-            border: 2px solid #f8bbd9;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
-            border-color: #f48fb1;
+            background: linear-gradient(135deg, #5568d3 0%, #6a4193 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
@@ -342,8 +374,100 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Desktop Three-Column Compact Layout */
+        @media (min-width: 992px) {
+            .form-container {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                grid-template-rows: auto auto auto !important;
+                gap: 1.25rem;
+                align-items: start;
+                padding: 1.5rem 2rem;
+            }
+
+            /* Row 1: Item Details | Pickup Address | Map */
+            .form-section:nth-of-type(1) {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .form-section:nth-of-type(2) {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .form-section:nth-of-type(3) {
+                grid-column: 3;
+                grid-row: 1;
+            }
+
+            /* Row 2: Upload Photos (span 2) | Fee Estimate */
+            .form-section:nth-of-type(4) {
+                grid-column: 1 / 3;
+                grid-row: 2;
+            }
+
+            .form-section:nth-of-type(5) {
+                grid-column: 3;
+                grid-row: 2;
+            }
+
+            /* Action Buttons - Span all columns, Row 3 */
+            .action-buttons {
+                grid-column: 1 / -1;
+                grid-row: 3;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* Tablet Two-Column Layout */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .form-container {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-rows: auto auto auto auto !important;
+                gap: 1rem;
+                align-items: start;
+            }
+
+            /* Row 1: Item Details | Pickup Address */
+            .form-section:nth-of-type(1) {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .form-section:nth-of-type(2) {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            /* Row 2: Map | Fee Estimate */
+            .form-section:nth-of-type(3) {
+                grid-column: 1;
+                grid-row: 2;
+            }
+
+            .form-section:nth-of-type(5) {
+                grid-column: 2;
+                grid-row: 2;
+            }
+
+            /* Row 3: Upload Photos (span 2) */
+            .form-section:nth-of-type(4) {
+                grid-column: 1 / -1;
+                grid-row: 3;
+            }
+
+            /* Action Buttons - Span all columns, Row 4 */
+            .action-buttons {
+                grid-column: 1 / -1;
+                grid-row: 4;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* Mobile Single Column */
+        @media (max-width: 767px) {
             .container {
                 padding: 1rem;
             }
@@ -387,26 +511,19 @@
     </style>
 </head>
 <body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <h1>
+            <span class="material-icons">delete_sweep</span>
+            Bulk Collection Request
+        </h1>
+        <a href="/resident/dashboard" class="back-link">
+            <span class="material-icons">arrow_back</span>
+            Back to Dashboard
+        </a>
+    </div>
+
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>
-                <span class="material-icons">shopping_cart</span>
-                Bulk Collection Request
-            </h1>
-            <p>Request special collection for bulky waste items</p>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav-breadcrumb">
-            <a href="/resident/dashboard">
-                <span class="material-icons">home</span>
-                Dashboard
-            </a>
-            <span style="margin: 0 0.5rem; color: #999;">/</span>
-            <span style="color: #666;">Bulk Collection Request</span>
-        </div>
-
         <!-- Form Container -->
         <div class="form-container">
             <form id="bulkRequestForm" th:action="@{/resident/bulk-request}" th:object="${bulkRequest}" method="post">
@@ -534,18 +651,19 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <a href="/resident/dashboard" class="btn btn-secondary">
-                        <span class="material-icons">arrow_back</span>
-                        Back to Dashboard
-                    </a>
-                    <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <span class="material-icons">payment</span>
-                        Submit Request
-                    </button>
-                </div>
             </form>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/resident/dashboard" class="btn btn-secondary">
+                    <span class="material-icons">arrow_back</span>
+                    Back to Dashboard
+                </a>
+                <button type="submit" form="bulkRequestForm" class="btn btn-primary" id="submitBtn">
+                    <span class="material-icons">payment</span>
+                    Submit Request
+                </button>
+            </div>
         </div>
     </div>
 

@@ -97,20 +97,6 @@ public class AuthorityController {
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
         model.addAttribute("collectors", collectors);
         
-        // Get bulk requests statistics
-        long pendingBulkRequests = bulkRequestService.getRequestCountByPaymentStatus(PaymentStatus.PENDING);
-        long paidBulkRequests = bulkRequestService.getRequestCountByStatus(BulkRequestStatus.PAYMENT_COMPLETED);
-        long scheduledBulkRequests = bulkRequestService.getRequestCountByStatus(BulkRequestStatus.SCHEDULED);
-        
-        model.addAttribute("pendingBulkRequests", pendingBulkRequests);
-        model.addAttribute("paidBulkRequests", paidBulkRequests);
-        model.addAttribute("scheduledBulkRequests", scheduledBulkRequests);
-        
-        // Get recent bulk requests (last 5)
-        List<BulkRequestDTO> recentBulkRequests = bulkRequestService.getRecentRequests(7);
-        model.addAttribute("recentBulkRequests", 
-            recentBulkRequests.size() > 5 ? recentBulkRequests.subList(0, 5) : recentBulkRequests);
-        
         return "authority/dashboard";
     }
 
@@ -1047,9 +1033,23 @@ public class AuthorityController {
             bulkRequests = bulkRequestService.getRecentRequests(30);
         }
         
+        // Calculate statistics
+        long pendingCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PENDING)
+            .count();
+        long paidCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PAYMENT_COMPLETED)
+            .count();
+        long scheduledCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.SCHEDULED)
+            .count();
+        
         model.addAttribute("bulkRequests", bulkRequests);
         model.addAttribute("user", user);
         model.addAttribute("selectedStatus", status);
+        model.addAttribute("pendingBulkRequests", pendingCount);
+        model.addAttribute("paidBulkRequests", paidCount);
+        model.addAttribute("scheduledBulkRequests", scheduledCount);
         
         // Get available collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);

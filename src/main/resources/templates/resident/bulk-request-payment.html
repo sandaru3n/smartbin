@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment - SmartBin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -15,71 +16,136 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+            background: white;
             color: #2c3e50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            margin: 0;
+            padding: 0;
         }
 
         .payment-container {
             background: white;
-            border-radius: 20px;
-            padding: 0;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            max-width: 600px;
             width: 100%;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .payment-header {
-            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2.5rem 2rem;
-            text-align: center;
+            padding: 2rem 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .payment-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .icon-wrapper {
+            position: relative;
+            display: inline-block;
         }
 
         .payment-header .material-icons {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
+            font-size: 3.5rem;
+            animation: pulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
         }
 
-        .payment-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .header-text h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
         }
 
-        .payment-header p {
-            opacity: 0.9;
-            font-size: 1rem;
+        .header-text p {
+            opacity: 0.95;
+            font-size: 0.95rem;
+            font-weight: 400;
         }
 
         .payment-body {
-            padding: 2.5rem 2rem;
+            padding: 3rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+            background: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
         .request-summary {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.75rem;
+            border-radius: 16px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .request-summary h3 {
             color: #2c3e50;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.25rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .request-summary h3::before {
+            content: '\e8b8';
+            font-family: 'Material Icons';
+            color: #667eea;
         }
 
         .summary-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .summary-item:hover {
+            padding-left: 0.5rem;
+            background: rgba(102, 126, 234, 0.03);
+            margin: 0 -0.5rem;
+            padding-right: 0.5rem;
+            border-radius: 8px;
         }
 
         .summary-item:last-child {
@@ -87,115 +153,200 @@
         }
 
         .summary-label {
-            color: #666;
+            color: #6c757d;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
         .summary-value {
-            font-weight: 600;
+            font-weight: 700;
             color: #2c3e50;
+            font-size: 1rem;
         }
 
         .amount-card {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             padding: 2rem;
-            border-radius: 16px;
+            border-radius: 20px;
             text-align: center;
-            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
+        }
+
+        .amount-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 60%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30%, -30%); }
         }
 
         .amount-label {
-            font-size: 1rem;
-            opacity: 0.9;
+            font-size: 0.95rem;
+            opacity: 0.95;
             margin-bottom: 0.5rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
         }
 
         .amount-value {
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: 2.75rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .amount-card p {
+            position: relative;
+            z-index: 1;
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
         }
 
         .payment-methods {
-            margin-bottom: 2rem;
         }
 
         .payment-methods h3 {
             color: #2c3e50;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.75rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-methods h3::before {
+            content: '\e8d8';
+            font-family: 'Material Icons';
+            color: #667eea;
         }
 
         .payment-option {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1.25rem;
+            padding: 1.15rem 1rem;
             border: 2px solid #e9ecef;
             border-radius: 12px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            position: relative;
+        }
+
+        .payment-option::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            opacity: 0;
+            transition: opacity 0.4s;
         }
 
         .payment-option:hover {
-            border-color: #3498db;
-            background: #f8f9fa;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+        }
+
+        .payment-option:hover::after {
+            opacity: 1;
         }
 
         .payment-option input[type="radio"] {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             cursor: pointer;
+            accent-color: #667eea;
+            position: relative;
+            z-index: 1;
         }
 
         .payment-option input[type="radio"]:checked ~ .payment-info {
-            color: #27ae60;
+            color: #667eea;
         }
 
         .payment-option.selected {
-            border-color: #27ae60;
-            background: #f1f9f5;
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .payment-option.selected::after {
+            opacity: 0;
+        }
+
+        .payment-option.selected .payment-icon {
+            color: #10b981;
         }
 
         .payment-icon {
             font-size: 2rem;
-            color: #3498db;
+            color: #667eea;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
         }
 
         .payment-info {
             flex: 1;
+            position: relative;
+            z-index: 1;
         }
 
         .payment-name {
-            font-weight: 600;
+            font-weight: 700;
             color: #2c3e50;
             margin-bottom: 0.25rem;
+            font-size: 1rem;
         }
 
         .payment-desc {
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
         }
 
         .security-badge {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            padding: 1.15rem;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
+            gap: 0.85rem;
+            border: 1px solid #a7f3d0;
         }
 
         .security-badge .material-icons {
-            color: #27ae60;
+            color: #10b981;
             font-size: 1.5rem;
         }
 
         .security-badge p {
             font-size: 0.85rem;
-            color: #666;
+            color: #065f46;
             margin: 0;
+            font-weight: 500;
+            line-height: 1.5;
         }
 
         .action-buttons {
@@ -205,149 +356,237 @@
 
         .btn {
             flex: 1;
-            padding: 1.25rem;
+            padding: 1.15rem 1.35rem;
             border: none;
             border-radius: 12px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn .material-icons {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-secondary {
-            background: #e9ecef;
-            color: #2c3e50;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            color: #374151;
+            border: 2px solid #d1d5db;
         }
 
         .btn-secondary:hover {
-            background: #dee2e6;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.08); }
         }
 
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        @media (max-width: 1024px) {
+            .payment-body {
+                grid-template-columns: 1fr;
+                padding: 2rem;
+                gap: 2rem;
+            }
+
+            .payment-header {
+                padding: 2rem;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .amount-value {
+                font-size: 2.25rem;
+            }
+
+            .header-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .payment-body {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="payment-container">
         <div class="payment-header">
-            <span class="material-icons">payment</span>
-            <h1>Complete Your Payment</h1>
-            <p>Secure payment for your bulk collection request</p>
+            <div class="header-content">
+                <span class="material-icons">payment</span>
+                <div class="header-text">
+                    <h1>Complete Your Payment</h1>
+                    <p>Secure payment for your bulk collection request</p>
+                </div>
+            </div>
         </div>
 
         <div class="payment-body">
-            <!-- Request Summary -->
-            <div class="request-summary">
-                <h3>Request Summary</h3>
-                <div class="summary-item">
-                    <span class="summary-label">Request ID:</span>
-                    <span class="summary-value" th:text="${bulkRequest.requestId}">BULK-123</span>
+            <!-- Left Column: Summary & Amount -->
+            <div class="left-column">
+                <!-- Request Summary -->
+                <div class="request-summary">
+                    <h3>Request Summary</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">Request ID:</span>
+                        <span class="summary-value" th:text="${bulkRequest.requestId}">BULK-123</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Category:</span>
+                        <span class="summary-value" th:text="${bulkRequest.category.displayName}">Furniture</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Description:</span>
+                        <span class="summary-value" th:text="${bulkRequest.description}">Old furniture items</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Location:</span>
+                        <span class="summary-value" th:text="${bulkRequest.streetAddress + ', ' + bulkRequest.city}">123 Main St, Colombo</span>
+                    </div>
                 </div>
-                <div class="summary-item">
-                    <span class="summary-label">Category:</span>
-                    <span class="summary-value" th:text="${bulkRequest.category.displayName}">Furniture</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">Location:</span>
-                    <span class="summary-value" th:text="${bulkRequest.city}">Colombo</span>
+
+                <!-- Amount to Pay -->
+                <div class="amount-card">
+                    <div class="amount-label">Total Amount</div>
+                    <div class="amount-value">LKR <span th:text="${#numbers.formatDecimal(bulkRequest.totalAmount, 1, 2)}">4,200.00</span></div>
+                    <p>
+                        Base: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.basePrice, 1, 2)}">3,500</span> + 
+                        Processing: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.processingFee, 1, 2)}">500</span> + 
+                        Tax: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.taxAmount, 1, 2)}">200</span>
+                    </p>
                 </div>
             </div>
 
-            <!-- Amount to Pay -->
-            <div class="amount-card">
-                <div class="amount-label">Total Amount</div>
-                <div class="amount-value">LKR <span th:text="${#numbers.formatDecimal(bulkRequest.totalAmount, 1, 2)}">4,200.00</span></div>
-                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
-                    Base: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.basePrice, 1, 2)}">3,500</span> + 
-                    Processing: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.processingFee, 1, 2)}">500</span> + 
-                    Tax: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.taxAmount, 1, 2)}">200</span>
-                </p>
+            <!-- Right Column: Payment Methods & Actions -->
+            <div class="right-column">
+                <form th:action="@{/resident/bulk-request/{id}/payment(id=${bulkRequest.id})}" method="post" id="paymentForm">
+                    <div class="payment-methods">
+                        <h3>Select Payment Method</h3>
+                        
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">credit_card</span>
+                            <div class="payment-info">
+                                <div class="payment-name">Credit/Debit Card</div>
+                                <div class="payment-desc">Visa, Mastercard, RuPay</div>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="UPI" onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">smartphone</span>
+                            <div class="payment-info">
+                                <div class="payment-name">UPI</div>
+                                <div class="payment-desc">Google Pay, PhonePe, Paytm</div>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="NET_BANKING" onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">account_balance</span>
+                            <div class="payment-info">
+                                <div class="payment-name">Net Banking</div>
+                                <div class="payment-desc">All major banks supported</div>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="DIGITAL_WALLET" onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">account_balance_wallet</span>
+                            <div class="payment-info">
+                                <div class="payment-name">Digital Wallet</div>
+                                <div class="payment-desc">Paytm, Amazon Pay</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Security Badge -->
+                    <div class="security-badge">
+                        <span class="material-icons">security</span>
+                        <p>Your payment is secured with 256-bit SSL encryption. We don't store your card details.</p>
+                    </div>
+
+                    <input type="hidden" name="paymentReference" th:value="${'PAY-' + #dates.format(#dates.createNow(), 'yyyyMMddHHmmss')}">
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="/resident/my-bulk-requests" class="btn btn-secondary">
+                            <span class="material-icons">arrow_back</span>
+                            Back
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="payBtn">
+                            <span class="material-icons">lock</span>
+                            Pay Now
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <!-- Payment Methods -->
-            <form th:action="@{/resident/bulk-request/{id}/payment(id=${bulkRequest.id})}" method="post" id="paymentForm">
-                <div class="payment-methods">
-                    <h3>Select Payment Method</h3>
-                    
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">credit_card</span>
-                        <div class="payment-info">
-                            <div class="payment-name">Credit/Debit Card</div>
-                            <div class="payment-desc">Visa, Mastercard, RuPay</div>
-                        </div>
-                    </label>
-
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="UPI" onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">smartphone</span>
-                        <div class="payment-info">
-                            <div class="payment-name">UPI</div>
-                            <div class="payment-desc">Google Pay, PhonePe, Paytm</div>
-                        </div>
-                    </label>
-
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="NET_BANKING" onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">account_balance</span>
-                        <div class="payment-info">
-                            <div class="payment-name">Net Banking</div>
-                            <div class="payment-desc">All major banks supported</div>
-                        </div>
-                    </label>
-
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="DIGITAL_WALLET" onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">account_balance_wallet</span>
-                        <div class="payment-info">
-                            <div class="payment-name">Digital Wallet</div>
-                            <div class="payment-desc">Paytm, Amazon Pay</div>
-                        </div>
-                    </label>
-                </div>
-
-                <!-- Security Badge -->
-                <div class="security-badge">
-                    <span class="material-icons">security</span>
-                    <p>Your payment is secured with 256-bit SSL encryption. We don't store your card details.</p>
-                </div>
-
-                <input type="hidden" name="paymentReference" th:value="${'PAY-' + #dates.format(#dates.createNow(), 'yyyyMMddHHmmss')}">
-
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <a href="/resident/my-bulk-requests" class="btn btn-secondary">
-                        <span class="material-icons">arrow_back</span>
-                        Back
-                    </a>
-                    <button type="submit" class="btn btn-primary" id="payBtn">
-                        <span class="material-icons">lock</span>
-                        Pay Now
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
