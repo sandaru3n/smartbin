@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner - SmartBin Collector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #fafafa;
+            color: #202124;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: #fff;
+            color: #202124;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            border-bottom: 1px solid #dadce0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 24px;
+            min-height: 64px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #5f6368;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #f1f3f4;
+            color: #202124;
+            text-decoration: none;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 400;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        .scanner-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .scan-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .scan-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e8f0fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: #1a73e8;
+        }
+
+        .scan-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .scan-subtitle {
+            color: #5f6368;
+            margin-bottom: 24px;
+            font-size: 16px;
+        }
+
+        .qr-input-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+        }
+
+        .qr-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .qr-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+
+        .qr-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        .btn {
+            padding: 10px 24px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 4px rgba(0,0,0,.2);
+        }
+
+        .btn-secondary {
+            background: #5f6368;
+        }
+
+        .btn-secondary:hover {
+            background: #494949;
+        }
+
+        .instructions {
+            background: #e8f0fe;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .instructions h3 {
+            color: #1a73e8;
+            margin-bottom: 12px;
+            font-weight: 400;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ol {
+            color: #5f6368;
+            padding-left: 20px;
+            font-size: 14px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background-color: #e6f4ea;
+            color: #137333;
+            border-color: #34a853;
+        }
+
+        .alert-error {
+            background-color: #fce8e6;
+            color: #d93025;
+            border-color: #ea4335;
+        }
+
+        .camera-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+        }
+
+        .camera-placeholder {
+            width: 100%;
+            height: 250px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            border: 2px dashed #dadce0;
+        }
+
+        .camera-icon {
+            color: #5f6368;
+        }
+
+        .camera-section p {
+            color: #5f6368;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .manual-input-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .manual-input-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header-content {
+                padding: 8px 16px;
+            }
+
+            .scanner-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-input-group {
+                flex-direction: column;
+            }
+
+            .camera-placeholder {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/collector/dashboard" class="back-btn">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1 class="header-title">
+                    <span class="material-icons">qr_code_scanner</span>
+                    QR Code Scanner
+                </h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success">
+            <span class="material-icons">check_circle</span>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <span class="material-icons">error</span>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Two Column Grid -->
+        <div class="scanner-grid">
+            <!-- Left Card: Camera QR Scanner -->
+            <div class="scan-card">
+                <div class="scan-icon">
+                    <span class="material-icons">qr_code_scanner</span>
+                </div>
+                <h2 class="scan-title">Scan Bin QR Code</h2>
+                <p class="scan-subtitle">Use camera to scan the QR code on the smart bin</p>
+
+                <!-- Camera Section -->
+                <div class="camera-section">
+                    <div class="camera-placeholder">
+                        <span class="material-icons camera-icon">camera_alt</span>
+                    </div>
+                    <p>Camera access required for QR scanning</p>
+                    <button class="btn btn-secondary" onclick="requestCameraAccess()">
+                        <span class="material-icons">camera_alt</span>
+                        Enable Camera
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Card: Manual Entry -->
+            <div class="manual-input-section">
+                <div class="scan-icon">
+                    <span class="material-icons">keyboard</span>
+                </div>
+                <h2 class="manual-input-title">Manual QR Code Entry</h2>
+                <p style="text-align: center; color: #5f6368; margin-bottom: 24px; font-size: 14px;">
+                    Enter the QR code manually if scanning is not available
+                </p>
+                
+                <form th:action="@{/collector/scan-qr}" method="post">
+                    <div class="qr-input-group">
+                        <input type="text" 
+                               name="qrCode" 
+                               class="qr-input" 
+                               placeholder="Enter QR Code (e.g., QR001, QR002, QR003)"
+                               required>
+                        <button type="submit" class="btn" style="width: 100%;">
+                            <span class="material-icons">search</span>
+                            Process QR Code
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Instructions -->
+                <div class="instructions" style="margin-top: 24px; margin-bottom: 0;">
+                    <h3>
+                        <span class="material-icons">info</span>
+                        Available QR Codes
+                    </h3>
+                    <ol>
+                        <li><strong>QR001</strong> - Colombo Fort Station</li>
+                        <li><strong>QR003</strong> - Galle Face Green (Recycle)</li>
+                        <li><strong>QR010</strong> - Mount Lavinia</li>
+                        <li><strong>QR012</strong> - Cinnamon Gardens (Recycle)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function requestCameraAccess() {
+            // In a real app, this would request camera permission
+            alert('Camera access would be requested here. For demo purposes, use manual input or test QR code.');
+        }
+
+        function generateTestQR() {
+            // Generate a test QR code for demonstration
+            // These match actual bins in the database
+            const testQRCodes = [
+                'QR001', // Colombo Fort Station - FULL
+                'QR002', // Pettah Market - PARTIAL
+                'QR003', // Galle Face Green - RECYCLING
+                'QR004', // Liberty Plaza - FULL
+                'QR005', // Bambalapitiya Junction - PARTIAL
+                'QR010', // Mount Lavinia - FULL
+                'QR012', // Cinnamon Gardens - RECYCLING
+                'QR020', // Ja-Ela - EMPTY
+                'QR024', // Temple of Tooth - RECYCLING
+                'QR030'  // Unawatuna Beach - PARTIAL
+            ];
+            
+            const randomQR = testQRCodes[Math.floor(Math.random() * testQRCodes.length)];
+            document.querySelector('input[name="qrCode"]').value = randomQR;
+            
+            // Show success message
+            alert('Test QR Code generated: ' + randomQR + '\nClick "Process QR Code" to continue.');
+        }
+
+        // Auto-focus on QR input
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrInput = document.querySelector('input[name="qrCode"]');
+            if (qrInput) {
+                qrInput.focus();
+            }
+        });
+
+        // Handle QR input formatting
+        document.querySelector('input[name="qrCode"]').addEventListener('input', function(e) {
+            // Convert to uppercase and remove spaces
+            e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
+        });
+    </script>
+</body>
+</html>

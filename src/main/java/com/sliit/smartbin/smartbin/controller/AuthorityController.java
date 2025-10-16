@@ -9,6 +9,9 @@ import com.sliit.smartbin.smartbin.service.ReportService;
 import com.sliit.smartbin.smartbin.service.RouteService;
 import com.sliit.smartbin.smartbin.service.UserService;
 import com.sliit.smartbin.smartbin.service.NotificationService;
+import com.sliit.smartbin.smartbin.service.BinAssignmentService;
+import com.sliit.smartbin.smartbin.service.CollectionService;
+import com.sliit.smartbin.smartbin.model.BinAssignment;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +38,23 @@ public class AuthorityController {
     private final ReportService reportService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final BinAssignmentService binAssignmentService;
+    private final CollectionService collectionService;
 
     public AuthorityController(BinService binService,
                                RouteService routeService,
                                ReportService reportService,
                                UserService userService,
-                               NotificationService notificationService) {
+                               NotificationService notificationService,
+                               BinAssignmentService binAssignmentService,
+                               CollectionService collectionService) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.binAssignmentService = binAssignmentService;
+        this.collectionService = collectionService;
     }
 
     @GetMapping("/dashboard")
@@ -228,6 +238,182 @@ public class AuthorityController {
         model.addAttribute("user", user);
         
         return "authority/manage-collectors";
+    }
+
+    @GetMapping("/api/collectors")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getCollectorsApi(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+            List<Map<String, Object>> collectorData = new ArrayList<>();
+            
+            for (User collector : collectors) {
+                Map<String, Object> collectorInfo = new HashMap<>();
+                collectorInfo.put("id", collector.getId());
+                collectorInfo.put("name", collector.getName());
+                collectorInfo.put("email", collector.getEmail());
+                collectorInfo.put("phone", collector.getPhone());
+                collectorInfo.put("region", collector.getRegion() != null ? collector.getRegion() : "No region assigned");
+                
+                // Get all routes for this collector
+                List<Route> allRoutes = routeService.findRoutesByCollector(collector);
+                List<Route> activeRoutes = routeService.findActiveRoutesByCollector(collector);
+                
+                // Get assigned routes
+                List<Route> assignedRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.ASSIGNED)
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Get in-progress routes
+                List<Route> inProgressRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.IN_PROGRESS)
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Get today's completed routes
+                LocalDate today = LocalDate.now();
+                List<Route> todayCompletedRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.COMPLETED 
+                        && r.getCompletedDate() != null
+                        && r.getCompletedDate().toLocalDate().equals(today))
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Get real today's collections count
+                long todayCollections = collectionService.findCollectionsByCollectorAndDateRange(
+                    collector, 
+                    today.atStartOfDay(), 
+                    today.plusDays(1).atStartOfDay()
+                ).size();
+                
+                // Calculate real completion rate
+                long completedRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.COMPLETED)
+                    .count();
+                double completionRate = allRoutes.isEmpty() ? 0 : 
+                    ((double) completedRoutes / allRoutes.size()) * 100;
+                
+                collectorInfo.put("activeRoutes", activeRoutes.size());
+                collectorInfo.put("assignedRoutes", assignedRoutes.size());
+                collectorInfo.put("inProgressRoutes", inProgressRoutes.size());
+                collectorInfo.put("todayCompletedRoutes", todayCompletedRoutes.size());
+                collectorInfo.put("todayCollections", todayCollections);
+                collectorInfo.put("completionRate", Math.round(completionRate));
+                
+                // Add detailed route information
+                List<Map<String, Object>> routeDetails = new ArrayList<>();
+                for (Route route : assignedRoutes) {
+                    Map<String, Object> routeInfo = new HashMap<>();
+                    routeInfo.put("id", route.getId());
+                    routeInfo.put("name", route.getRouteName());
+                    routeInfo.put("status", route.getStatus().name());
+                    routeInfo.put("assignedDate", route.getAssignedDate().toString());
+                    routeInfo.put("binCount", route.getRouteBins() != null ? route.getRouteBins().size() : 0);
+                    routeInfo.put("distance", route.getTotalDistanceKm());
+                    routeInfo.put("duration", route.getEstimatedDurationMinutes());
+                    routeDetails.add(routeInfo);
+                }
+                
+                for (Route route : inProgressRoutes) {
+                    Map<String, Object> routeInfo = new HashMap<>();
+                    routeInfo.put("id", route.getId());
+                    routeInfo.put("name", route.getRouteName());
+                    routeInfo.put("status", route.getStatus().name());
+                    routeInfo.put("startedDate", route.getStartedDate() != null ? route.getStartedDate().toString() : null);
+                    routeInfo.put("binCount", route.getRouteBins() != null ? route.getRouteBins().size() : 0);
+                    routeInfo.put("distance", route.getTotalDistanceKm());
+                    routeInfo.put("duration", route.getEstimatedDurationMinutes());
+                    routeDetails.add(routeInfo);
+                }
+                
+                collectorInfo.put("routes", routeDetails);
+                
+                // Determine status based on active routes
+                if (activeRoutes.isEmpty()) {
+                    collectorInfo.put("status", "available");
+                } else if (inProgressRoutes.size() > 0) {
+                    collectorInfo.put("status", "on-route");
+                } else {
+                    collectorInfo.put("status", "busy");
+                }
+                
+                // Add current activity description
+                if (inProgressRoutes.size() > 0) {
+                    Route currentRoute = inProgressRoutes.get(0);
+                    collectorInfo.put("currentActivity", "On route: " + currentRoute.getRouteName());
+                } else if (assignedRoutes.size() > 0) {
+                    collectorInfo.put("currentActivity", assignedRoutes.size() + " route(s) assigned");
+                } else {
+                    collectorInfo.put("currentActivity", "Available for assignment");
+                }
+                
+                collectorData.add(collectorInfo);
+            }
+            
+            return ResponseEntity.ok(collectorData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    @GetMapping("/api/analytics")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAnalytics(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Map<String, Object> analytics = new HashMap<>();
+            
+            // Collection trends (last 7 hours)
+            List<Integer> collectionTrends = new ArrayList<>();
+            for (int i = 6; i >= 0; i--) {
+                // Mock data - in real app, this would query actual collection data
+                collectionTrends.add((int) (Math.random() * 20 + 10));
+            }
+            analytics.put("collectionTrends", collectionTrends);
+            
+            // Collector performance
+            List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+            List<String> collectorLabels = new ArrayList<>();
+            List<Integer> collectorData = new ArrayList<>();
+            
+            for (User collector : collectors) {
+                collectorLabels.add(collector.getName().split(" ")[0] + " " + 
+                    collector.getName().split(" ")[1].charAt(0) + ".");
+                collectorData.add((int) (Math.random() * 15 + 5)); // Mock daily collections
+            }
+            
+            Map<String, Object> collectorPerformance = new HashMap<>();
+            collectorPerformance.put("labels", collectorLabels);
+            collectorPerformance.put("data", collectorData);
+            analytics.put("collectorPerformance", collectorPerformance);
+            
+            // Bin status distribution
+            List<Integer> binStatus = new ArrayList<>();
+            binStatus.add(45); // Empty
+            binStatus.add(30); // Partial
+            binStatus.add(20); // Full
+            binStatus.add(5);  // Overdue
+            analytics.put("binStatus", binStatus);
+            
+            // Route efficiency (last 7 days)
+            List<Integer> routeEfficiency = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                routeEfficiency.add((int) (Math.random() * 20 + 75)); // 75-95% efficiency
+            }
+            analytics.put("routeEfficiency", routeEfficiency);
+            
+            return ResponseEntity.ok(analytics);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/api/assign-collector")
@@ -657,6 +843,161 @@ public class AuthorityController {
         }
         
         return "redirect:/authority/bins";
+    }
+    
+    // ==================== BIN ASSIGNMENT API ENDPOINTS ====================
+    
+    /**
+     * Save a new bin assignment to database
+     */
+    @PostMapping("/api/assignments/save")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> saveAssignment(@RequestBody Map<String, Object> request,
+                                                              HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Long collectorId = Long.valueOf(request.get("collectorId").toString());
+            
+            @SuppressWarnings("unchecked")
+            List<Object> binIdsObj = (List<Object>) request.get("binIds");
+            List<Long> binIds = new ArrayList<>();
+            for (Object binIdObj : binIdsObj) {
+                if (binIdObj instanceof Integer) {
+                    binIds.add(((Integer) binIdObj).longValue());
+                } else if (binIdObj instanceof Long) {
+                    binIds.add((Long) binIdObj);
+                } else {
+                    binIds.add(Long.valueOf(binIdObj.toString()));
+                }
+            }
+            
+            @SuppressWarnings("unchecked")
+            List<String> binLocations = (List<String>) request.get("binLocations");
+            Long routeId = request.get("routeId") != null ? Long.valueOf(request.get("routeId").toString()) : null;
+            
+            User collector = userService.findById(collectorId)
+                .orElseThrow(() -> new RuntimeException("Collector not found"));
+            
+            // Create assignment in database
+            BinAssignment assignment = binAssignmentService.createAssignment(
+                collector, user, binIds, binLocations, routeId
+            );
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Assignment saved successfully");
+            response.put("assignmentId", assignment.getId());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to save assignment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get all bin assignments
+     */
+    @GetMapping("/api/assignments/all")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAllAssignments(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BinAssignment> assignments = binAssignmentService.getAllAssignments();
+            List<Map<String, Object>> response = new ArrayList<>();
+            
+            for (BinAssignment assignment : assignments) {
+                Map<String, Object> assignmentData = new HashMap<>();
+                assignmentData.put("id", assignment.getId());
+                assignmentData.put("collectorId", assignment.getCollector().getId());
+                assignmentData.put("collectorName", assignment.getCollector().getName());
+                assignmentData.put("binIds", assignment.getBinIds());
+                assignmentData.put("binLocations", assignment.getBinLocations());
+                assignmentData.put("assignedBy", assignment.getAssignedBy().getName());
+                assignmentData.put("assignedAt", assignment.getAssignedAt().toString());
+                assignmentData.put("status", assignment.getStatus().toString());
+                assignmentData.put("routeId", assignment.getRouteId());
+                
+                response.add(assignmentData);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    /**
+     * Get bin assignments for a specific collector
+     */
+    @GetMapping("/api/assignments/collector/{collectorId}")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAssignmentsByCollector(@PathVariable Long collectorId,
+                                                                               HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BinAssignment> assignments = binAssignmentService.getAssignmentsByCollector(collectorId);
+            List<Map<String, Object>> response = new ArrayList<>();
+            
+            for (BinAssignment assignment : assignments) {
+                Map<String, Object> assignmentData = new HashMap<>();
+                assignmentData.put("id", assignment.getId());
+                assignmentData.put("collectorId", assignment.getCollector().getId());
+                assignmentData.put("collectorName", assignment.getCollector().getName());
+                assignmentData.put("binIds", assignment.getBinIds());
+                assignmentData.put("binLocations", assignment.getBinLocations());
+                assignmentData.put("assignedBy", assignment.getAssignedBy().getName());
+                assignmentData.put("assignedAt", assignment.getAssignedAt().toString());
+                assignmentData.put("status", assignment.getStatus().toString());
+                
+                response.add(assignmentData);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    /**
+     * Delete all bin assignments (for testing/reset)
+     */
+    @DeleteMapping("/api/assignments/clear")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearAllAssignments(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            binAssignmentService.deleteAllAssignments();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "All assignments cleared successfully");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to clear assignments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
 
