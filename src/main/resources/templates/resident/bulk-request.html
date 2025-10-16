@@ -17,84 +17,135 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: white;
+            background: #f8f9fa;
             min-height: 100vh;
-            color: #2c3e50;
+            color: #202124;
             margin: 0;
             padding: 0;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .container {
             max-width: 100%;
             margin: 0;
             padding: 0;
-            background: white;
+            background: #f8f9fa;
         }
 
-        /* Top Bar - Payment Page Style */
-        .top-bar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem 3rem;
+        /* Page Header */
+        .page-header {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 3rem 1.5rem;
+        }
+
+        .header-content {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            position: relative;
+            gap: 1rem;
         }
 
-        .top-bar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        .back-link {
+            color: #5f6368;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #dadce0;
         }
 
-        .top-bar h1 {
-            font-size: 1.5rem;
-            font-weight: 800;
+        .back-link:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .back-link .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: #202124;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             margin: 0;
-            position: relative;
-            z-index: 1;
+            letter-spacing: -0.5px;
         }
 
-        .top-bar .material-icons {
-            font-size: 2.25rem;
-            animation: pulse 2s ease-in-out infinite;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
-        }
-
-        .back-link {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: rgba(255,255,255,0.2);
-            border-radius: 12px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-            border: 2px solid transparent;
-        }
-
-        .back-link:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        .page-header h1 .material-icons {
+            font-size: 2rem;
+            color: #34a853;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+            50% { transform: scale(1.05); }
         }
 
         /* Navigation - Removed */
@@ -617,9 +668,8 @@
                 padding: 1.5rem;
             }
 
-            .top-bar {
-                padding: 1.25rem 1.5rem;
-                flex-direction: row;
+            .page-header {
+                padding: 1.5rem;
             }
 
             .form-section {
@@ -637,19 +687,27 @@
         }
 
         @media (max-width: 767px) {
-            .container {
-                padding: 0;
+            .navbar {
+                padding: 0.75rem 1rem;
             }
 
-            .top-bar {
-                padding: 1rem 1.25rem;
-            }
-
-            .top-bar h1 {
+            .logo {
                 font-size: 1.25rem;
             }
 
-            .top-bar .material-icons {
+            .logo .material-icons {
+                font-size: 1.75rem;
+            }
+
+            .page-header {
+                padding: 1rem 1.25rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.375rem;
+            }
+
+            .page-header h1 .material-icons {
                 font-size: 1.75rem;
             }
 
@@ -721,19 +779,33 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <h1>
-            <span class="material-icons">delete_sweep</span>
-            Bulk Collection Request
-        </h1>
-        <a href="/resident/dashboard" class="back-link">
-            <span class="material-icons">arrow_back</span>
-            Back to Dashboard
-        </a>
-    </div>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin
+            </div>
+            <div class="user-info">
+                <span th:text="${user != null ? user.name : 'Guest'}">Guest</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
 
     <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <a href="/resident/dashboard" class="back-link">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1>
+                    <span class="material-icons">delete_sweep</span>
+                    Bulk Collection Request
+                </h1>
+            </div>
+        </div>
         <!-- Form Container -->
         <div class="form-container">
             <!-- Single Form Box -->
