@@ -472,14 +472,20 @@
         
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 1rem;
             margin-top: 2rem;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
             .quick-actions {
                 grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -604,6 +610,15 @@
 
         .action-bulk .icon .material-icons {
             color: #e91e63;
+        }
+
+        .action-btn[href="/resident/my-bulk-requests"]:hover {
+            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%) !important;
+            transform: translateY(-2px);
+        }
+
+        .action-btn[href="/resident/my-bulk-requests"]:hover .icon .material-icons {
+            color: white;
         }
         
         .btn {
@@ -987,6 +1002,10 @@
             </div>
         </div>
         
+        <!-- My Bulk Requests Section (if user has any bulk requests, they will appear here via controller) -->
+        <!-- This would be populated by controller with model attribute for bulkRequests -->
+        <!-- For now, we'll redirect users to /resident/my-bulk-requests to view their requests -->
+        
         <!-- Quick Actions Section -->
         <div style="margin-top: 2rem;">
             <h2 style="color: #2c3e50; margin-bottom: 1rem; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
@@ -1023,6 +1042,12 @@
                         <span class="material-icons">shopping_cart</span>
                     </div>
                     Bulk Collection Request
+                </a>
+                <a href="/resident/my-bulk-requests" class="action-btn" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;">
+                    <div class="icon">
+                        <span class="material-icons">list_alt</span>
+                    </div>
+                    View All My Requests
                 </a>
             </div>
         </div>
