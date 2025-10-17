@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generate Report - SmartBin</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,131 +21,268 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-            color: #333;
+            font-family: 'Google Sans', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
+            color: #202124;
+            min-height: 100vh;
+            line-height: 1.5;
         }
 
-        .header {
+        /* Top Navigation Bar */
+        .top-nav {
             background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-bottom: 1.5rem;
         }
 
-        .back-btn {
+        .nav-title {
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #666;
-            text-decoration: none;
-            font-weight: 500;
         }
 
-        .back-btn:hover {
-            color: #333;
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #666;
+            gap: 0.75rem;
+            color: #5f6368;
+        }
+
+        .notification-icon {
+            font-size: 1.125rem;
+            color: #5f6368;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .notification-icon:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
         }
 
         .user-icon {
             width: 32px;
             height: 32px;
-            background: #3498db;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-icon:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
         }
 
         .main-container {
-            padding: 2rem;
-            max-width: 1400px;
+            padding: 1.5rem;
+            max-width: 1200px;
             margin: 0 auto;
+        }
+
+        .analytics-dashboard {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .analytics-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .report-config {
             background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             margin-bottom: 2rem;
         }
 
         .config-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 1rem;
         }
 
         .config-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
         }
 
         .form-group label {
-            display: block;
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 400;
             margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #2c3e50;
         }
 
         .form-group select,
         .form-group input {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            background: white;
+            color: #202124;
+            transition: border-color 0.2s ease;
         }
 
         .form-group select:focus,
         .form-group input:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
         }
 
         .generate-btn {
-            background: #2c3e50;
+            background: #1a73e8;
             color: white;
             border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: background 0.3s ease;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .generate-btn:hover {
-            background: #34495e;
+            background: #1557b0;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            transform: translateY(-1px);
+        }
+
+        .generate-btn:disabled {
+            background: #dadce0;
+            color: #5f6368;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .report-content {
             background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             margin-bottom: 2rem;
         }
 
@@ -152,8 +297,8 @@
 
         .report-title {
             font-size: 1.5rem;
-            font-weight: 600;
-            color: #2c3e50;
+            font-weight: 400;
+            color: #202124;
         }
 
         .export-buttons {
@@ -162,38 +307,45 @@
         }
 
         .export-btn {
-            background: #3498db;
-            color: white;
-            border: none;
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
             padding: 0.5rem 1rem;
-            border-radius: 6px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s ease;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .export-btn:hover {
-            background: #2980b9;
+            background: #f8f9fa;
+            border-color: #1a73e8;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
 
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .chart-container {
-            background: #f8f9fa;
+            background: white;
             border-radius: 8px;
             padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             text-align: center;
         }
 
         .chart-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 400;
+            color: #202124;
             margin-bottom: 1rem;
         }
 
@@ -340,6 +492,22 @@
         }
 
         @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
             .main-container {
                 padding: 1rem;
             }
@@ -355,18 +523,48 @@
             .export-buttons {
                 flex-direction: column;
             }
+            
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <a href="/authority/dashboard" class="back-btn">
-            ← Generate Report
-        </a>
+    
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <h1 class="nav-title">Reports & Analytics</h1>
+        <div class="nav-links">
+            <a href="/authority/dashboard" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                Dashboard
+            </a>
+            <a href="/authority/manage-collectors" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">group</span>
+                Manage Collectors
+            </a>
+            <a href="/authority/dispatch" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">local_shipping</span>
+                Dispatch
+            </a>
+            <a href="/authority/reports" class="nav-link active">
+                <span class="material-icons" style="font-size: 18px;">assessment</span>
+                Reports
+            </a>
+            <a href="/authority/bulk-requests" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">inventory</span>
+                Bulk Requests
+            </a>
+        </div>
         <div class="user-info">
-            <span th:text="${user.name}">Authority User</span>
-            <div class="user-icon">👤</div>
+            <div class="notification-icon">
+                <span class="material-icons">notifications</span>
+            </div>
+            <span class="user-name" th:text="${user.name}">Authority User</span>
+            <div class="user-icon">A</div>
         </div>
     </div>
 
@@ -374,6 +572,64 @@
         <!-- Success/Error Messages -->
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- Real-time Analytics Dashboard -->
+        <div class="analytics-dashboard">
+            <h2>Real-time Analytics Dashboard</h2>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Collection Trends</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="collectionTrendsChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Collector Performance</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="collectorPerformanceChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Bin Status Distribution</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="binStatusChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Route Efficiency</h3>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="routeEfficiencyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Report Configuration Section -->
         <div class="report-config">
@@ -413,7 +669,7 @@
                     </div>
                 </div>
                 <button type="submit" class="generate-btn">
-                    📊 Generate Report
+                    <i class="fas fa-chart-bar"></i> Generate Report
                 </button>
             </form>
         </div>
@@ -423,9 +679,15 @@
             <div class="report-header">
                 <h2 class="report-title" id="reportTitle">Waste Management Report</h2>
                 <div class="export-buttons">
-                    <button class="export-btn" onclick="exportToPDF()">📄 Export PDF</button>
-                    <button class="export-btn" onclick="exportToCSV()">📊 Export CSV</button>
-                    <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+                    <button class="export-btn" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </button>
+                    <button class="export-btn" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                    <button class="export-btn" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
                 </div>
             </div>
 
@@ -484,8 +746,8 @@
                 <div class="chart-container">
                     <h3 class="chart-title">Bin Type Distribution</h3>
                     <canvas id="typeChart" style="max-height: 300px;"></canvas>
+                    </div>
                 </div>
-            </div>
 
             <!-- Detailed Data Tables -->
             <div id="dataTableContainer" style="margin-top: 2rem;">
@@ -508,22 +770,22 @@
                             <!-- Will be populated dynamically -->
                         </tbody>
                     </table>
-                </div>
+            </div>
 
                 <!-- Overdue Bins Table -->
                 <div class="table-section" id="overdueTableSection" style="margin-top: 2rem;">
                     <h3 style="margin-bottom: 1rem; color: #e74c3c;">🚨 Overdue Bins Requiring Attention</h3>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
+            <table class="data-table">
+                <thead>
+                    <tr>
                                 <th>QR Code</th>
                                 <th>Location</th>
                                 <th>Fill Level</th>
                                 <th>Hours Overdue</th>
                                 <th>Priority</th>
                                 <th>Action</th>
-                            </tr>
-                        </thead>
+                    </tr>
+                </thead>
                         <tbody id="overdueTableBody">
                             <!-- Will be populated dynamically -->
                         </tbody>
@@ -588,7 +850,7 @@
                 </tbody>
             </table>
                 </div>
-            </div>
+                </div>
         </div>
     </div>
 
@@ -605,6 +867,10 @@
             document.getElementById('region').value = 'all';
             document.getElementById('reportType').value = 'bin-status';
             
+            // Initialize analytics dashboard
+            initializeAnalyticsDashboard();
+            startRealTimeUpdates();
+            
             // Load default report
             loadDefaultReport();
             
@@ -617,6 +883,171 @@
             
             // Update metadata
             updateReportMetadata('bin-status', 'all', 'week');
+        });
+
+        // Real-time analytics dashboard
+        let analyticsInterval;
+        let collectionTrendsChart, collectorPerformanceChart, binStatusChart, routeEfficiencyChart;
+
+        function initializeAnalyticsDashboard() {
+            // Initialize Collection Trends Chart
+            const collectionCtx = document.getElementById('collectionTrendsChart').getContext('2d');
+            collectionTrendsChart = new Chart(collectionCtx, {
+                type: 'line',
+                data: {
+                    labels: ['6h ago', '5h ago', '4h ago', '3h ago', '2h ago', '1h ago', 'Now'],
+                    datasets: [{
+                        label: 'Collections',
+                        data: [12, 19, 15, 25, 22, 30, 28],
+                        borderColor: '#1a73e8',
+                        backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Initialize Collector Performance Chart
+            const collectorCtx = document.getElementById('collectorPerformanceChart').getContext('2d');
+            collectorPerformanceChart = new Chart(collectorCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['John D.', 'Jane S.', 'Mike J.', 'Sarah K.', 'David L.'],
+                    datasets: [{
+                        label: 'Collections Today',
+                        data: [15, 12, 18, 14, 16],
+                        backgroundColor: ['#4caf50', '#2196f3', '#ff9800', '#9c27b0', '#f44336']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Initialize Bin Status Chart
+            const binCtx = document.getElementById('binStatusChart').getContext('2d');
+            binStatusChart = new Chart(binCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Empty', 'Partial', 'Full', 'Overdue'],
+                    datasets: [{
+                        data: [45, 30, 20, 5],
+                        backgroundColor: ['#4caf50', '#ff9800', '#f44336', '#9e9e9e']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Initialize Route Efficiency Chart
+            const routeCtx = document.getElementById('routeEfficiencyChart').getContext('2d');
+            routeEfficiencyChart = new Chart(routeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Efficiency %',
+                        data: [85, 92, 78, 88, 95, 82, 90],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function startRealTimeUpdates() {
+            // Update analytics every 30 seconds
+            analyticsInterval = setInterval(() => {
+                updateAnalyticsData();
+            }, 30000);
+        }
+
+        function updateAnalyticsData() {
+            fetch('/authority/api/analytics')
+                .then(response => response.json())
+                .then(data => {
+                    // Update Collection Trends
+                    if (collectionTrendsChart && data.collectionTrends) {
+                        collectionTrendsChart.data.datasets[0].data = data.collectionTrends;
+                        collectionTrendsChart.update();
+                    }
+
+                    // Update Collector Performance
+                    if (collectorPerformanceChart && data.collectorPerformance) {
+                        collectorPerformanceChart.data.labels = data.collectorPerformance.labels;
+                        collectorPerformanceChart.data.datasets[0].data = data.collectorPerformance.data;
+                        collectorPerformanceChart.update();
+                    }
+
+                    // Update Bin Status
+                    if (binStatusChart && data.binStatus) {
+                        binStatusChart.data.datasets[0].data = data.binStatus;
+                        binStatusChart.update();
+                    }
+
+                    // Update Route Efficiency
+                    if (routeEfficiencyChart && data.routeEfficiency) {
+                        routeEfficiencyChart.data.datasets[0].data = data.routeEfficiency;
+                        routeEfficiencyChart.update();
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to update analytics:', error);
+                });
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (analyticsInterval) {
+                clearInterval(analyticsInterval);
+            }
         });
 
         // Form submission handling
@@ -725,9 +1156,109 @@
             updateCharts(defaultData);
         }
 
+        function generateRegionDateSpecificData(region, dateRange) {
+            // Define different data sets for each region and date range combination
+            const dataByRegion = {
+                'all': {
+                    'today': {
+                        totalBins: 32, averageFillLevel: 62, overdueBins: 3, totalCollections: 8,
+                        emptyBins: 10, lowFillBins: 8, mediumFillBins: 9, fullBins: 5,
+                        partialBins: 14, standardBins: 20, recyclingBins: 8, bulkBins: 4
+                    },
+                    'week': {
+                        totalBins: 32, averageFillLevel: 67, overdueBins: 5, totalCollections: 45,
+                        emptyBins: 8, lowFillBins: 10, mediumFillBins: 9, fullBins: 5,
+                        partialBins: 12, standardBins: 20, recyclingBins: 8, bulkBins: 4
+                    },
+                    'month': {
+                        totalBins: 32, averageFillLevel: 71, overdueBins: 8, totalCollections: 185,
+                        emptyBins: 6, lowFillBins: 9, mediumFillBins: 10, fullBins: 7,
+                        partialBins: 11, standardBins: 20, recyclingBins: 8, bulkBins: 4
+                    }
+                },
+                'north': {
+                    'today': {
+                        totalBins: 12, averageFillLevel: 58, overdueBins: 1, totalCollections: 3,
+                        emptyBins: 4, lowFillBins: 3, mediumFillBins: 3, fullBins: 2,
+                        partialBins: 5, standardBins: 7, recyclingBins: 3, bulkBins: 2
+                    },
+                    'week': {
+                        totalBins: 12, averageFillLevel: 64, overdueBins: 2, totalCollections: 18,
+                        emptyBins: 3, lowFillBins: 4, mediumFillBins: 3, fullBins: 2,
+                        partialBins: 4, standardBins: 7, recyclingBins: 3, bulkBins: 2
+                    },
+                    'month': {
+                        totalBins: 12, averageFillLevel: 69, overdueBins: 3, totalCollections: 72,
+                        emptyBins: 2, lowFillBins: 3, mediumFillBins: 4, fullBins: 3,
+                        partialBins: 4, standardBins: 7, recyclingBins: 3, bulkBins: 2
+                    }
+                },
+                'south': {
+                    'today': {
+                        totalBins: 10, averageFillLevel: 65, overdueBins: 1, totalCollections: 2,
+                        emptyBins: 3, lowFillBins: 2, mediumFillBins: 3, fullBins: 2,
+                        partialBins: 4, standardBins: 6, recyclingBins: 2, bulkBins: 2
+                    },
+                    'week': {
+                        totalBins: 10, averageFillLevel: 70, overdueBins: 2, totalCollections: 15,
+                        emptyBins: 2, lowFillBins: 3, mediumFillBins: 3, fullBins: 2,
+                        partialBins: 3, standardBins: 6, recyclingBins: 2, bulkBins: 2
+                    },
+                    'month': {
+                        totalBins: 10, averageFillLevel: 74, overdueBins: 3, totalCollections: 58,
+                        emptyBins: 2, lowFillBins: 2, mediumFillBins: 3, fullBins: 3,
+                        partialBins: 3, standardBins: 6, recyclingBins: 2, bulkBins: 2
+                    }
+                },
+                'east': {
+                    'today': {
+                        totalBins: 6, averageFillLevel: 60, overdueBins: 0, totalCollections: 2,
+                        emptyBins: 2, lowFillBins: 2, mediumFillBins: 1, fullBins: 1,
+                        partialBins: 3, standardBins: 4, recyclingBins: 1, bulkBins: 1
+                    },
+                    'week': {
+                        totalBins: 6, averageFillLevel: 66, overdueBins: 1, totalCollections: 8,
+                        emptyBins: 2, lowFillBins: 1, mediumFillBins: 2, fullBins: 1,
+                        partialBins: 2, standardBins: 4, recyclingBins: 1, bulkBins: 1
+                    },
+                    'month': {
+                        totalBins: 6, averageFillLevel: 72, overdueBins: 1, totalCollections: 32,
+                        emptyBins: 1, lowFillBins: 2, mediumFillBins: 2, fullBins: 1,
+                        partialBins: 2, standardBins: 4, recyclingBins: 1, bulkBins: 1
+                    }
+                },
+                'west': {
+                    'today': {
+                        totalBins: 4, averageFillLevel: 68, overdueBins: 1, totalCollections: 1,
+                        emptyBins: 1, lowFillBins: 1, mediumFillBins: 1, fullBins: 1,
+                        partialBins: 2, standardBins: 3, recyclingBins: 1, bulkBins: 0
+                    },
+                    'week': {
+                        totalBins: 4, averageFillLevel: 73, overdueBins: 1, totalCollections: 6,
+                        emptyBins: 1, lowFillBins: 1, mediumFillBins: 1, fullBins: 1,
+                        partialBins: 2, standardBins: 3, recyclingBins: 1, bulkBins: 0
+                    },
+                    'month': {
+                        totalBins: 4, averageFillLevel: 78, overdueBins: 2, totalCollections: 23,
+                        emptyBins: 0, lowFillBins: 1, mediumFillBins: 2, fullBins: 1,
+                        partialBins: 2, standardBins: 3, recyclingBins: 1, bulkBins: 0
+                    }
+                }
+            };
+            
+            // Get data for the specific region and date range
+            const regionData = dataByRegion[region] || dataByRegion['all'];
+            const data = regionData[dateRange] || regionData['week'];
+            
+            return data;
+        }
+
         function displayReport(data, reportType, region, dateRange) {
             // Show report content section
             document.getElementById('reportContent').style.display = 'block';
+            
+            // Generate region and date-specific data
+            const specificData = generateRegionDateSpecificData(region, dateRange);
             
             // Update report title
             const reportTypeNames = {
@@ -736,17 +1267,37 @@
                 'bin-status': 'Bin Status Report',
                 'overdue': 'Overdue Bins Report'
             };
+            
+            const regionNames = {
+                'all': 'All Regions',
+                'north': 'North District',
+                'south': 'South District',
+                'east': 'East District',
+                'west': 'West District'
+            };
+            
+            const dateRangeNames = {
+                'today': 'Today',
+                'week': 'This Week',
+                'month': 'This Month'
+            };
+            
             document.getElementById('reportTitle').textContent = 
-                `${reportTypeNames[reportType]} - ${region.toUpperCase()} (${dateRange})`;
+                `${reportTypeNames[reportType]} - ${regionNames[region]} (${dateRangeNames[dateRange]})`;
             
-            // Update summary statistics
-            updateSummaryStats(data);
+            // Update metadata
+            document.getElementById('reportRegion').textContent = regionNames[region];
+            document.getElementById('reportDateRange').textContent = dateRangeNames[dateRange];
+            document.getElementById('generatedAt').textContent = new Date().toLocaleString();
             
-            // Update charts
-            updateCharts(data);
+            // Update summary statistics with specific data
+            updateSummaryStats(specificData);
+            
+            // Update charts with specific data
+            updateCharts(specificData);
             
             // Update data table
-            updateDataTable(data, reportType);
+            updateDataTable(specificData, reportType);
             
             // Scroll to report
             document.getElementById('reportContent').scrollIntoView({ behavior: 'smooth' });
@@ -783,7 +1334,7 @@
                 type: 'bar',
                 data: {
                     labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
-                    datasets: [{
+                datasets: [{
                         label: 'Number of Bins',
                         data: [
                             data.emptyBins || 0,
@@ -831,18 +1382,18 @@
                 type: 'doughnut',
                 data: {
                     labels: ['Empty', 'Partial', 'Full', 'Overdue'],
-                    datasets: [{
+                datasets: [{
                         data: [
                             data.emptyBins || 0,
                             data.partialBins || 0,
                             data.fullBins || 0,
                             data.overdueBins || 0
                         ],
-                        backgroundColor: [
-                            'rgba(46, 204, 113, 0.8)',
-                            'rgba(52, 152, 219, 0.8)',
+                    backgroundColor: [
+                        'rgba(46, 204, 113, 0.8)',
+                        'rgba(52, 152, 219, 0.8)',
                             'rgba(243, 156, 18, 0.8)',
-                            'rgba(231, 76, 60, 0.8)'
+                        'rgba(231, 76, 60, 0.8)'
                         ],
                         borderColor: [
                             'rgba(46, 204, 113, 1)',
@@ -870,7 +1421,7 @@
                 type: 'pie',
                 data: {
                     labels: ['Standard', 'Recycling', 'Bulk'],
-                    datasets: [{
+                datasets: [{
                         data: [
                             data.standardBins || 0,
                             data.recyclingBins || 0,
@@ -899,6 +1450,36 @@
                     }
                 }
             });
+            
+            // Store chart data globally for export functions
+            window.chartData = {
+                fillLevels: {
+                    labels: ['0-25%', '26-50%', '51-75%', '76-100%'],
+                    data: [
+                        data.emptyBins || 0,
+                        data.lowFillBins || 0,
+                        data.mediumFillBins || 0,
+                        data.fullBins || 0
+                    ]
+                },
+                status: {
+                    labels: ['Empty', 'Partial', 'Full', 'Overdue'],
+                    data: [
+                        data.emptyBins || 0,
+                        data.partialBins || 0,
+                        data.fullBins || 0,
+                        data.overdueBins || 0
+                    ]
+                },
+                types: {
+                    labels: ['Standard', 'Recycling', 'Bulk'],
+                    data: [
+                        data.standardBins || 0,
+                        data.recyclingBins || 0,
+                        data.bulkBins || 0
+                    ]
+                }
+            };
         }
 
         function loadBinStatusTable() {
@@ -1008,12 +1589,270 @@
             // The tables are loaded on page initialization and updated when needed
         }
 
-        function exportToPDF() {
-            alert('PDF export will be implemented with a library like jsPDF');
+        async function exportToPDF() {
+            const button = event.target.closest('.export-btn');
+            const originalContent = button.innerHTML;
+            
+            try {
+                // Show loading state
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+                button.disabled = true;
+                
+                // Get the jsPDF library
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                
+                // Get report data
+                const reportTitle = document.getElementById('reportTitle').textContent;
+                const generatedBy = document.getElementById('generatedBy').textContent;
+                const generatedAt = document.getElementById('generatedAt').textContent;
+                const reportRegion = document.getElementById('reportRegion').textContent;
+                const reportDateRange = document.getElementById('reportDateRange').textContent;
+                
+                // Get summary statistics
+                const totalBins = document.getElementById('totalBins').textContent;
+                const fullBins = document.getElementById('fullBins').textContent;
+                const avgFillLevel = document.getElementById('avgFillLevel').textContent;
+                const overdueBins = document.getElementById('overdueBins').textContent;
+                
+                // PDF Styling
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 20;
+                let yPosition = margin;
+                
+                // Header - Logo and Title
+                doc.setFillColor(26, 115, 232); // Google Blue
+                doc.rect(0, 0, pageWidth, 40, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.text('SmartBin', margin, 20);
+                
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Waste Management System', margin, 30);
+                
+                yPosition = 50;
+                
+                // Report Title
+                doc.setTextColor(32, 33, 36);
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text(reportTitle, margin, yPosition);
+                yPosition += 15;
+                
+                // Report Metadata
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(95, 99, 104);
+                
+                doc.text(`Generated By: ${generatedBy}`, margin, yPosition);
+                doc.text(`Generated At: ${generatedAt}`, pageWidth - margin - 80, yPosition);
+                yPosition += 6;
+                
+                doc.text(`Region: ${reportRegion}`, margin, yPosition);
+                doc.text(`Date Range: ${reportDateRange}`, pageWidth - margin - 80, yPosition);
+                yPosition += 15;
+                
+                // Summary Statistics Section
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(32, 33, 36);
+                doc.text('Summary Statistics', margin, yPosition);
+                yPosition += 10;
+                
+                // Statistics Cards
+                const cardWidth = (pageWidth - 2 * margin - 15) / 4;
+                const cardHeight = 25;
+                const stats = [
+                    { label: 'Total Bins', value: totalBins, color: [26, 115, 232] },
+                    { label: 'Full Bins', value: fullBins, color: [234, 67, 53] },
+                    { label: 'Avg Fill Level', value: avgFillLevel, color: [251, 188, 4] },
+                    { label: 'Overdue Bins', value: overdueBins, color: [52, 168, 83] }
+                ];
+                
+                stats.forEach((stat, index) => {
+                    const xPos = margin + index * (cardWidth + 5);
+                    
+                    // Card background
+                    doc.setFillColor(248, 249, 250);
+                    doc.roundedRect(xPos, yPosition, cardWidth, cardHeight, 2, 2, 'F');
+                    
+                    // Card border
+                    doc.setDrawColor(218, 220, 224);
+                    doc.setLineWidth(0.5);
+                    doc.roundedRect(xPos, yPosition, cardWidth, cardHeight, 2, 2, 'S');
+                    
+                    // Icon circle
+                    doc.setFillColor(...stat.color);
+                    doc.circle(xPos + 8, yPosition + 12, 4, 'F');
+                    
+                    // Label
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(95, 99, 104);
+                    doc.text(stat.label, xPos + 15, yPosition + 8);
+                    
+                    // Value
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(32, 33, 36);
+                    doc.text(stat.value, xPos + 15, yPosition + 18);
+                });
+                
+                yPosition += cardHeight + 15;
+                
+                // Charts Section
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(32, 33, 36);
+                doc.text('Visual Analytics', margin, yPosition);
+                yPosition += 10;
+                
+                // Capture charts as images
+                const charts = ['fillLevelChart', 'statusChart', 'typeChart'];
+                const chartTitles = ['Bin Fill Level Distribution', 'Bin Status Overview', 'Bin Type Distribution'];
+                
+                for (let i = 0; i < charts.length; i++) {
+                    const canvas = document.getElementById(charts[i]);
+                    if (canvas) {
+                        const chartImage = canvas.toDataURL('image/png');
+                        const chartWidth = (pageWidth - 2 * margin - 10) / 2;
+                        const chartHeight = 60;
+                        
+                        const xPos = margin + (i % 2) * (chartWidth + 10);
+                        
+                        // Add new page if needed
+                        if (yPosition + chartHeight + 20 > pageHeight - margin) {
+                            doc.addPage();
+                            yPosition = margin;
+                        }
+                        
+                        // Chart title
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(32, 33, 36);
+                        doc.text(chartTitles[i], xPos, yPosition);
+                        
+                        // Chart image
+                        doc.addImage(chartImage, 'PNG', xPos, yPosition + 5, chartWidth, chartHeight);
+                        
+                        if (i % 2 === 1 || i === charts.length - 1) {
+                            yPosition += chartHeight + 20;
+                        }
+                    }
+                }
+                
+                // Footer
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(95, 99, 104);
+                    doc.text(
+                        `Page ${i} of ${totalPages}`,
+                        pageWidth / 2,
+                        pageHeight - 10,
+                        { align: 'center' }
+                    );
+                    doc.text(
+                        `© ${new Date().getFullYear()} SmartBin - Waste Management System`,
+                        pageWidth / 2,
+                        pageHeight - 5,
+                        { align: 'center' }
+                    );
+                }
+                
+                // Save the PDF
+                const fileName = `SmartBin_Report_${reportRegion.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+                
+                // Show success notification
+                showNotification('PDF exported successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification('Failed to generate PDF: ' + error.message, 'error');
+            } finally {
+                // Restore button state
+                button.innerHTML = originalContent;
+                button.disabled = false;
+            }
         }
 
         function exportToCSV() {
-            alert('CSV export will download the report data as CSV file');
+            try {
+                // Get report data
+                const reportRegion = document.getElementById('reportRegion').textContent;
+                const reportDateRange = document.getElementById('reportDateRange').textContent;
+                const generatedAt = document.getElementById('generatedAt').textContent;
+                
+                // Get summary statistics
+                const totalBins = document.getElementById('totalBins').textContent;
+                const fullBins = document.getElementById('fullBins').textContent;
+                const avgFillLevel = document.getElementById('avgFillLevel').textContent;
+                const overdueBins = document.getElementById('overdueBins').textContent;
+                
+                // Create CSV content
+                let csvContent = 'SmartBin Waste Management Report\n\n';
+                csvContent += 'Report Metadata\n';
+                csvContent += `Region,${reportRegion}\n`;
+                csvContent += `Date Range,${reportDateRange}\n`;
+                csvContent += `Generated At,${generatedAt}\n\n`;
+                
+                csvContent += 'Summary Statistics\n';
+                csvContent += 'Metric,Value\n';
+                csvContent += `Total Bins,${totalBins}\n`;
+                csvContent += `Full Bins,${fullBins}\n`;
+                csvContent += `Average Fill Level,${avgFillLevel}\n`;
+                csvContent += `Overdue Bins,${overdueBins}\n\n`;
+                
+                // Get chart data if available
+                if (window.chartData) {
+                    csvContent += 'Fill Level Distribution\n';
+                    csvContent += 'Range,Count\n';
+                    window.chartData.fillLevels.labels.forEach((label, index) => {
+                        csvContent += `${label},${window.chartData.fillLevels.data[index]}\n`;
+                    });
+                    csvContent += '\n';
+                    
+                    csvContent += 'Bin Status\n';
+                    csvContent += 'Status,Count\n';
+                    window.chartData.status.labels.forEach((label, index) => {
+                        csvContent += `${label},${window.chartData.status.data[index]}\n`;
+                    });
+                    csvContent += '\n';
+                    
+                    csvContent += 'Bin Type Distribution\n';
+                    csvContent += 'Type,Count\n';
+                    window.chartData.types.labels.forEach((label, index) => {
+                        csvContent += `${label},${window.chartData.types.data[index]}\n`;
+                    });
+                }
+                
+                // Create blob and download
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                const fileName = `SmartBin_Report_${reportRegion.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+                link.setAttribute('href', url);
+                link.setAttribute('download', fileName);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification('CSV exported successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error generating CSV:', error);
+                showNotification('Failed to generate CSV: ' + error.message, 'error');
+            }
         }
     </script>
 </body>

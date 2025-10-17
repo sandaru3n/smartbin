@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Collector Dashboard - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,276 +14,1159 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
+            font-family: 'Roboto', sans-serif;
+            background: #fafafa;
+            color: #202124;
+            line-height: 1.5;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        /* Header Section - Google Material Design */
+        .header {
+            background: #fff;
+            color: #202124;
+            padding: 0 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            border-bottom: 1px solid #dadce0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
         }
 
-        .navbar-content {
-            max-width: 1200px;
+        .header-content {
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem 0;
+            min-height: 64px;
+            gap: 1.5rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex: 1;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5f6368;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            color: #5f6368;
         }
 
-        .btn-logout {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            text-decoration: none;
+        .user-name {
             font-weight: 500;
-            transition: background 0.3s;
+            color: #202124;
+            font-size: 0.875rem;
         }
 
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .header-btn {
+            background: none;
+            border: 1px solid #dadce0;
+            color: #5f6368;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
+        .header-btn:hover {
+            border-color: #5f6368;
+        }
+
+        .header-btn .material-icons {
+            font-size: 1.375rem;
+            color: #5f6368;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ea4335;
+            color: white;
+            border-radius: 10px;
+            min-width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .profile-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #202124;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+        }
+
+        .dropdown-item.logout .material-icons {
+            color: #ea4335;
+        }
+
+        /* Main Container */
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            margin: 0 auto;
+            padding: 24px;
         }
 
-        .welcome-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        /* Welcome Section */
+        .welcome-section {
+            margin-bottom: 32px;
+            padding: 0;
+            background: none;
         }
 
-        .welcome-card h1 {
-            color: #333;
-            margin-bottom: 0.5rem;
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #4285f4 0%, #9b72f2 25%, #d96570 50%, #f4a261 75%, #4285f4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: gradientShift 8s ease infinite;
         }
 
-        .welcome-card p {
-            color: #666;
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+        .welcome-subtitle {
+            font-size: 18px;
+            color: #5f6368;
+            margin-bottom: 0;
+            font-weight: 400;
         }
 
-        .dashboard-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+        /* Today's Summary Section - AdSense Blue Card Style */
+        .summary-section {
+            background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(26, 115, 232, 0.3), 0 10px 15px -3px rgba(26, 115, 232, 0.2);
+            border: none;
+            overflow: hidden;
+            position: relative;
         }
 
-        .dashboard-card:hover {
-            transform: translateY(-5px);
+        .summary-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
         }
 
-        .dashboard-card .icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+        .summary-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+            padding: 0;
+            margin: 0 0 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: none;
+            background: none;
         }
 
-        .dashboard-card h3 {
-            color: #333;
-            margin-bottom: 0.5rem;
+        .summary-title .material-icons {
+            color: white;
         }
 
-        .dashboard-card p {
-            color: #666;
+        .summary-cards {
+            display: flex;
+            gap: 80px;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+            justify-content: flex-start;
         }
 
-        .alert {
-            padding: 1rem;
+        .summary-card {
+            background: none;
+            border-radius: 0;
+            padding: 0;
+            text-align: left;
+            border: none;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .summary-card:nth-child(2) {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .summary-label {
+            color: rgba(255,255,255,0.9);
+            font-weight: 400;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .summary-number {
+            font-size: 48px;
+            font-weight: 400;
+            color: white;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .summary-trend {
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up {
+            color: #34a853;
+        }
+
+        .trend-down {
+            color: #ea4335;
+        }
+
+        /* Notification Section */
+        .notification-section {
+            background: #e8f0fe;
+            border: 1px solid #dadce0;
             border-radius: 8px;
-            margin-bottom: 1.5rem;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .notification-icon {
+            
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-        
-        .assigned-routes-section, .stats-section {
-            margin-top: 3rem;
+
+        .notification-content h4 {
+            color: #1a73e8;
+            font-weight: 400;
+            margin-bottom: 4px;
+            font-size: 16px;
         }
-        
-        .assigned-routes-section h2, .stats-section h2 {
+
+        .notification-content p {
+            color: #5f6368;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .notification-close:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .live-updates-panel {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: #f5f5f5;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
             color: #333;
-            margin-bottom: 1.5rem;
-            text-align: center;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .updates-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .update-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .update-item:last-child {
+            border-bottom: none;
+        }
+
+        .update-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .update-icon.route {
+            background: #2196f3;
+        }
+
+        .update-icon.alert {
+            background: #ff9800;
+        }
+
+        .update-icon.completion {
+            background: #4caf50;
+        }
+
+        .update-content {
+            flex: 1;
+        }
+
+        .update-title {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .update-message {
+            margin: 0 0 4px 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .update-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+            max-width: 1200px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 6px -1px rgba(26, 115, 232, 0.3);
+        }
+
+        .action-card:nth-child(1) .action-icon {
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+        }
+
+        .action-card:nth-child(2) .action-icon {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        }
+
+        .action-card:nth-child(3) .action-icon {
+            background: linear-gradient(135deg, #00bcd4, #0097a7);
+        }
+
+        .action-card:nth-child(4) .action-icon {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+        }
+
+        .action-icon .material-icons {
+            font-size: 28px;
+        }
+
+        .action-content h3 {
+            color: #202124;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .action-content p {
+            color: #5f6368;
+            font-size: 13px;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Quick Stats Section */
+        .quick-stats-section {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+        }
+
+        .quick-stats-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.05), rgba(66, 133, 244, 0.05));
+            border-radius: 12px;
+            border: 1px solid rgba(26, 115, 232, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+        }
+
+        .stat-item:nth-child(1) {
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.05), rgba(66, 133, 244, 0.05));
+            border-color: rgba(26, 115, 232, 0.2);
+        }
+
+        .stat-item:nth-child(2) {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.05), rgba(46, 125, 50, 0.05));
+            border-color: rgba(52, 168, 83, 0.2);
+        }
+
+        .stat-item:nth-child(3) {
+            background: linear-gradient(135deg, rgba(251, 188, 4, 0.05), rgba(245, 124, 0, 0.05));
+            border-color: rgba(251, 188, 4, 0.2);
+        }
+
+        .stat-item:nth-child(4) {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.05), rgba(123, 31, 162, 0.05));
+            border-color: rgba(156, 39, 176, 0.2);
+        }
+
+        .stat-label {
+            color: #5f6368;
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: #202124;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        /* Routes Section */
+        .routes-section {
+            margin-bottom: 32px;
+        }
+
+        .routes-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .routes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
+            gap: 20px;
         }
         
         .route-card {
             background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #f5576c;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            border-left: 4px solid #1a73e8;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .route-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
         }
         
         .route-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 16px;
         }
         
         .route-name {
-            font-weight: bold;
-            color: #333;
+            font-weight: 400;
+            color: #202124;
+            font-size: 16px;
         }
         
         .route-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
             text-transform: uppercase;
         }
         
         .status-ASSIGNED {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: #fef7e0;
+            color: #ea8600;
         }
         
         .status-IN_PROGRESS {
-            background-color: #cce5ff;
-            color: #004085;
+            background-color: #e8f0fe;
+            color: #1a73e8;
         }
         
         .status-COMPLETED {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #e6f4ea;
+            color: #137333;
         }
         
         .route-details {
-            margin-bottom: 1rem;
+            margin-bottom: 16px;
         }
         
         .route-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
         
         .info-label {
-            color: #666;
+            color: #5f6368;
+            font-weight: 400;
+        }
+
+        .info-value {
+            color: #202124;
+            font-weight: 400;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
             font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
+            color: white;
+            text-decoration: none;
         }
-        
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #f5576c;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-label {
-            color: #666;
-            font-weight: 500;
-        }
-        
+
         .btn-small {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.1), rgba(46, 125, 50, 0.1));
+            color: #137333;
+            border-left: 4px solid #34a853;
+        }
+
+        .alert-success .material-icons {
+            color: #34a853;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, rgba(234, 67, 53, 0.1), rgba(197, 34, 31, 0.1));
+            color: #d93025;
+            border-left: 4px solid #ea4335;
+        }
+
+        .alert-error .material-icons {
+            color: #ea4335;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 1rem;
+            }
+
+            .header-content {
+                padding: 0.75rem 0;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .summary-cards,
+            .action-grid,
+            .stats-grid,
+            .routes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .action-grid {
+                max-width: 100%;
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="logo">🚛 SmartBin - Collector Portal</div>
-            <div class="user-info">
-                <span th:text="${user.name}">Collector</span>
-                <a href="/logout" class="btn-logout">Logout</a>
+    <!-- Header Section / Top Navigation Bar -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    Collector Dashboard
+                </div>
+                <div class="nav-links">
+                    <a href="/collector/dashboard" class="nav-link active">
+                        <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                        Dashboard
+                    </a>
+                    <a href="/collector/routes" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">route</span>
+                        My Routes
+                    </a>
+                    <a href="/collector/scan-qr" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">qr_code_scanner</span>
+                        QR Code Scanner
+                    </a>
+                    <a href="/collector/collections" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">inventory_2</span>
+                        Your Collection Records
+                    </a>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="notification-icon header-btn">
+                        <span class="material-icons">notifications</span>
+                        <span class="notification-badge" th:if="${newNotifications > 0}" th:text="${newNotifications}">2</span>
+                    </div>
+                    <span class="user-name" th:text="${user.name}">Collector</span>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="user-icon profile-btn" onclick="toggleProfileDropdown()">
+                            <span th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'C'}">C</span>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-user-name" th:text="${user.name}">Collector</div>
+                                <div class="dropdown-user-email" th:text="${user.email}">collector@smartbin.com</div>
+                            </div>
+                            <a href="/collector/dashboard" class="dropdown-item">
+                                <span class="material-icons">dashboard</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="/collector/profile" class="dropdown-item">
+                                <span class="material-icons">person</span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/collector/settings" class="dropdown-item">
+                                <span class="material-icons">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout" class="dropdown-item logout">
+                                <span class="material-icons">logout</span>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
+    </header>
 
     <div class="container">
-        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
-        <div class="welcome-card">
-            <h1>Welcome, <span th:text="${user.name}">Collector</span>!</h1>
-            <p>Manage your collection routes and optimize your operations.</p>
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">
+                <span id="greeting">Good morning</span>, <span th:text="${user.name}">Collector</span>
+            </h1>
+            <p class="welcome-subtitle">Here's what's happening with your collection routes today</p>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="icon">🗺️</div>
-                <h3>My Routes</h3>
-                <p>View and manage your assigned collection routes.</p>
-                <a href="/collector/routes" class="btn">View Routes</a>
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success">
+            <span class="material-icons">check_circle</span>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <span class="material-icons">error</span>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Today's Summary Section -->
+        <div class="summary-section">
+            <h2 class="summary-title">
+                <span class="material-icons">today</span>
+                Today's Summary
+            </h2>
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-number" th:text="${assignedRoutes != null ? assignedRoutes.size() : 0}">3</div>
+                    <div class="summary-label">Routes Pending</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number" th:text="${completedCollections != null ? completedCollections : 0}">12</div>
+                    <div class="summary-label">Bins Completed</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Notification Section -->
+        <div class="notification-section" id="notificationSection" style="display: none;">
+            <div class="notification-icon">
+                <span class="material-icons">notifications</span>
+            </div>
+            <div class="notification-content">
+                <h4 id="notificationTitle">New Update</h4>
+                <p id="notificationMessage">Loading notifications...</p>
+                <div class="notification-time" id="notificationTime"></div>
+            </div>
+            <button class="notification-close" onclick="closeNotification()">
+                <span class="material-icons">close</span>
+            </button>
             </div>
 
-            <div class="dashboard-card">
-                <div class="icon">📱</div>
-                <h3>Scan QR Code</h3>
-                <p>Scan bin QR codes to unlock and collect waste.</p>
-                <a href="/collector/scan-qr" class="btn">Scan QR</a>
+        <!-- Live Updates Panel -->
+        <div class="live-updates-panel" id="liveUpdatesPanel">
+            <div class="panel-header">
+                <span class="material-icons">live_tv</span>
+                <h3>Live Updates</h3>
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    <span>Connected</span>
+                </div>
+            </div>
+            <div class="updates-list" id="updatesList">
+                <!-- Updates will be loaded here -->
+            </div>
             </div>
 
-            <div class="dashboard-card">
-                <div class="icon">✅</div>
-                <h3>Collections</h3>
-                <p>View your collection history and status.</p>
-                <a href="/collector/collections" class="btn">View Collections</a>
+        <!-- Action Grid -->
+        <div class="action-grid">
+            <a href="/collector/routes" class="action-card">
+                <div class="action-icon">
+                    <span class="material-icons">route</span>
+                </div>
+                <div class="action-content">
+                    <h3>View Assigned Routes</h3>
+                    <p>Access your collection routes and GPS navigation</p>
+                </div>
+            </a>
+
+            <a href="/collector/scan-qr" class="action-card">
+                <div class="action-icon">
+                    <span class="material-icons">qr_code_scanner</span>
+                </div>
+                <div class="action-content">
+                    <h3>Scan QR Code</h3>
+                    <p>Scan QR codes to unlock and collect waste</p>
+                </div>
+            </a>
+
+            <a href="/collector/collections" class="action-card">
+                <div class="action-icon">
+                    <span class="material-icons">assessment</span>
+                </div>
+                <div class="action-content">
+                    <h3>Collection Reports</h3>
+                    <p>View collection history and performance metrics</p>
+                </div>
+            </a>
+
+            <a href="/collector/performance" class="action-card">
+                <div class="action-icon">
+                    <span class="material-icons">settings</span>
+                </div>
+                <div class="action-content">
+                    <h3>Settings</h3>
+                    <p>Manage your account and preferences</p>
+                </div>
+            </a>
             </div>
 
-            <div class="dashboard-card">
-                <div class="icon">📊</div>
-                <h3>Performance</h3>
-                <p>View your collection statistics and efficiency.</p>
-                <a href="/collector/performance" class="btn">View Performance</a>
+        <!-- Quick Stats Section -->
+        <div class="quick-stats-section">
+            <h2 class="quick-stats-title">
+                <span class="material-icons">analytics</span>
+                Quick Stats
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Total Collections Today</span>
+                    <span class="stat-value" th:text="${completedCollections != null ? completedCollections : 0}">12</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Distance Covered</span>
+                    <span class="stat-value">45.2 km</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Time Worked</span>
+                    <span class="stat-value">6h 30m</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Next Route</span>
+                    <span class="stat-value" th:if="${assignedRoutes != null and !assignedRoutes.empty}" th:text="'R-' + ${assignedRoutes[0].id} + ' (2:30 PM)'">R-046 (2:30 PM)</span>
+                    <span class="stat-value" th:if="${assignedRoutes == null or assignedRoutes.empty}">None</span>
+                </div>
             </div>
         </div>
         
-        <div class="assigned-routes-section" th:if="${assignedRoutes != null and !assignedRoutes.empty}">
-            <h2>Assigned Routes</h2>
+        <!-- Assigned Routes Section -->
+        <div class="routes-section" th:if="${assignedRoutes != null and !assignedRoutes.empty}">
+            <h2 class="routes-title">
+                <span class="material-icons">route</span>
+                Assigned Routes
+            </h2>
             <div class="routes-grid">
                 <div class="route-card" th:each="route : ${assignedRoutes}">
                     <div class="route-header">
@@ -291,40 +1176,246 @@
                     <div class="route-details">
                         <div class="route-info">
                             <span class="info-label">Estimated Duration:</span>
-                            <span th:text="${route.estimatedDurationMinutes} + ' minutes'">120 minutes</span>
+                            <span class="info-value" th:text="${route.estimatedDurationMinutes} + ' minutes'">120 minutes</span>
                         </div>
                         <div class="route-info">
                             <span class="info-label">Distance:</span>
-                            <span th:text="${route.totalDistanceKm} + ' km'">15.5 km</span>
+                            <span class="info-value" th:text="${route.totalDistanceKm} + ' km'">15.5 km</span>
                         </div>
                         <div class="route-info">
                             <span class="info-label">Assigned:</span>
-                            <span th:text="${#temporals.format(route.assignedDate, 'MMM dd, yyyy HH:mm')}">Dec 15, 2024 09:00</span>
+                            <span class="info-value" th:text="${#temporals.format(route.assignedDate, 'MMM dd, yyyy HH:mm')}">Dec 15, 2024 09:00</span>
                         </div>
                     </div>
-                    <a th:href="@{/collector/route/{id}(id=${route.id})}" class="btn btn-small">View Details</a>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <a th:href="@{/collector/route/{id}(id=${route.id})}" 
+                           style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: #1a73e8; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);">
+                            <span class="material-icons" style="font-size: 1.125rem;">visibility</span>
+                            View Details
+                        </a>
+                        <a th:href="@{/collector/routes}" 
+                           style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: white; color: #1a73e8; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid #dadce0; transition: all 0.2s;">
+                            <span class="material-icons" style="font-size: 1.125rem;">directions</span>
+                            Go to Routes
+                        </a>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
         
-        <div class="stats-section">
-            <h2>Today's Statistics</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" th:text="${assignedCollections.size()}">3</div>
-                    <div class="stat-label">Assigned Collections</div>
+    <script>
+        // Update greeting based on time of day
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greetingElement = document.getElementById('greeting');
+            
+            let greeting;
+            
+            if (hour >= 5 && hour < 12) {
+                greeting = 'Good morning';
+            } else if (hour >= 12 && hour < 17) {
+                greeting = 'Good afternoon';
+            } else if (hour >= 17 && hour < 21) {
+                greeting = 'Good evening';
+            } else {
+                greeting = 'Good night';
+            }
+            
+            greetingElement.innerHTML = greeting;
+        }
+        
+        // Update greeting on page load
+        document.addEventListener('DOMContentLoaded', updateGreeting);
+        
+        // Auto-refresh dashboard every 30 seconds
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+
+        // Notification click handler
+        document.querySelector('.header-btn').addEventListener('click', function() {
+            // In a real app, this would show notifications
+            alert('Notifications feature coming soon!');
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            // In a real app, this would filter routes/bins
+            console.log('Searching for:', e.target.value);
+        });
+
+        // Real-time notification system
+        let notificationInterval;
+        let updateInterval;
+
+        // Initialize real-time features
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLiveUpdates();
+            startNotificationPolling();
+        });
+
+        function loadLiveUpdates() {
+            fetch('/collector/api/live-updates')
+                .then(response => response.json())
+                .then(updates => {
+                    displayUpdates(updates);
+                })
+                .catch(error => {
+                    console.error('Failed to load live updates:', error);
+                });
+        }
+
+        function displayUpdates(updates) {
+            const updatesList = document.getElementById('updatesList');
+            updatesList.innerHTML = '';
+
+            updates.forEach(update => {
+                const updateElement = createUpdateElement(update);
+                updatesList.appendChild(updateElement);
+            });
+        }
+
+        function createUpdateElement(update) {
+            const updateDiv = document.createElement('div');
+            updateDiv.className = 'update-item';
+            
+            const iconClass = getUpdateIconClass(update.type);
+            const iconName = getUpdateIconName(update.type);
+            
+            updateDiv.innerHTML = `
+                <div class="update-icon ${iconClass}">
+                    <span class="material-icons">${iconName}</span>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" th:text="${completedCollections}">5</div>
-                    <div class="stat-label">Completed Today</div>
+                <div class="update-content">
+                    <div class="update-title">${update.title}</div>
+                    <div class="update-message">${update.message}</div>
+                    <div class="update-time">${formatTime(update.timestamp)}</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" th:text="${activeRoutes.size()}">1</div>
-                    <div class="stat-label">Active Routes</div>
-                </div>
-            </div>
-        </div>
-    </div>
+            `;
+            
+            return updateDiv;
+        }
+
+        function getUpdateIconClass(type) {
+            switch(type) {
+                case 'route': return 'route';
+                case 'alert': return 'alert';
+                case 'completion': return 'completion';
+                default: return 'route';
+            }
+        }
+
+        function getUpdateIconName(type) {
+            switch(type) {
+                case 'route': return 'route';
+                case 'alert': return 'warning';
+                case 'completion': return 'check_circle';
+                default: return 'info';
+            }
+        }
+
+        function formatTime(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diffMs = now - time;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return `${diffHours}h ago`;
+            return time.toLocaleDateString();
+        }
+
+        function startNotificationPolling() {
+            notificationInterval = setInterval(() => {
+                checkForNewNotifications();
+            }, 10000); // Check every 10 seconds
+        }
+
+        function checkForNewNotifications() {
+            fetch('/collector/api/notifications')
+                .then(response => response.json())
+                .then(notifications => {
+                    notifications.forEach(notification => {
+                        if (!notification.seen) {
+                            showNotification(notification);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Failed to check notifications:', error);
+                });
+        }
+
+        function showNotification(notification) {
+            const notificationSection = document.getElementById('notificationSection');
+            const titleElement = document.getElementById('notificationTitle');
+            const messageElement = document.getElementById('notificationMessage');
+            const timeElement = document.getElementById('notificationTime');
+
+            titleElement.textContent = notification.title;
+            messageElement.textContent = notification.message;
+            timeElement.textContent = formatTime(notification.timestamp);
+
+            notificationSection.style.display = 'flex';
+            notificationSection.style.animation = 'slideIn 0.3s ease-out';
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 5000);
+        }
+
+        function closeNotification() {
+            const notificationSection = document.getElementById('notificationSection');
+            notificationSection.style.display = 'none';
+        }
+
+        // Refresh updates every 30 seconds
+        updateInterval = setInterval(() => {
+            loadLiveUpdates();
+        }, 30000);
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (notificationInterval) {
+                clearInterval(notificationInterval);
+            }
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+        });
+
+        // Profile Dropdown Functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const isClickInside = dropdown && dropdown.contains(event.target);
+            
+            if (!isClickInside && dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                // Allow links to navigate
+                if (event.target.tagName === 'A' || event.target.closest('a')) {
+                    return;
+                }
+                event.stopPropagation();
+            });
+        }
+    </script>
 </body>
 </html>
 

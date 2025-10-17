@@ -1,14 +1,23 @@
 package com.sliit.smartbin.smartbin.controller;
 
 import com.sliit.smartbin.smartbin.dto.ReportDTO;
+import com.sliit.smartbin.smartbin.dto.BulkRequestDTO;
 import com.sliit.smartbin.smartbin.model.Bin;
 import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.User;
+import com.sliit.smartbin.smartbin.model.BulkRequestStatus;
+import com.sliit.smartbin.smartbin.model.PaymentStatus;
 import com.sliit.smartbin.smartbin.service.BinService;
 import com.sliit.smartbin.smartbin.service.ReportService;
 import com.sliit.smartbin.smartbin.service.RouteService;
 import com.sliit.smartbin.smartbin.service.UserService;
 import com.sliit.smartbin.smartbin.service.NotificationService;
+import com.sliit.smartbin.smartbin.service.BinAssignmentService;
+import com.sliit.smartbin.smartbin.service.CollectionService;
+import com.sliit.smartbin.smartbin.service.BulkRequestService;
+import com.sliit.smartbin.smartbin.model.BinAssignment;
+import com.sliit.smartbin.smartbin.model.RegionAssignment;
+import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,26 +35,56 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.HashMap;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN AUTHORITY CONTROLLER
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This controller has ONE responsibility: Handle HTTP requests for authority features.
+ *     Each method handles one specific endpoint. Business logic delegated to service layer.
+ * 
+ * I - Interface Segregation Principle (ISP):
+ *     Controller depends on multiple focused service interfaces (BinService, RouteService, etc.)
+ *     rather than one giant service. Each service has specific responsibilities.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controller depends on Service INTERFACES, not concrete implementations.
+ *     All dependencies injected via constructor for loose coupling and testability.
+ */
 @Controller
 @RequestMapping("/authority")
 public class AuthorityController {
 
+    // DIP: Depend on service abstractions (interfaces), not concrete classes
+    // ISP: Multiple focused services instead of one monolithic service
     private final BinService binService;
     private final RouteService routeService;
     private final ReportService reportService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final BinAssignmentService binAssignmentService;
+    private final CollectionService collectionService;
+    private final BulkRequestService bulkRequestService;
+    private final RegionAssignmentRepository regionAssignmentRepository;
 
+    // DIP: Constructor injection for loose coupling and easy testing/mocking
     public AuthorityController(BinService binService,
                                RouteService routeService,
                                ReportService reportService,
                                UserService userService,
-                               NotificationService notificationService) {
+                               NotificationService notificationService,
+                               BinAssignmentService binAssignmentService,
+                               CollectionService collectionService,
+                               BulkRequestService bulkRequestService,
+                               RegionAssignmentRepository regionAssignmentRepository) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.binAssignmentService = binAssignmentService;
+        this.collectionService = collectionService;
+        this.bulkRequestService = bulkRequestService;
+        this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
     @GetMapping("/dashboard")
@@ -224,10 +264,218 @@ public class AuthorityController {
         
         // Get all collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        
+        // Ensure collectors is never null
+        if (collectors == null) {
+            collectors = new java.util.ArrayList<>();
+        }
+        
+        System.out.println("=== MANAGE COLLECTORS DEBUG ===");
+        System.out.println("Total collectors found: " + collectors.size());
+        for (User collector : collectors) {
+            System.out.println("  - " + collector.getName() + " (" + collector.getEmail() + ") ID: " + collector.getId());
+        }
+        System.out.println("================================");
+        
         model.addAttribute("collectors", collectors);
         model.addAttribute("user", user);
         
         return "authority/manage-collectors";
+    }
+
+    @GetMapping("/api/collectors")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getCollectorsApi(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            System.out.println("=== API: Getting collectors ===");
+            List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+            
+            if (collectors == null) {
+                collectors = new ArrayList<>();
+            }
+            
+            System.out.println("API: Found " + collectors.size() + " collectors");
+            List<Map<String, Object>> collectorData = new ArrayList<>();
+            
+            for (User collector : collectors) {
+                System.out.println("API: Processing collector " + collector.getName());
+                Map<String, Object> collectorInfo = new HashMap<>();
+                collectorInfo.put("id", collector.getId());
+                collectorInfo.put("name", collector.getName());
+                collectorInfo.put("email", collector.getEmail());
+                collectorInfo.put("phone", collector.getPhone());
+                collectorInfo.put("region", collector.getRegion() != null ? collector.getRegion() : "No region assigned");
+                
+                // Get all routes for this collector
+                List<Route> allRoutes = routeService.findRoutesByCollector(collector);
+                List<Route> activeRoutes = routeService.findActiveRoutesByCollector(collector);
+                
+                // Get assigned routes
+                List<Route> assignedRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.ASSIGNED)
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Get in-progress routes
+                List<Route> inProgressRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.IN_PROGRESS)
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Get today's completed routes
+                LocalDate today = LocalDate.now();
+                List<Route> todayCompletedRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.COMPLETED 
+                        && r.getCompletedDate() != null
+                        && r.getCompletedDate().toLocalDate().equals(today))
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Get real today's collections count
+                long todayCollections = collectionService.findCollectionsByCollectorAndDateRange(
+                    collector, 
+                    today.atStartOfDay(), 
+                    today.plusDays(1).atStartOfDay()
+                ).size();
+                
+                // Calculate real completion rate
+                long completedRoutes = allRoutes.stream()
+                    .filter(r -> r.getStatus() == Route.RouteStatus.COMPLETED)
+                    .count();
+                double completionRate = allRoutes.isEmpty() ? 0 : 
+                    ((double) completedRoutes / allRoutes.size()) * 100;
+                
+                collectorInfo.put("activeRoutes", activeRoutes.size());
+                collectorInfo.put("assignedRoutes", assignedRoutes.size());
+                collectorInfo.put("inProgressRoutes", inProgressRoutes.size());
+                collectorInfo.put("todayCompletedRoutes", todayCompletedRoutes.size());
+                collectorInfo.put("todayCollections", todayCollections);
+                collectorInfo.put("completionRate", Math.round(completionRate));
+                
+                // Add detailed route information
+                List<Map<String, Object>> routeDetails = new ArrayList<>();
+                for (Route route : assignedRoutes) {
+                    Map<String, Object> routeInfo = new HashMap<>();
+                    routeInfo.put("id", route.getId());
+                    routeInfo.put("name", route.getRouteName());
+                    routeInfo.put("status", route.getStatus().name());
+                    routeInfo.put("assignedDate", route.getAssignedDate().toString());
+                    routeInfo.put("binCount", route.getRouteBins() != null ? route.getRouteBins().size() : 0);
+                    routeInfo.put("distance", route.getTotalDistanceKm());
+                    routeInfo.put("duration", route.getEstimatedDurationMinutes());
+                    routeDetails.add(routeInfo);
+                }
+                
+                for (Route route : inProgressRoutes) {
+                    Map<String, Object> routeInfo = new HashMap<>();
+                    routeInfo.put("id", route.getId());
+                    routeInfo.put("name", route.getRouteName());
+                    routeInfo.put("status", route.getStatus().name());
+                    routeInfo.put("startedDate", route.getStartedDate() != null ? route.getStartedDate().toString() : null);
+                    routeInfo.put("binCount", route.getRouteBins() != null ? route.getRouteBins().size() : 0);
+                    routeInfo.put("distance", route.getTotalDistanceKm());
+                    routeInfo.put("duration", route.getEstimatedDurationMinutes());
+                    routeDetails.add(routeInfo);
+                }
+                
+                collectorInfo.put("routes", routeDetails);
+                
+                // Determine status based on active routes
+                if (activeRoutes.isEmpty()) {
+                    collectorInfo.put("status", "available");
+                } else if (inProgressRoutes.size() > 0) {
+                    collectorInfo.put("status", "on-route");
+                } else {
+                    collectorInfo.put("status", "busy");
+                }
+                
+                // Add current activity description
+                if (inProgressRoutes.size() > 0) {
+                    Route currentRoute = inProgressRoutes.get(0);
+                    collectorInfo.put("currentActivity", "On route: " + currentRoute.getRouteName());
+                } else if (assignedRoutes.size() > 0) {
+                    collectorInfo.put("currentActivity", assignedRoutes.size() + " route(s) assigned");
+                } else {
+                    collectorInfo.put("currentActivity", "Available for assignment");
+                }
+                
+                // Add performance rating (0-5 stars based on completion rate)
+                double performanceRating = (completionRate / 100.0) * 5;
+                collectorInfo.put("performanceRating", Math.round(performanceRating * 10) / 10.0);
+                
+                collectorData.add(collectorInfo);
+            }
+            
+            System.out.println("API: Successfully processed " + collectorData.size() + " collectors");
+            return ResponseEntity.ok(collectorData);
+        } catch (Exception e) {
+            System.err.println("=== API ERROR ===");
+            System.err.println("Error fetching collectors: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("=================");
+            
+            // Return empty list instead of error to prevent frontend crashes
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+    }
+
+
+    @GetMapping("/api/analytics")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAnalytics(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Map<String, Object> analytics = new HashMap<>();
+            
+            // Collection trends (last 7 hours)
+            List<Integer> collectionTrends = new ArrayList<>();
+            for (int i = 6; i >= 0; i--) {
+                // Mock data - in real app, this would query actual collection data
+                collectionTrends.add((int) (Math.random() * 20 + 10));
+            }
+            analytics.put("collectionTrends", collectionTrends);
+            
+            // Collector performance
+            List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+            List<String> collectorLabels = new ArrayList<>();
+            List<Integer> collectorData = new ArrayList<>();
+            
+            for (User collector : collectors) {
+                collectorLabels.add(collector.getName().split(" ")[0] + " " + 
+                    collector.getName().split(" ")[1].charAt(0) + ".");
+                collectorData.add((int) (Math.random() * 15 + 5)); // Mock daily collections
+            }
+            
+            Map<String, Object> collectorPerformance = new HashMap<>();
+            collectorPerformance.put("labels", collectorLabels);
+            collectorPerformance.put("data", collectorData);
+            analytics.put("collectorPerformance", collectorPerformance);
+            
+            // Bin status distribution
+            List<Integer> binStatus = new ArrayList<>();
+            binStatus.add(45); // Empty
+            binStatus.add(30); // Partial
+            binStatus.add(20); // Full
+            binStatus.add(5);  // Overdue
+            analytics.put("binStatus", binStatus);
+            
+            // Route efficiency (last 7 days)
+            List<Integer> routeEfficiency = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                routeEfficiency.add((int) (Math.random() * 20 + 75)); // 75-95% efficiency
+            }
+            analytics.put("routeEfficiency", routeEfficiency);
+            
+            return ResponseEntity.ok(analytics);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/api/assign-collector")
@@ -243,14 +491,37 @@ public class AuthorityController {
             Long collectorId = Long.valueOf(request.get("collectorId").toString());
             String region = request.get("region").toString();
             
+            System.out.println("=== REGION ASSIGNMENT ===");
             System.out.println("Assigning collector ID: " + collectorId + " to region: " + region);
             
             User collector = userService.findById(collectorId)
                 .orElseThrow(() -> new RuntimeException("Collector not found"));
             
-            System.out.println("Found collector: " + collector.getName() + ", current region: " + collector.getRegion());
+            String previousRegion = collector.getRegion();
+            System.out.println("Found collector: " + collector.getName() + ", current region: " + previousRegion);
             
-            // Update collector region assignment
+            // Save assignment history before updating
+            RegionAssignment assignment = new RegionAssignment();
+            assignment.setCollector(collector);
+            assignment.setAssignedBy(user);
+            assignment.setPreviousRegion(previousRegion);
+            assignment.setNewRegion(region);
+            assignment.setStatus(RegionAssignment.AssignmentStatus.ACTIVE);
+            assignment.setNotes("Assigned via Manage Collectors interface");
+            
+            // Mark previous assignments as superseded
+            List<RegionAssignment> previousAssignments = regionAssignmentRepository
+                .findByCollectorAndStatus(collector, RegionAssignment.AssignmentStatus.ACTIVE);
+            for (RegionAssignment prev : previousAssignments) {
+                prev.setStatus(RegionAssignment.AssignmentStatus.SUPERSEDED);
+                regionAssignmentRepository.save(prev);
+            }
+            
+            // Save new assignment
+            RegionAssignment savedAssignment = regionAssignmentRepository.save(assignment);
+            System.out.println("Saved assignment history with ID: " + savedAssignment.getId());
+            
+            // Update collector region assignment in User table
             collector.setRegion(region);
             User updatedCollector = userService.updateUser(collector);
             
@@ -260,17 +531,72 @@ public class AuthorityController {
             notificationService.sendRegionAssignmentNotification(collector, region);
             
             System.out.println("Sent notification to collector");
+            System.out.println("=== ASSIGNMENT COMPLETE ===");
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Collector " + collector.getName() + " assigned to " + region + " successfully!");
+            response.put("previousRegion", previousRegion);
+            response.put("newRegion", region);
+            response.put("assignmentId", savedAssignment.getId());
+            response.put("assignedBy", user.getName());
+            response.put("timestamp", savedAssignment.getAssignedAt().toString());
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("ERROR in region assignment: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Failed to assign collector: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/api/region-assignments")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getRegionAssignments(
+            @RequestParam(required = false) Long collectorId,
+            HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<RegionAssignment> assignments;
+            
+            if (collectorId != null) {
+                // Get assignments for specific collector
+                User collector = userService.findById(collectorId)
+                    .orElseThrow(() -> new RuntimeException("Collector not found"));
+                assignments = regionAssignmentRepository.findByCollectorOrderByAssignedAtDesc(collector);
+            } else {
+                // Get all assignments
+                assignments = regionAssignmentRepository.findAll();
+                assignments.sort((a, b) -> b.getAssignedAt().compareTo(a.getAssignedAt()));
+            }
+            
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (RegionAssignment assignment : assignments) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", assignment.getId());
+                data.put("collectorId", assignment.getCollector().getId());
+                data.put("collectorName", assignment.getCollector().getName());
+                data.put("assignedById", assignment.getAssignedBy().getId());
+                data.put("assignedByName", assignment.getAssignedBy().getName());
+                data.put("previousRegion", assignment.getPreviousRegion());
+                data.put("newRegion", assignment.getNewRegion());
+                data.put("assignedAt", assignment.getAssignedAt().toString());
+                data.put("status", assignment.getStatus().toString());
+                data.put("notes", assignment.getNotes());
+                response.add(data);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("ERROR fetching region assignments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -657,6 +983,376 @@ public class AuthorityController {
         }
         
         return "redirect:/authority/bins";
+    }
+    
+    // ==================== BIN ASSIGNMENT API ENDPOINTS ====================
+    
+    /**
+     * Save a new bin assignment to database
+     */
+    @PostMapping("/api/assignments/save")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> saveAssignment(@RequestBody Map<String, Object> request,
+                                                              HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            Long collectorId = Long.valueOf(request.get("collectorId").toString());
+            
+            @SuppressWarnings("unchecked")
+            List<Object> binIdsObj = (List<Object>) request.get("binIds");
+            List<Long> binIds = new ArrayList<>();
+            for (Object binIdObj : binIdsObj) {
+                if (binIdObj instanceof Integer) {
+                    binIds.add(((Integer) binIdObj).longValue());
+                } else if (binIdObj instanceof Long) {
+                    binIds.add((Long) binIdObj);
+                } else {
+                    binIds.add(Long.valueOf(binIdObj.toString()));
+                }
+            }
+            
+            @SuppressWarnings("unchecked")
+            List<String> binLocations = (List<String>) request.get("binLocations");
+            Long routeId = request.get("routeId") != null ? Long.valueOf(request.get("routeId").toString()) : null;
+            
+            User collector = userService.findById(collectorId)
+                .orElseThrow(() -> new RuntimeException("Collector not found"));
+            
+            // Create assignment in database
+            BinAssignment assignment = binAssignmentService.createAssignment(
+                collector, user, binIds, binLocations, routeId
+            );
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Assignment saved successfully");
+            response.put("assignmentId", assignment.getId());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to save assignment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get all bin assignments
+     */
+    @GetMapping("/api/assignments/all")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAllAssignments(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BinAssignment> assignments = binAssignmentService.getAllAssignments();
+            List<Map<String, Object>> response = new ArrayList<>();
+            
+            for (BinAssignment assignment : assignments) {
+                Map<String, Object> assignmentData = new HashMap<>();
+                assignmentData.put("id", assignment.getId());
+                assignmentData.put("collectorId", assignment.getCollector().getId());
+                assignmentData.put("collectorName", assignment.getCollector().getName());
+                assignmentData.put("binIds", assignment.getBinIds());
+                assignmentData.put("binLocations", assignment.getBinLocations());
+                assignmentData.put("assignedBy", assignment.getAssignedBy().getName());
+                assignmentData.put("assignedAt", assignment.getAssignedAt().toString());
+                assignmentData.put("status", assignment.getStatus().toString());
+                assignmentData.put("routeId", assignment.getRouteId());
+                
+                response.add(assignmentData);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    /**
+     * Get bin assignments for a specific collector
+     */
+    @GetMapping("/api/assignments/collector/{collectorId}")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAssignmentsByCollector(@PathVariable Long collectorId,
+                                                                               HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BinAssignment> assignments = binAssignmentService.getAssignmentsByCollector(collectorId);
+            List<Map<String, Object>> response = new ArrayList<>();
+            
+            for (BinAssignment assignment : assignments) {
+                Map<String, Object> assignmentData = new HashMap<>();
+                assignmentData.put("id", assignment.getId());
+                assignmentData.put("collectorId", assignment.getCollector().getId());
+                assignmentData.put("collectorName", assignment.getCollector().getName());
+                assignmentData.put("binIds", assignment.getBinIds());
+                assignmentData.put("binLocations", assignment.getBinLocations());
+                assignmentData.put("assignedBy", assignment.getAssignedBy().getName());
+                assignmentData.put("assignedAt", assignment.getAssignedAt().toString());
+                assignmentData.put("status", assignment.getStatus().toString());
+                
+                response.add(assignmentData);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    /**
+     * Delete all bin assignments (for testing/reset)
+     */
+    @DeleteMapping("/api/assignments/clear")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearAllAssignments(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            binAssignmentService.deleteAllAssignments();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "All assignments cleared successfully");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to clear assignments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    // ======================== Bulk Request Management Endpoints ========================
+    
+    /**
+     * SRP: This method has ONE job - display bulk requests page
+     * OCP: New filters can be added without modifying core display logic
+     * 
+     * View all bulk requests
+     */
+    @GetMapping("/bulk-requests")
+    public String manageBulkRequests(HttpSession session, Model model,
+                                    @RequestParam(required = false) String status) {
+        // SRP: Authentication/validation extracted to helper method
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        List<BulkRequestDTO> bulkRequests;
+        
+        // DIP: Controller doesn't know HOW data is fetched, just calls service methods
+        if (status != null && !status.isEmpty()) {
+            try {
+                BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+                bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            } catch (IllegalArgumentException e) {
+                bulkRequests = bulkRequestService.getRecentRequests(30);
+            }
+        } else {
+            bulkRequests = bulkRequestService.getRecentRequests(30);
+        }
+        
+        // Calculate statistics
+        long pendingCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PENDING)
+            .count();
+        long paidCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PAYMENT_COMPLETED)
+            .count();
+        long scheduledCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.SCHEDULED)
+            .count();
+        
+        model.addAttribute("bulkRequests", bulkRequests);
+        model.addAttribute("user", user);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("pendingBulkRequests", pendingCount);
+        model.addAttribute("paidBulkRequests", paidCount);
+        model.addAttribute("scheduledBulkRequests", scheduledCount);
+        
+        // Get available collectors
+        List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        model.addAttribute("collectors", collectors);
+        
+        return "authority/bulk-requests";
+    }
+    
+    /**
+     * Get requests requiring collector assignment (AJAX)
+     */
+    @GetMapping("/api/bulk-requests/requiring-assignment")
+    @ResponseBody
+    public ResponseEntity<List<BulkRequestDTO>> getRequestsRequiringAssignment(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        List<BulkRequestDTO> requests = bulkRequestService.getRequestsRequiringCollectorAssignment();
+        return ResponseEntity.ok(requests);
+    }
+    
+    /**
+     * SRP: Method only handles HTTP request/response, assignment logic in service
+     * DIP: Depends on BulkRequestService interface for assignment processing
+     * 
+     * Assign collector to bulk request
+     */
+    @PostMapping("/bulk-requests/{requestId}/assign-collector")
+    public String assignCollectorToBulkRequest(@PathVariable Long requestId,
+                                               @RequestParam Long collectorId,
+                                               HttpSession session,
+                                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // SRP: Business logic (validation, notification) handled in service layer
+            // DIP: Controller doesn't know implementation details of assignment
+            bulkRequestService.assignCollector(requestId, collectorId);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Collector assigned successfully to bulk request!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to assign collector: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
+    }
+    
+    /**
+     * SRP: Only handles HTTP request/response, scheduling and notification in service
+     * OCP: New scheduling types can be added in service without modifying controller
+     * 
+     * Schedule pickup for bulk request
+     */
+    @PostMapping("/bulk-requests/{requestId}/schedule")
+    public String scheduleBulkPickup(@PathVariable Long requestId,
+                                     @RequestParam String scheduledDateTime,
+                                     @RequestParam(required = false) Long collectorId,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            LocalDateTime scheduledDate = LocalDateTime.parse(scheduledDateTime);
+            // SRP: Notification and scheduling logic encapsulated in service
+            // DIP: Controller doesn't know how notifications are sent
+            bulkRequestService.scheduleAndNotifyPickup(requestId, scheduledDate, collectorId);
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Bulk collection pickup scheduled successfully! User has been notified.");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to schedule pickup: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
+    }
+    
+    /**
+     * SRP: Method only handles status update HTTP endpoint
+     * OCP: New statuses can be added to enum without modifying this method
+     * 
+     * Update bulk request status
+     */
+    @PostMapping("/bulk-requests/{requestId}/update-status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateBulkRequestStatus(@PathVariable Long requestId,
+                                                                       @RequestParam String status,
+                                                                       HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+            // DIP: Status update logic handled in service layer
+            BulkRequestDTO updatedRequest = bulkRequestService.updateRequestStatus(requestId, requestStatus);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Bulk request status updated successfully");
+            response.put("request", updatedRequest);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to update status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get bulk request details (AJAX)
+     */
+    @GetMapping("/api/bulk-requests/{requestId}/details")
+    @ResponseBody
+    public ResponseEntity<BulkRequestDTO> getBulkRequestDetails(@PathVariable Long requestId,
+                                                                HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Optional<BulkRequestDTO> request = bulkRequestService.getBulkRequestById(requestId);
+        return request.map(ResponseEntity::ok)
+                     .orElse(ResponseEntity.notFound().build());
+    }
+    
+    /**
+     * Complete bulk collection
+     */
+    @PostMapping("/bulk-requests/{requestId}/complete")
+    public String completeBulkCollection(@PathVariable Long requestId,
+                                        @RequestParam(required = false) String notes,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            bulkRequestService.completeCollection(requestId, notes);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Bulk collection marked as completed successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to complete collection: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
     }
 }
 

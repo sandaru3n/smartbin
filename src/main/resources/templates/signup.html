@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - SmartBin</title>
+    <title>Sign Up - SmartBin | Intelligent Waste Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -12,228 +17,1109 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
+            background: url('https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .navbar {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        /* Subtle dark overlay for better readability */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.35);
+            pointer-events: none;
         }
 
-        .navbar-content {
+        /* Header - Matching Homepage */
+        .header {
+            background: white;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
         }
 
         .nav-links a {
-            color: #333;
+            color: #5f6368;
             text-decoration: none;
-            margin-left: 2rem;
+            font-size: 0.875rem;
             font-weight: 500;
-            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
 
         .nav-links a:hover {
-            color: #667eea;
+            background: #f8f9fa;
+            color: #202124;
         }
 
+        .nav-links .btn-signin {
+            background: transparent;
+            color: #1a73e8;
+            border: 1.5px solid #1a73e8;
+            padding: 0.5rem 1.25rem;
+        }
+
+        .nav-links .btn-signin:hover {
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-links .btn-getstarted {
+            background: #1a73e8;
+            color: white;
+            padding: 0.625rem 1.5rem;
+        }
+
+        .nav-links .btn-getstarted:hover {
+            background: #0d47a1;
+            color: white;
+            box-shadow: 0 2px 4px 0 rgba(60,64,67,.4), 0 2px 6px 2px rgba(60,64,67,.2);
+            transform: translateY(-1px);
+        }
+
+        /* Main Container */
         .container {
             flex: 1;
-            max-width: 600px;
-            margin: 2rem auto;
-            padding: 2rem;
+            max-width: 1000px;
+            margin: 1rem auto;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
         }
 
-        .signup-card {
+        .signup-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
             background: white;
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: cardEntrance 0.8s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .signup-card h2 {
-            color: #333;
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Left side - Info panel */
+        .info-panel {
+            background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+            padding: 2rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float-circle 20s ease-in-out infinite;
+        }
+
+        @keyframes float-circle {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-20px, 20px); }
+        }
+
+        .info-header {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1rem;
+        }
+
+        .info-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .info-icon .material-icons {
+            font-size: 2.25rem;
+            color: white;
+        }
+
+        .info-panel h2 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.625rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
-            font-size: 2rem;
-            text-align: center;
+            line-height: 1.2;
+            animation: fadeInDown 0.8s ease-out;
         }
 
-        .signup-card p {
-            color: #666;
-            margin-bottom: 2rem;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-panel p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+            animation: fadeInDown 0.8s ease-out 0.2s backwards;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-top: 0.75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            animation: slideInLeft 0.6s ease-out backwards;
+        }
+
+        .features-list li:nth-child(1) { animation-delay: 0.1s; }
+        .features-list li:nth-child(2) { animation-delay: 0.2s; }
+        .features-list li:nth-child(3) { animation-delay: 0.3s; }
+        .features-list li:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .features-list li:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .features-list .material-icons {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 0.625rem;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            min-width: 40px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .features-list li:hover .material-icons {
+            transform: rotate(5deg) scale(1.1);
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .features-list li span:last-child {
+            line-height: 1.6;
+        }
+
+        .features-list li strong {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+        }
+
+        /* Right side - Form */
+        .form-panel {
+            padding: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-header {
             text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-panel h3 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.5rem;
+            color: #202124;
+            margin-bottom: 0.375rem;
+            font-weight: 500;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .form-panel .subtitle {
+            color: #5f6368;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            animation: fadeInDown 0.6s ease-out 0.1s backwards;
+        }
+
+        .form-panel .subtitle .material-icons {
+            font-size: 1.125rem;
+            color: #34a853;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        .alert-success {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border-left: 4px solid #16a34a;
+        }
+
+        .alert .material-icons {
+            font-size: 1.25rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
             display: block;
-            color: #333;
+            color: #374151;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
+        .required {
+            color: #ea4335;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .material-icons {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6366f1;
+            font-size: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1a73e8;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
+        }
+
+        .input-wrapper:focus-within .material-icons {
+            color: #4f46e5;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            padding-left: 3rem;
+            border: 1.5px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #c7d2fe;
+            background: #fafbff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 70px;
+            padding-left: 3rem;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.25rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.875rem;
         }
 
         .btn {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
             color: white;
             border: none;
-            border-radius: 25px;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 14px rgba(26, 115, 232, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Google Sans', sans-serif;
+            letter-spacing: 0.025em;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn:hover {
+            background: linear-gradient(135deg, #1557b0 0%, #1a73e8 100%);
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            text-align: center;
+        .btn:active {
+            background: linear-gradient(135deg, #0d47a1 0%, #1557b0 100%);
+            box-shadow: 0 2px 4px rgba(26, 115, 232, 0.3);
+            transform: translateY(0);
         }
 
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .btn .material-icons {
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+            animation: arrowPulse 2s ease-in-out infinite;
         }
 
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        @keyframes arrowPulse {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(3px);
+            }
         }
+
+        .btn:hover .material-icons {
+            transform: translateX(4px);
+            animation: none;
+        }
+
 
         .login-link {
             text-align: center;
-            margin-top: 1.5rem;
-            color: #666;
+            margin-top: 1rem;
+            padding: 0.875rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #5f6368;
+            font-size: 0.875rem;
+            animation: fadeIn 0.8s ease-out 0.5s backwards;
         }
 
         .login-link a {
-            color: #667eea;
+            color: #1a73e8;
             text-decoration: none;
             font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .login-link a:hover {
-            text-decoration: underline;
+            color: #1557b0;
+            gap: 0.5rem;
         }
 
-        .required {
-            color: #e74c3c;
+        .login-link a::after {
+            content: '→';
+            transition: transform 0.3s ease;
+        }
+
+        .login-link a:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            height: 3px;
+            margin-top: 0.375rem;
+            border-radius: 2px;
+            background: #e0e0e0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #e0e0e0;
+            position: relative;
+        }
+
+        .password-strength-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .password-strength-bar.weak::after,
+        .password-strength-bar.medium::after,
+        .password-strength-bar.strong::after {
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .password-strength-bar.weak {
+            width: 33%;
+            background: linear-gradient(90deg, #ea4335, #f87171);
+        }
+
+        .password-strength-bar.medium {
+            width: 66%;
+            background: linear-gradient(90deg, #fbbc04, #fbbf24);
+        }
+
+        .password-strength-bar.strong {
+            width: 100%;
+            background: linear-gradient(90deg, #34a853, #4ade80);
+        }
+
+        .password-hint {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            margin-top: 0.375rem;
+            font-size: 0.8rem;
+            color: #5f6368;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .password-hint.visible {
+            opacity: 1;
+        }
+
+        .password-hint .material-icons {
+            font-size: 0.9rem;
+        }
+
+        .password-hint.weak {
+            color: #ea4335;
+        }
+
+        .password-hint.medium {
+            color: #fbbc04;
+        }
+
+        .password-hint.strong {
+            color: #34a853;
+        }
+
+        /* Form input animations */
+        .form-group {
+            animation: slideUp 0.6s ease-out backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.15s; }
+        .form-group:nth-child(3) { animation-delay: 0.2s; }
+        .form-group:nth-child(4) { animation-delay: 0.25s; }
+        .form-group:nth-child(5) { animation-delay: 0.3s; }
+        .form-group:nth-child(6) { animation-delay: 0.35s; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Button hover ripple effect */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .nav-links a:not(.btn-signin):not(.btn-getstarted) {
+                display: none;
+            }
+
+            .signup-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .info-panel {
+                padding: 1.75rem;
+            }
+
+            .info-panel h2 {
+                font-size: 1.5rem;
+            }
+
+            .info-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .info-icon .material-icons {
+                font-size: 2rem;
+            }
+
+            .features-list {
+                margin-top: 0.75rem;
+            }
+
+            .features-list li {
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-panel {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0.5rem auto;
+                padding: 0.5rem;
+            }
+
+            .form-panel {
+                padding: 1.5rem;
+            }
+
+            .header-content {
+                padding: 0.75rem 1rem;
+            }
+
+            .nav-links {
+                gap: 0.75rem;
+            }
+
+            .nav-links .btn-signin,
+            .nav-links .btn-getstarted {
+                padding: 0.5rem 1rem;
+                font-size: 0.8125rem;
+            }
+
+            .logo {
+                font-size: 1.125rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1.25rem;
+                border-radius: 8px;
+            }
+
+            .info-panel {
+                padding: 1.5rem;
+            }
+
+            .info-panel h2 {
+                font-size: 1.375rem;
+            }
+
+            .info-panel p {
+                font-size: 0.9rem;
+            }
+
+            .form-panel h3 {
+                font-size: 1.5rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="logo">🗑️ SmartBin</div>
-            <div class="nav-links">
-                <a href="/home">Home</a>
-                <a href="/signup">Sign Up</a>
-            </div>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <span class="material-icons">delete</span>
+                </div>
+                <span>SmartBin</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/#features">Features</a>
+                <a href="/#portals">Portals</a>
+                <a href="/#about">About</a>
+                <a href="/login" class="btn-signin">Sign In</a>
+                <a href="/signup" class="btn-getstarted">Get Started</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
+    <!-- Main Container -->
     <div class="container">
-        <div class="signup-card">
-            <h2>Create Account</h2>
-            <p>Join SmartBin for better waste management</p>
+        <div class="signup-wrapper">
+            <!-- Left side - Info Panel -->
+            <div class="info-panel">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <span class="material-icons">recycling</span>
+                    </div>
+                    <h2>Join the Smart Revolution</h2>
+                    <p>Transform the way you manage waste with our intelligent, IoT-powered platform.</p>
+                </div>
+                
+                <ul class="features-list">
+                    <li>
+                        <span class="material-icons">sensors</span>
+                        <span><strong>Real-time Monitoring</strong><br>Track bin levels instantly</span>
+                    </li>
+                    <li>
+                        <span class="material-icons">map</span>
+                        <span><strong>Smart Routes</strong><br>AI-optimized collection paths</span>
+                    </li>
+                    <li>
+                        <span class="material-icons">insights</span>
+                        <span><strong>Analytics Dashboard</strong><br>Comprehensive performance insights</span>
+                    </li>
+                    <li>
+                        <span class="material-icons">eco</span>
+                        <span><strong>Eco-Friendly</strong><br>Sustainable waste management</span>
+                    </li>
+                </ul>
+            </div>
 
-            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
-            <form th:action="@{/signup}" th:object="${userDTO}" method="post">
-                <div class="form-group">
-                    <label for="name">Full Name <span class="required">*</span></label>
-                    <input type="text" id="name" th:field="*{name}" required placeholder="Enter your full name">
+            <!-- Right side - Form Panel -->
+            <div class="form-panel">
+                <div class="form-header">
+                    <h3>Create Your Account</h3>
+                    
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address <span class="required">*</span></label>
-                    <input type="email" id="email" th:field="*{email}" required placeholder="example@email.com">
+                <div th:if="${error}" class="alert alert-error">
+                    <span class="material-icons">error</span>
+                    <span th:text="${error}"></span>
+                </div>
+                <div th:if="${success}" class="alert alert-success">
+                    <span class="material-icons">check_circle</span>
+                    <span th:text="${success}"></span>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password <span class="required">*</span></label>
-                    <input type="password" id="password" th:field="*{password}" required placeholder="Create a strong password">
+                <form th:action="@{/signup}" th:object="${userDTO}" method="post" id="signupForm">
+                    <div class="form-group">
+                        <label for="name">Full Name <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="material-icons">account_circle</span>
+                            <input type="text" id="name" th:field="*{name}" required placeholder="Enter your full name" autocomplete="name">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <span class="material-icons">alternate_email</span>
+                                <input type="email" id="email" th:field="*{email}" required placeholder="you@example.com" autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <span class="material-icons">phone_android</span>
+                                <input type="tel" id="phone" th:field="*{phone}" required placeholder="+94 771234567" autocomplete="tel">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="material-icons">lock_outline</span>
+                            <input type="password" id="password" th:field="*{password}" required placeholder="Create a strong password" autocomplete="new-password">
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
+                        <div class="password-hint" id="passwordHint">
+                            <span class="material-icons">info</span>
+                            <span id="hintText">Enter a password</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <div class="input-wrapper">
+                            <span class="material-icons">home_pin</span>
+                            <textarea id="address" th:field="*{address}" placeholder="Enter your address (optional)" autocomplete="street-address"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Register as <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="material-icons">badge</span>
+                            <select id="role" th:field="*{role}" required>
+                                <option value="">Choose your role...</option>
+                                <option th:value="RESIDENT">🏠 Resident - Manage your household waste</option>
+                                <option th:value="COLLECTOR">🚛 Waste Collector - Collect and manage routes</option>
+                                <option th:value="AUTHORITY">🏢 Authority - Monitor and dispatch operations</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <span>Create Account</span>
+                        <span class="material-icons">rocket_launch</span>
+                    </button>
+                </form>
+
+                <div class="login-link">
+                    Already have an account? 
+                    <a href="/login">Sign in instead</a>
                 </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number <span class="required">*</span></label>
-                    <input type="tel" id="phone" th:field="*{phone}" required placeholder="+94 123456789">
-                </div>
-
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <textarea id="address" th:field="*{address}" placeholder="Enter your address (optional)"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="role">Register as <span class="required">*</span></label>
-                    <select id="role" th:field="*{role}" required>
-                        <option value="">Select your role</option>
-                        <option th:value="RESIDENT">Resident</option>
-                        <option th:value="COLLECTOR">Waste Collector</option>
-                        <option th:value="AUTHORITY">Waste Management Authority</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn">Sign Up</button>
-            </form>
-
-            <div class="login-link">
-                Already have an account? 
-                <a href="/home">Go to Login</a>
             </div>
         </div>
     </div>
+
+    <script>
+        // Enhanced Password strength checker
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strengthBar');
+        const passwordHint = document.getElementById('passwordHint');
+        const hintText = document.getElementById('hintText');
+
+        if (passwordInput && strengthBar && passwordHint && hintText) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+
+                if (password.length >= 8) strength++;
+                if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+                if (password.match(/[0-9]/)) strength++;
+                if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+                strengthBar.className = 'password-strength-bar';
+                passwordHint.className = 'password-hint visible';
+                
+                if (password.length === 0) {
+                    strengthBar.style.width = '0%';
+                    passwordHint.classList.remove('visible');
+                    hintText.textContent = 'Enter a password';
+                } else if (strength === 0 || strength === 1) {
+                    strengthBar.classList.add('weak');
+                    passwordHint.classList.add('weak');
+                    hintText.textContent = '❌ Weak - Add uppercase, numbers, and symbols';
+                } else if (strength === 2) {
+                    strengthBar.classList.add('weak');
+                    passwordHint.classList.add('weak');
+                    hintText.textContent = '⚠️ Fair - Include more character types';
+                } else if (strength === 3) {
+                    strengthBar.classList.add('medium');
+                    passwordHint.classList.add('medium');
+                    hintText.textContent = '✓ Good - Consider adding special characters';
+                } else {
+                    strengthBar.classList.add('strong');
+                    passwordHint.classList.add('strong');
+                    hintText.textContent = '✓ Strong password!';
+                }
+            });
+
+            // Show hint on focus
+            passwordInput.addEventListener('focus', function() {
+                if (this.value.length > 0) {
+                    passwordHint.classList.add('visible');
+                }
+            });
+        }
+
+        // Form validation enhancement with loading state
+        const form = document.getElementById('signupForm');
+        const submitBtn = form ? form.querySelector('.btn') : null;
+        
+        if (form && submitBtn) {
+            form.addEventListener('submit', function(e) {
+                const password = document.getElementById('password').value;
+                const email = document.getElementById('email').value;
+                const name = document.getElementById('name').value;
+                const role = document.getElementById('role').value;
+
+                // Validation
+                if (!name || name.trim().length < 2) {
+                    e.preventDefault();
+                    alert('Please enter your full name');
+                    return false;
+                }
+
+                if (!email || !email.includes('@')) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address');
+                    return false;
+                }
+
+                if (password.length < 6) {
+                    e.preventDefault();
+                    alert('Password must be at least 6 characters long');
+                    return false;
+                }
+
+                if (!role) {
+                    e.preventDefault();
+                    alert('Please select your role');
+                    return false;
+                }
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.7';
+                submitBtn.innerHTML = '<span class="material-icons rotating">sync</span><span>Creating your account...</span>';
+            });
+        }
+
+        // Add rotation animation for loading icon
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes rotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            .rotating {
+                animation: rotate 1s linear infinite;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Auto-format phone number
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.startsWith('94')) {
+                    value = '+' + value;
+                } else if (value.startsWith('0')) {
+                    value = '+94 ' + value.substring(1);
+                }
+                e.target.value = value;
+            });
+        }
+    </script>
 </body>
 </html>
-

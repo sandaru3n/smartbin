@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
+            background: url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle dark overlay for better text readability */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: #202124;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: #f8f9fa;
+            color: #202124;
+        }
+
+        .nav-links .btn-signin {
+            background: transparent;
+            color: #1a73e8;
+            border: 1.5px solid #1a73e8;
+            padding: 0.5rem 1.25rem;
+        }
+
+        .nav-links .btn-signin:hover {
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-links .btn-getstarted {
+            background: #1a73e8;
+            color: white;
+            padding: 0.625rem 1.5rem;
+        }
+
+        .nav-links .btn-getstarted:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-container {
+            max-width: 1100px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2.5rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header h1 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 2.25rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-header p {
+            font-size: 1.125rem;
+            opacity: 0.95;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .portals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .portal-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.75rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out backwards;
+        }
+
+        .portal-card:nth-child(1) { animation-delay: 0.1s; }
+        .portal-card:nth-child(2) { animation-delay: 0.2s; }
+        .portal-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4285f4, #34a853, #fbbc04, #ea4335);
+            transition: height 0.3s;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border-color: #1a73e8;
+        }
+
+        .portal-card:hover::before {
+            height: 8px;
+        }
+
+        .portal-card.resident {
+            border-top: 5px solid #667eea;
+        }
+
+        .portal-card.collector {
+            border-top: 5px solid #f093fb;
+        }
+
+        .portal-card.authority {
+            border-top: 5px solid #4facfe;
+        }
+
+        .portal-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .portal-card.resident .portal-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .portal-card.collector .portal-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .portal-card.authority .portal-icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .portal-card:hover .portal-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .portal-card h3 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 0.75rem;
+        }
+
+        .portal-card p {
+            color: #5f6368;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+        }
+
+
+        .btn-portal {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            background: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+            font-family: 'Google Sans', sans-serif;
+        }
+
+        .btn-portal:hover {
+            background: #1557b0;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
+        }
+
+        .btn-portal .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: white;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px);
+            padding: 1.25rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .signup-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .signup-link a .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .signup-link a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .nav-links a:not(.btn-signin):not(.btn-getstarted) {
+                display: none;
+            }
+
+            .portals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .login-header h1 {
+                font-size: 2rem;
+            }
+
+            .portal-card {
+                padding: 1.5rem;
+            }
+
+            .portal-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .header-content {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 0.75rem;
+            }
+
+            .nav-links .btn-signin,
+            .nav-links .btn-getstarted {
+                padding: 0.5rem 1rem;
+                font-size: 0.8125rem;
+            }
+
+            .logo {
+                font-size: 1.125rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1.25rem;
+                border-radius: 8px;
+            }
+
+            .login-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .portal-card h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <span class="material-icons">delete</span>
+                </div>
+                <span>SmartBin</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/#features">Features</a>
+                <a href="/#portals">Portals</a>
+                <a href="/#about">About</a>
+                <a href="/login" class="btn-signin">Sign In</a>
+                <a href="/signup" class="btn-getstarted">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Welcome Back to SmartBin</h1>
+                <p>Select your role to access your dashboard</p>
+            </div>
+
+            <div class="portals-grid">
+                <!-- Resident Portal -->
+                <div class="portal-card resident" onclick="window.location.href='/resident/login'">
+                    <div class="portal-icon">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">home</span>
+                    </div>
+                    <h3>Resident Portal</h3>
+                    <p>Access your household waste management dashboard</p>
+                    <a href="/resident/login" class="btn-portal">
+                        <span>Sign In as Resident</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </a>
+                </div>
+
+                <!-- Collector Portal -->
+                <div class="portal-card collector" onclick="window.location.href='/collector/login'">
+                    <div class="portal-icon">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">local_shipping</span>
+                    </div>
+                    <h3>Collector Portal</h3>
+                    <p>Manage your collection routes and daily operations</p>
+                    <a href="/collector/login" class="btn-portal">
+                        <span>Sign In as Collector</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </a>
+                </div>
+
+                <!-- Authority Portal -->
+                <div class="portal-card authority" onclick="window.location.href='/authority/login'">
+                    <div class="portal-icon">
+                        <span class="material-icons" style="color: white; font-size: 2.5rem;">admin_panel_settings</span>
+                    </div>
+                    <h3>Authority Portal</h3>
+                    <p>Monitor and manage city-wide waste operations</p>
+                    <a href="/authority/login" class="btn-portal">
+                        <span>Sign In as Authority</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="signup-link">
+                Don't have an account? 
+                <a href="/signup">
+                    <span>Create Account</span>
+                    <span class="material-icons">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

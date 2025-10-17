@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collect Bin - SmartBin Collector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #fafafa;
+            color: #202124;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,.08);
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 32px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 48px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 500;
+            color: #5f6368;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo .material-icons {
+            font-size: 24px;
+            color: #1a73e8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            color: #5f6368;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .nav-link.active {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .nav-link .material-icons {
+            font-size: 20px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #dadce0;
+            background: white;
+            position: relative;
+        }
+
+        .header-btn:hover {
+            border-color: #5f6368;
+        }
+
+        .header-btn .material-icons {
+            font-size: 20px;
+            color: #5f6368;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: #ea4335;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            position: relative;
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-header p {
+            margin: 0;
+            font-size: 14px;
+            color: #5f6368;
+        }
+
+        .dropdown-header strong {
+            color: #202124;
+            font-size: 15px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #5f6368;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: #f1f3f4;
+        }
+
+        .dropdown-item .material-icons {
+            font-size: 20px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 4px 0;
+        }
+
+        .logout {
+            color: #d93025;
+        }
+
+        .logout:hover {
+            background: #fce8e6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        .bin-info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            margin-bottom: 24px;
+        }
+
+        .bin-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .bin-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .bin-icon .material-icons {
+            font-size: 36px;
+        }
+
+        .bin-details h2 {
+            color: #202124;
+            font-size: 24px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .bin-id {
+            color: #5f6368;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bin-id .material-icons {
+            font-size: 16px;
+        }
+
+        .bin-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(66, 133, 244, 0.04), rgba(26, 115, 232, 0.04));
+            border-radius: 12px;
+            border: 1px solid rgba(26, 115, 232, 0.12);
+            transition: all 0.2s;
+        }
+
+        .info-item:hover {
+            border-color: rgba(26, 115, 232, 0.3);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .info-label {
+            color: #5f6368;
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #202124;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .collection-form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            margin-bottom: 24px;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .form-title .material-icons {
+            font-size: 28px;
+            color: #1a73e8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #5f6368;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dadce0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .form-group select:hover,
+        .form-group input:hover,
+        .form-group textarea:hover {
+            border-color: #bdc1c6;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background: #fafbff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .waste-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .waste-type-option {
+            position: relative;
+        }
+
+        .waste-type-option input[type="radio"] {
+            display: none;
+        }
+
+        .waste-type-option label {
+            display: block;
+            padding: 20px 16px;
+            border: 2px solid #dadce0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(60,64,67,.1);
+        }
+
+        .waste-type-option input[type="radio"]:checked + label {
+            border-color: #1a73e8;
+            background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
+            color: #1a73e8;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .waste-type-option label:hover {
+            border-color: #4285f4;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+        }
+
+        .waste-level-slider {
+            margin: 1rem 0;
+        }
+
+        .slider-container {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #e8f0fe 0%, #d2e3fc 100%);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            border: 1px solid rgba(26, 115, 232, 0.2);
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+            transition: all 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 3px 12px rgba(26, 115, 232, 0.5);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+            transition: all 0.2s;
+        }
+
+        .slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 3px 12px rgba(26, 115, 232, 0.5);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        .current-level {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #1557b0, #1a73e8);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn .material-icons {
+            font-size: 20px;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #5f6368;
+            border: 2px solid #dadce0;
+            margin-top: 12px;
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #5f6368;
+            color: #202124;
+        }
+
+        .alert {
+            padding: 18px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(60,64,67,.15);
+        }
+
+        .alert .material-icons {
+            font-size: 24px;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.08), rgba(52, 168, 83, 0.04));
+            color: #137333;
+            border-color: #34a853;
+        }
+
+        .alert-success .material-icons {
+            color: #34a853;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, rgba(234, 67, 53, 0.08), rgba(234, 67, 53, 0.04));
+            color: #d93025;
+            border-color: #ea4335;
+        }
+
+        .alert-error .material-icons {
+            color: #ea4335;
+        }
+
+        .gps-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .unlock-status {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.08), rgba(52, 168, 83, 0.04));
+            border: none;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.2);
+        }
+
+        .unlock-status.unlocked {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.12), rgba(52, 168, 83, 0.06));
+            box-shadow: 0 2px 12px rgba(52, 168, 83, 0.25);
+        }
+
+        .unlock-status.locked {
+            background: linear-gradient(135deg, rgba(251, 188, 4, 0.12), rgba(251, 188, 4, 0.06));
+            box-shadow: 0 2px 12px rgba(251, 188, 4, 0.25);
+        }
+
+        .unlock-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 8px rgba(60,64,67,.15);
+        }
+
+        .unlocked .unlock-icon {
+            color: #34a853;
+        }
+
+        .locked .unlock-icon {
+            color: #fbbc04;
+        }
+
+        .unlock-status h3 {
+            color: #202124;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .unlock-status p {
+            color: #5f6368;
+            font-size: 15px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header-content {
+                padding: 8px 16px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .header-left {
+                width: 100%;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .nav-link {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .bin-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .waste-type-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Custom Modal Styles */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .custom-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content-custom {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-header-custom {
+            padding: 24px 24px 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-header-custom h2 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #202124;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header-custom .material-icons {
+            color: #1a73e8;
+            font-size: 24px;
+        }
+
+        .modal-body-custom {
+            padding: 24px;
+        }
+
+        .modal-body-custom p {
+            margin: 0 0 16px 0;
+            color: #5f6368;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-details {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .modal-details-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-details-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-details-label {
+            font-weight: 500;
+            color: #202124;
+            font-size: 14px;
+        }
+
+        .modal-details-value {
+            color: #5f6368;
+            font-size: 14px;
+        }
+
+        .modal-footer-custom {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-btn-cancel {
+            background: white;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #f8f9fa;
+            border-color: #5f6368;
+        }
+
+        .modal-btn-confirm {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+        }
+
+        .modal-btn .material-icons {
+            font-size: 18px;
+        }
+
+        /* Alert Modal Styles */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+        }
+
+        .alert-header {
+            padding: 24px 24px 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .alert-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #ea4335;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-header .material-icons {
+            color: #ea4335;
+            font-size: 24px;
+        }
+
+        .alert-body {
+            padding: 24px;
+        }
+
+        .alert-body p {
+            margin: 0;
+            color: #5f6368;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .alert-footer {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .alert-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background: #1a73e8;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .alert-btn:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/collector/dashboard" class="logo">
+                    <span class="material-icons">recycling</span>
+                    <span>Collect Bin</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="/collector/dashboard" class="nav-link">
+                        <span class="material-icons">dashboard</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/collector/routes" class="nav-link">
+                        <span class="material-icons">route</span>
+                        <span>My Routes</span>
+                    </a>
+                    <a href="/collector/scan-qr" class="nav-link active">
+                        <span class="material-icons">qr_code_scanner</span>
+                        <span>QR Code Scanner</span>
+                    </a>
+                    <a href="/collector/collections" class="nav-link">
+                        <span class="material-icons">inventory_2</span>
+                        <span>Your Collection Records</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="header-btn">
+                        <span class="material-icons">notifications</span>
+                        <div class="notification-badge"></div>
+                    </div>
+                    <span class="user-name" th:text="${user != null ? user.name : 'Collector'}">Collector</span>
+                    <div class="profile-dropdown">
+                        <div class="profile-btn" onclick="toggleProfileDropdown()">
+                            <span th:text="${user != null ? user.name.substring(0,1).toUpperCase() : 'C'}">C</span>
+                        </div>
+                        <div class="dropdown-menu" id="profileDropdown">
+                            <div class="dropdown-header">
+                                <p><strong th:text="${user != null ? user.name : 'Collector'}">Collector</strong></p>
+                                <p th:text="${user != null ? user.email : 'collector@smartbin.com'}">collector@smartbin.com</p>
+                            </div>
+                            <a href="/collector/dashboard" class="dropdown-item">
+                                <span class="material-icons">dashboard</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <span class="material-icons">person</span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <span class="material-icons">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout" class="dropdown-item logout">
+                                <span class="material-icons">logout</span>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success">
+            <span class="material-icons">check_circle</span>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <span class="material-icons">error</span>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Bin Information Card -->
+        <div class="bin-info-card">
+            <div class="bin-header">
+                <div class="bin-icon">
+                    <span class="material-icons">delete</span>
+                </div>
+                <div class="bin-details">
+                    <h2 th:text="${bin.location}">Colombo Central Market</h2>
+                    <div class="bin-id">Bin ID: <span th:text="${bin.qrCode}">BIN-001-ABC123</span></div>
+                </div>
+            </div>
+            
+            <div class="bin-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Type:</span>
+                    <span class="info-value" th:text="${bin.binType}">Standard</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Fill Level:</span>
+                    <span class="info-value" th:text="${bin.fillLevel} + '%'">75%</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value" th:text="${bin.status}">Active</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Location:</span>
+                    <span class="info-value" th:text="${bin.location}">Colombo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPS Navigation Card -->
+        <div class="bin-info-card">
+            <h2 class="form-title">
+                <span class="material-icons">navigation</span>
+                GPS Navigation
+            </h2>
+            <div class="gps-info">
+                <div class="info-item">
+                    <span class="info-label">Latitude:</span>
+                    <span class="info-value" th:text="${bin.latitude}">6.9271</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Longitude:</span>
+                    <span class="info-value" th:text="${bin.longitude}">79.8612</span>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="openGoogleMaps()" style="margin-top: 16px;">
+                <span class="material-icons">directions</span>
+                Get Directions (GPS)
+            </button>
+        </div>
+
+        <!-- Unlock Status -->
+        <div class="unlock-status unlocked">
+            <div class="unlock-icon">
+                <span class="material-icons">lock_open</span>
+            </div>
+            <h3>Bin Unlocked Successfully</h3>
+            <p>You can now collect waste from this bin. Complete the collection form below.</p>
+        </div>
+
+        <!-- Collection Form -->
+        <div class="collection-form-card">
+            <h2 class="form-title">
+                <span class="material-icons">assignment</span>
+                Waste Collection Form
+            </h2>
+            
+            <form th:action="@{/collector/bin/{id}/collect(id=${bin.id})}" method="post">
+                <!-- Waste Type Selection -->
+                <div class="form-group">
+                    <label>Waste Type</label>
+                    <div class="waste-type-grid">
+                        <div class="waste-type-option">
+                            <input type="radio" id="general" name="wasteType" value="GENERAL" required>
+                            <label for="general">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">delete</span>
+                                General Waste
+                            </label>
+                        </div>
+                        <div class="waste-type-option">
+                            <input type="radio" id="recyclable" name="wasteType" value="RECYCLABLE" required>
+                            <label for="recyclable">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">recycling</span>
+                                Recyclable
+                            </label>
+                        </div>
+                        <div class="waste-type-option">
+                            <input type="radio" id="organic" name="wasteType" value="ORGANIC" required>
+                            <label for="organic">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">eco</span>
+                                Organic
+                            </label>
+                        </div>
+                        <div class="waste-type-option">
+                            <input type="radio" id="hazardous" name="wasteType" value="HAZARDOUS" required>
+                            <label for="hazardous">
+                                <span class="material-icons" style="display: block; margin-bottom: 8px; font-size: 24px;">warning</span>
+                                Hazardous
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waste Level -->
+                <div class="form-group">
+                    <label>Waste Level Found</label>
+                    <div class="waste-level-slider">
+                        <div class="slider-container">
+                            <input type="range" 
+                                   id="wasteLevel" 
+                                   name="wasteLevel" 
+                                   min="0" 
+                                   max="100" 
+                                   value="75" 
+                                   class="slider"
+                                   required>
+                            <div class="slider-labels">
+                                <span>Empty</span>
+                                <span>Half Full</span>
+                                <span>Full</span>
+                            </div>
+                        </div>
+                        <div class="current-level">
+                            <span id="levelDisplay">75%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collection Notes -->
+                <div class="form-group">
+                    <label for="notes">Collection Notes (Optional)</label>
+                    <textarea id="notes" 
+                              name="notes" 
+                              placeholder="Add any notes about the collection (e.g., bin condition, issues encountered, etc.)"></textarea>
+                </div>
+
+                <!-- Submit Buttons -->
+                <button type="submit" class="btn">
+                    <span class="material-icons">check_circle</span>
+                    Complete Collection
+                </button>
+                
+                <a href="/collector/dashboard" class="btn btn-secondary">
+                    <span class="material-icons">cancel</span>
+                    Cancel Collection
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Update waste level display
+        const slider = document.getElementById('wasteLevel');
+        const levelDisplay = document.getElementById('levelDisplay');
+
+        slider.addEventListener('input', function() {
+            levelDisplay.textContent = this.value + '%';
+        });
+
+        // Store form for submission
+        let collectionForm = null;
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Always prevent default first
+            collectionForm = this;
+
+            const wasteType = document.querySelector('input[name="wasteType"]:checked');
+            const wasteLevel = document.getElementById('wasteLevel').value;
+
+            if (!wasteType) {
+                showAlert('Please select a waste type');
+                return;
+            }
+
+            if (!wasteLevel || wasteLevel < 0 || wasteLevel > 100) {
+                showAlert('Please set a valid waste level');
+                return;
+            }
+
+            // Show confirmation modal
+            showConfirmModal(wasteType.value, wasteLevel);
+        });
+
+        // Custom Alert Modal Functions
+        function showAlert(message) {
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('alertModal').classList.add('show');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('alertModal').classList.remove('show');
+        }
+
+        // Custom Confirm Modal Functions
+        function showConfirmModal(wasteType, wasteLevel) {
+            const binQR = document.querySelector('.bin-header h2').textContent.trim();
+            document.getElementById('modalBinQR').textContent = binQR;
+            document.getElementById('modalWasteType').textContent = wasteType;
+            document.getElementById('modalWasteLevel').textContent = wasteLevel + '%';
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+        }
+
+        function confirmCollection() {
+            closeConfirmModal();
+            if (collectionForm) {
+                collectionForm.submit();
+            }
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const confirmModal = document.getElementById('confirmModal');
+            const alertModal = document.getElementById('alertModal');
+            
+            if (event.target === confirmModal) {
+                closeConfirmModal();
+            }
+            if (event.target === alertModal) {
+                closeAlertModal();
+            }
+        });
+
+        // Auto-select waste type based on bin type (if applicable)
+        document.addEventListener('DOMContentLoaded', function() {
+            // This could be enhanced to pre-select based on bin type
+            console.log('Collection form loaded');
+        });
+
+        // 5a. Collector navigates to each recycle bin using GPS
+        // 5b. GPS provides directions to the collector
+        function openGoogleMaps() {
+            const latitude = /*[[${bin.latitude}]]*/ '6.9271';
+            const longitude = /*[[${bin.longitude}]]*/ '79.8612';
+            const location = /*[[${bin.location}]]*/ 'Bin Location';
+            
+            // Check if user is on mobile device
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Open Google Maps app if available
+                window.location.href = `geo:${latitude},${longitude}?q=${latitude},${longitude}(${encodeURIComponent(location)})`;
+            } else {
+                // Open Google Maps in browser
+                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+                window.open(mapsUrl, '_blank');
+            }
+            
+            // Log navigation event
+            console.log(`GPS Navigation started to: ${location} (${latitude}, ${longitude})`);
+        }
+
+        // Get current location and calculate distance
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const binLat = /*[[${bin.latitude}]]*/ 6.9271;
+                    const binLng = /*[[${bin.longitude}]]*/ 79.8612;
+                    
+                    const distance = calculateDistance(userLat, userLng, binLat, binLng);
+                    console.log(`Distance to bin: ${distance.toFixed(2)} km`);
+                }, function(error) {
+                    console.error('Error getting location:', error);
+                });
+            }
+        }
+
+        // Calculate distance between two coordinates (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of Earth in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Initialize location tracking when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            getCurrentLocation();
+        });
+
+        // Profile dropdown toggle
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const profileBtn = document.querySelector('.profile-btn');
+            
+            if (dropdown && profileBtn && !profileBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header-custom">
+                <h2>
+                    <span class="material-icons">check_circle</span>
+                    Confirm Collection
+                </h2>
+            </div>
+            <div class="modal-body-custom">
+                <p>Please confirm the collection details before proceeding:</p>
+                <div class="modal-details">
+                    <div class="modal-details-row">
+                        <span class="modal-details-label">Bin QR Code:</span>
+                        <span class="modal-details-value" id="modalBinQR"></span>
+                    </div>
+                    <div class="modal-details-row">
+                        <span class="modal-details-label">Waste Type:</span>
+                        <span class="modal-details-value" id="modalWasteType"></span>
+                    </div>
+                    <div class="modal-details-row">
+                        <span class="modal-details-label">Waste Level:</span>
+                        <span class="modal-details-value" id="modalWasteLevel"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeConfirmModal()">
+                    <span class="material-icons">cancel</span>
+                    Cancel
+                </button>
+                <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmCollection()">
+                    <span class="material-icons">check_circle</span>
+                    Confirm Collection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="alert-modal">
+        <div class="alert-content">
+            <div class="alert-header">
+                <h2>
+                    <span class="material-icons">warning</span>
+                    Validation Error
+                </h2>
+            </div>
+            <div class="alert-body">
+                <p id="alertMessage"></p>
+            </div>
+            <div class="alert-footer">
+                <button type="button" class="alert-btn" onclick="closeAlertModal()">OK</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

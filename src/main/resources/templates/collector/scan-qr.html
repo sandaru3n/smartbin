@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner - SmartBin Collector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #fafafa;
+            color: #202124;
+            line-height: 1.5;
+        }
+
+        /* Header Section - Google Material Design */
+        .header {
+            background: #fff;
+            color: #202124;
+            padding: 0 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            border-bottom: 1px solid #dadce0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            min-height: 64px;
+            gap: 1.5rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5f6368;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #5f6368;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+        }
+
+        .header-btn {
+            background: none;
+            border: 1px solid #dadce0;
+            color: #5f6368;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .header-btn:hover {
+            border-color: #5f6368;
+        }
+
+        .header-btn .material-icons {
+            font-size: 1.375rem;
+            color: #5f6368;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ea4335;
+            color: white;
+            border-radius: 10px;
+            min-width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .profile-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #202124;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+        }
+
+        .dropdown-item.logout .material-icons {
+            color: #ea4335;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        .scanner-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .scan-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .scan-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
+        }
+
+        .scan-icon {
+            width: 96px;
+            height: 96px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .scan-card:nth-child(1) .scan-icon {
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+        }
+
+        .scan-card:nth-child(2) .scan-icon {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        }
+
+        .scan-icon .material-icons {
+            font-size: 48px;
+        }
+
+        .scan-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .scan-subtitle {
+            color: #5f6368;
+            margin-bottom: 24px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .qr-input-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+        }
+
+        .qr-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .qr-input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid #dadce0;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            background: white;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .qr-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
+            background: #f8f9fa;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px 0 rgba(26,115,232,.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #1557b0, #1a73e8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(26, 115, 232, 0.5);
+        }
+
+        .btn .material-icons {
+            font-size: 20px;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #5f6368;
+            border: 2px solid #dadce0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3);
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #5f6368;
+            color: #202124;
+            transform: translateY(-1px);
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.05), rgba(66, 133, 244, 0.05));
+            border: 1px solid rgba(26, 115, 232, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .instructions h3 {
+            color: #1a73e8;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions h3 .material-icons {
+            font-size: 20px;
+        }
+
+        .instructions ol {
+            color: #5f6368;
+            padding-left: 24px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.1), rgba(46, 125, 50, 0.1));
+            color: #137333;
+            border-left: 4px solid #34a853;
+        }
+
+        .alert-success .material-icons {
+            color: #34a853;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, rgba(234, 67, 53, 0.1), rgba(197, 34, 31, 0.1));
+            color: #d93025;
+            border-left: 4px solid #ea4335;
+        }
+
+        .alert-error .material-icons {
+            color: #ea4335;
+        }
+
+        .camera-section {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+        }
+
+        .camera-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.03), rgba(66, 133, 244, 0.03));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border: 2px dashed rgba(26, 115, 232, 0.3);
+        }
+
+        .camera-icon {
+            color: #5f6368;
+        }
+
+        .camera-section p {
+            color: #5f6368;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .manual-input-section {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .manual-input-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .manual-input-title .material-icons {
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header {
+                padding: 0 1rem;
+            }
+
+            .header-content {
+                padding: 0.75rem 0;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .scanner-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-input-group {
+                flex-direction: column;
+            }
+
+            .camera-placeholder {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    QR Code Scanner
+                </div>
+                <div class="nav-links">
+                    <a href="/collector/dashboard" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                        Dashboard
+                    </a>
+                    <a href="/collector/routes" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">route</span>
+                        My Routes
+                    </a>
+                    <a href="/collector/scan-qr" class="nav-link active">
+                        <span class="material-icons" style="font-size: 18px;">qr_code_scanner</span>
+                        QR Code Scanner
+                    </a>
+                    <a href="/collector/collections" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">inventory_2</span>
+                        Your Collection Records
+                    </a>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="notification-icon header-btn">
+                        <span class="material-icons">notifications</span>
+                        <span class="notification-badge" th:if="${newNotifications > 0}" th:text="${newNotifications}">2</span>
+                    </div>
+                    <span class="user-name" th:text="${user.name}">Collector</span>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="user-icon profile-btn" onclick="toggleProfileDropdown()">
+                            <span th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'C'}">C</span>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-user-name" th:text="${user.name}">Collector</div>
+                                <div class="dropdown-user-email" th:text="${user.email}">collector@smartbin.com</div>
+                            </div>
+                            <a href="/collector/dashboard" class="dropdown-item">
+                                <span class="material-icons">dashboard</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="/collector/profile" class="dropdown-item">
+                                <span class="material-icons">person</span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/collector/settings" class="dropdown-item">
+                                <span class="material-icons">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout" class="dropdown-item logout">
+                                <span class="material-icons">logout</span>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success">
+            <span class="material-icons">check_circle</span>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <span class="material-icons">error</span>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Two Column Grid -->
+        <div class="scanner-grid">
+            <!-- Left Card: Camera QR Scanner -->
+            <div class="scan-card">
+                <div class="scan-icon">
+                    <span class="material-icons">qr_code_scanner</span>
+                </div>
+                <h2 class="scan-title">Scan Bin QR Code</h2>
+                <p class="scan-subtitle">Use camera to scan the QR code on the smart bin</p>
+
+                <!-- Camera Section -->
+                <div class="camera-section">
+                    <div class="camera-placeholder">
+                        <span class="material-icons camera-icon">camera_alt</span>
+                    </div>
+                    <p>Camera access required for QR scanning</p>
+                    <button class="btn btn-secondary" onclick="requestCameraAccess()">
+                        <span class="material-icons">camera_alt</span>
+                        Enable Camera
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Card: Manual Entry -->
+            <div class="manual-input-section">
+                <div class="scan-icon">
+                    <span class="material-icons">keyboard</span>
+                </div>
+                <h2 class="manual-input-title">Manual QR Code Entry</h2>
+                <p style="text-align: center; color: #5f6368; margin-bottom: 24px; font-size: 14px;">
+                    Enter the QR code manually if scanning is not available
+                </p>
+                
+                <form th:action="@{/collector/scan-qr}" method="post">
+                    <div class="qr-input-group">
+                        <input type="text" 
+                               name="qrCode" 
+                               class="qr-input" 
+                               placeholder="Enter QR Code (e.g., QR001, QR002, QR003)"
+                               required>
+                        <button type="submit" class="btn" style="width: 100%;">
+                            <span class="material-icons">search</span>
+                            Process QR Code
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Instructions -->
+                <div class="instructions" style="margin-top: 24px; margin-bottom: 0;">
+                    <h3>
+                        <span class="material-icons">info</span>
+                        Available QR Codes
+                    </h3>
+                    <ol>
+                        <li><strong>QR001</strong> - Colombo Fort Station</li>
+                        <li><strong>QR003</strong> - Galle Face Green (Recycle)</li>
+                        <li><strong>QR010</strong> - Mount Lavinia</li>
+                        <li><strong>QR012</strong> - Cinnamon Gardens (Recycle)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function requestCameraAccess() {
+            // In a real app, this would request camera permission
+            alert('Camera access would be requested here. For demo purposes, use manual input or test QR code.');
+        }
+
+        function generateTestQR() {
+            // Generate a test QR code for demonstration
+            // These match actual bins in the database
+            const testQRCodes = [
+                'QR001', // Colombo Fort Station - FULL
+                'QR002', // Pettah Market - PARTIAL
+                'QR003', // Galle Face Green - RECYCLING
+                'QR004', // Liberty Plaza - FULL
+                'QR005', // Bambalapitiya Junction - PARTIAL
+                'QR010', // Mount Lavinia - FULL
+                'QR012', // Cinnamon Gardens - RECYCLING
+                'QR020', // Ja-Ela - EMPTY
+                'QR024', // Temple of Tooth - RECYCLING
+                'QR030'  // Unawatuna Beach - PARTIAL
+            ];
+            
+            const randomQR = testQRCodes[Math.floor(Math.random() * testQRCodes.length)];
+            document.querySelector('input[name="qrCode"]').value = randomQR;
+            
+            // Show success message
+            alert('Test QR Code generated: ' + randomQR + '\nClick "Process QR Code" to continue.');
+        }
+
+        // Auto-focus on QR input
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrInput = document.querySelector('input[name="qrCode"]');
+            if (qrInput) {
+                qrInput.focus();
+            }
+        });
+
+        // Handle QR input formatting
+        document.querySelector('input[name="qrCode"]').addEventListener('input', function(e) {
+            // Convert to uppercase and remove spaces
+            e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
+        });
+
+        // Profile Dropdown Functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const isClickInside = dropdown && dropdown.contains(event.target);
+            
+            if (!isClickInside && dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                // Allow links to navigate
+                if (event.target.tagName === 'A' || event.target.closest('a')) {
+                    return;
+                }
+                event.stopPropagation();
+            });
+        }
+    </script>
+</body>
+</html>
