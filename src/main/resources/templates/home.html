@@ -107,15 +107,30 @@
 
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 5rem 2rem;
+            background: url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1920&q=80') center/cover;
+            padding: 8rem 2rem;
             text-align: center;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.85) 0%, rgba(52, 168, 83, 0.75) 100%);
+            z-index: 1;
         }
 
         .hero-content {
             max-width: 900px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
 
         .hero h1 {
@@ -211,15 +226,26 @@
 
         .feature-card {
             background: white;
-            border-radius: 8px;
-            padding: 2rem;
+            border-radius: 12px;
+            padding: 0;
             box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
-            transition: all 0.2s;
+            transition: all 0.3s;
+            overflow: hidden;
         }
 
         .feature-card:hover {
             box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+        }
+
+        .feature-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .feature-content {
+            padding: 2rem;
         }
 
         .feature-icon {
@@ -282,12 +308,22 @@
         .portal-card {
             background: white;
             border: 1px solid #dadce0;
-            border-radius: 8px;
-            padding: 2.5rem;
+            border-radius: 12px;
+            padding: 0;
             text-align: center;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+        }
+
+        .portal-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .portal-content {
+            padding: 2.5rem;
         }
 
         .portal-card::before {
@@ -597,46 +633,64 @@
             </div>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon blue">
-                        <span class="material-icons">sensors</span>
+                    <img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=600&q=80" alt="Smart Bin Monitoring" class="feature-image">
+                    <div class="feature-content">
+                        <div class="feature-icon blue">
+                            <span class="material-icons">sensors</span>
+                        </div>
+                        <h3>Smart Bin Monitoring</h3>
+                        <p>Real-time fill level tracking with IoT sensors and automated alerts for optimized collection schedules</p>
                     </div>
-                    <h3>Smart Bin Monitoring</h3>
-                    <p>Real-time fill level tracking with IoT sensors and automated alerts for optimized collection schedules</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon green">
-                        <span class="material-icons">route</span>
+                    <img src="/optimized.jpg" alt="Optimized Routes" class="feature-image">
+                    <div class="feature-content">
+                        <div class="feature-icon green">
+                            <span class="material-icons">route</span>
+                        </div>
+                        <h3>Optimized Routes</h3>
+                        <p>AI-powered route optimization for waste collectors to minimize fuel costs and collection time</p>
                     </div>
-                    <h3>Optimized Routes</h3>
-                    <p>AI-powered route optimization for waste collectors to minimize fuel costs and collection time</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon yellow">
-                        <span class="material-icons">qr_code_scanner</span>
+                    <img src="/qr.jpg" alt="QR Code Scanning" class="feature-image">
+                    <div class="feature-content">
+                        <div class="feature-icon yellow">
+                            <span class="material-icons">qr_code_scanner</span>
+                        </div>
+                        <h3>QR Code Scanning</h3>
+                        <p>Quick bin identification and collection tracking using QR codes for accurate record keeping</p>
                     </div>
-                    <h3>QR Code Scanning</h3>
-                    <p>Quick bin identification and collection tracking using QR codes for accurate record keeping</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon blue">
-                        <span class="material-icons">analytics</span>
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80" alt="Real-Time Analytics" class="feature-image">
+                    <div class="feature-content">
+                        <div class="feature-icon blue">
+                            <span class="material-icons">analytics</span>
+                        </div>
+                        <h3>Real-Time Analytics</h3>
+                        <p>Comprehensive dashboards and reports for data-driven decision making and performance tracking</p>
                     </div>
-                    <h3>Real-Time Analytics</h3>
-                    <p>Comprehensive dashboards and reports for data-driven decision making and performance tracking</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon green">
-                        <span class="material-icons">location_on</span>
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80" alt="GPS Navigation" class="feature-image">
+                    <div class="feature-content">
+                        <div class="feature-icon green">
+                            <span class="material-icons">location_on</span>
+                        </div>
+                        <h3>GPS Navigation</h3>
+                        <p>Turn-by-turn navigation for collectors to reach bins efficiently with real-time location tracking</p>
                     </div>
-                    <h3>GPS Navigation</h3>
-                    <p>Turn-by-turn navigation for collectors to reach bins efficiently with real-time location tracking</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon yellow">
-                        <span class="material-icons">notifications_active</span>
+                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80" alt="Smart Notifications" class="feature-image">
+                    <div class="feature-content">
+                        <div class="feature-icon yellow">
+                            <span class="material-icons">notifications_active</span>
+                        </div>
+                        <h3>Smart Notifications</h3>
+                        <p>Automated alerts for full bins, missed pickups, and route assignments to keep operations smooth</p>
                     </div>
-                    <h3>Smart Notifications</h3>
-                    <p>Automated alerts for full bins, missed pickups, and route assignments to keep operations smooth</p>
                 </div>
             </div>
         </div>
@@ -651,39 +705,48 @@
             </div>
             <div class="portals-grid">
                 <div class="portal-card">
-                    <div class="portal-icon resident">
-                        <span class="material-icons" style="color: white; font-size: 2.5rem;">home</span>
-        </div>
-                <h3>Resident Portal</h3>
-                    <p>Track your waste collection schedules, view pickup history, and manage your household waste efficiently</p>
-                    <a href="/login" class="btn-portal">
-                        <span class="material-icons">login</span>
-                        Resident Login
-                    </a>
-            </div>
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80" alt="Resident Portal" class="portal-image">
+                    <div class="portal-content">
+                        <div class="portal-icon resident">
+                            <span class="material-icons" style="color: white; font-size: 2.5rem;">home</span>
+                        </div>
+                        <h3>Resident Portal</h3>
+                        <p>Track your waste collection schedules, view pickup history, and manage your household waste efficiently</p>
+                        <a href="/login" class="btn-portal">
+                            <span class="material-icons">login</span>
+                            Resident Login
+                        </a>
+                    </div>
+                </div>
 
                 <div class="portal-card">
-                    <div class="portal-icon collector">
-                        <span class="material-icons" style="color: white; font-size: 2.5rem;">local_shipping</span>
+                    <img src="/collector.jpg" alt="Waste Collector Portal" class="portal-image">
+                    <div class="portal-content">
+                        <div class="portal-icon collector">
+                            <span class="material-icons" style="color: white; font-size: 2.5rem;">local_shipping</span>
+                        </div>
+                        <h3>Waste Collector</h3>
+                        <p>Access your collection routes, scan QR codes, update bin status, and track daily performance metrics</p>
+                        <a href="/login" class="btn-portal">
+                            <span class="material-icons">login</span>
+                            Collector Login
+                        </a>
                     </div>
-                <h3>Waste Collector</h3>
-                    <p>Access your collection routes, scan QR codes, update bin status, and track daily performance metrics</p>
-                    <a href="/login" class="btn-portal">
-                        <span class="material-icons">login</span>
-                        Collector Login
-                    </a>
-            </div>
+                </div>
 
                 <div class="portal-card">
-                    <div class="portal-icon authority">
-                        <span class="material-icons" style="color: white; font-size: 2.5rem;">admin_panel_settings</span>
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="Management Authority Portal" class="portal-image">
+                    <div class="portal-content">
+                        <div class="portal-icon authority">
+                            <span class="material-icons" style="color: white; font-size: 2.5rem;">admin_panel_settings</span>
+                        </div>
+                        <h3>Management Authority</h3>
+                        <p>Monitor city-wide operations, assign routes, analyze data, and manage the entire waste management system</p>
+                        <a href="/login" class="btn-portal">
+                            <span class="material-icons">login</span>
+                            Authority Login
+                        </a>
                     </div>
-                <h3>Management Authority</h3>
-                    <p>Monitor city-wide operations, assign routes, analyze data, and manage the entire waste management system</p>
-                    <a href="/login" class="btn-portal">
-                        <span class="material-icons">login</span>
-                        Authority Login
-                    </a>
                 </div>
             </div>
         </div>

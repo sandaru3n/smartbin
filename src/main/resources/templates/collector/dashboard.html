@@ -24,37 +24,71 @@
         .header {
             background: #fff;
             color: #202124;
-            padding: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            padding: 0 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             border-bottom: 1px solid #dadce0;
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
         }
 
         .header-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 24px;
+            padding: 1rem 0;
             min-height: 64px;
+            gap: 1.5rem;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 2rem;
+            flex: 1;
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 8px;
+            color: #5f6368;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
             color: #1a73e8;
-            font-size: 22px;
-            font-weight: 400;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
         }
 
         .header-right {
@@ -63,40 +97,22 @@
             gap: 8px;
         }
 
-        .search-container {
-            position: relative;
-            margin-right: 16px;
-        }
-
-        .search-input {
-            width: 280px;
-            height: 40px;
-            padding: 0 16px 0 48px;
-            border: 1px solid #dadce0;
-            border-radius: 24px;
-            background: #f8f9fa;
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            background: #fff;
-            border-color: #1a73e8;
-            box-shadow: 0 1px 3px rgba(26, 115, 232, 0.3);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             color: #5f6368;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
         }
 
         .header-btn {
             background: none;
-            border: none;
+            border: 1px solid #dadce0;
             color: #5f6368;
             width: 40px;
             height: 40px;
@@ -105,35 +121,42 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
             position: relative;
         }
 
         .header-btn:hover {
-            background: #f1f3f4;
+            border-color: #5f6368;
+        }
+
+        .header-btn .material-icons {
+            font-size: 1.375rem;
+            color: #5f6368;
         }
 
         .notification-badge {
             position: absolute;
-            top: 6px;
-            right: 6px;
+            top: 4px;
+            right: 4px;
             background: #ea4335;
             color: white;
             border-radius: 10px;
             min-width: 18px;
             height: 18px;
-            font-size: 11px;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
 
         .profile-btn {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #1a73e8;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
             color: white;
             border: none;
             cursor: pointer;
@@ -141,8 +164,95 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #202124;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+        }
+
+        .dropdown-item.logout .material-icons {
+            color: #ea4335;
         }
 
         /* Main Container */
@@ -155,74 +265,133 @@
         /* Welcome Section */
         .welcome-section {
             margin-bottom: 32px;
+            padding: 0;
+            background: none;
         }
 
         .welcome-title {
             font-size: 32px;
-            font-weight: 400;
-            color: #202124;
+            font-weight: 600;
             margin-bottom: 8px;
+            background: linear-gradient(90deg, #4285f4 0%, #9b72f2 25%, #d96570 50%, #f4a261 75%, #4285f4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
         }
 
         .welcome-subtitle {
-            font-size: 16px;
+            font-size: 18px;
             color: #5f6368;
-            margin-bottom: 24px;
+            margin-bottom: 0;
+            font-weight: 400;
         }
 
-        /* Today's Summary Section */
+        /* Today's Summary Section - AdSense Blue Card Style */
         .summary-section {
-            background: #fff;
-            border-radius: 8px;
-            padding: 24px;
+            background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+            border-radius: 12px;
+            padding: 28px;
             margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            border: 1px solid #dadce0;
+            box-shadow: 0 4px 6px -1px rgba(26, 115, 232, 0.3), 0 10px 15px -3px rgba(26, 115, 232, 0.2);
+            border: none;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .summary-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
         }
 
         .summary-title {
-            font-size: 20px;
-            font-weight: 400;
-            color: #202124;
-            margin-bottom: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+            padding: 0;
+            margin: 0 0 24px 0;
             display: flex;
             align-items: center;
             gap: 8px;
+            border-bottom: none;
+            background: none;
+        }
+
+        .summary-title .material-icons {
+            color: white;
         }
 
         .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+            display: flex;
+            gap: 80px;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+            justify-content: flex-start;
         }
 
         .summary-card {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid #dadce0;
-            transition: all 0.2s;
-            cursor: pointer;
+            background: none;
+            border-radius: 0;
+            padding: 0;
+            text-align: left;
+            border: none;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .summary-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,.15);
-            transform: translateY(-1px);
+        .summary-card:nth-child(2) {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .summary-label {
+            color: rgba(255,255,255,0.9);
+            font-weight: 400;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: none;
+            letter-spacing: 0;
         }
 
         .summary-number {
             font-size: 48px;
             font-weight: 400;
-            color: #1a73e8;
-            margin-bottom: 8px;
+            color: white;
+            margin-bottom: 4px;
             line-height: 1;
         }
 
-        .summary-label {
-            color: #5f6368;
-            font-weight: 400;
-            font-size: 14px;
+        .summary-trend {
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up {
+            color: #34a853;
+        }
+
+        .trend-down {
+            color: #ea4335;
         }
 
         /* Notification Section */
@@ -238,7 +407,7 @@
         }
 
         .notification-icon {
-            background: #1a73e8;
+            
             color: white;
             width: 40px;
             height: 40px;
@@ -415,44 +584,67 @@
         }
 
         .action-card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            border: 1px solid #dadce0;
-            transition: all 0.2s;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            transition: all 0.3s ease;
             cursor: pointer;
             text-decoration: none;
             color: inherit;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
         .action-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,.15);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
             color: inherit;
             text-decoration: none;
         }
 
         .action-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f8f9fa;
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #1a73e8;
+            color: white;
             flex-shrink: 0;
+            box-shadow: 0 4px 6px -1px rgba(26, 115, 232, 0.3);
+        }
+
+        .action-card:nth-child(1) .action-icon {
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+        }
+
+        .action-card:nth-child(2) .action-icon {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        }
+
+        .action-card:nth-child(3) .action-icon {
+            background: linear-gradient(135deg, #00bcd4, #0097a7);
+        }
+
+        .action-card:nth-child(4) .action-icon {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+        }
+
+        .action-icon .material-icons {
+            font-size: 28px;
         }
 
         .action-content h3 {
             color: #202124;
             margin-bottom: 4px;
-            font-weight: 400;
-            font-size: 15px;
+            font-weight: 500;
+            font-size: 16px;
         }
 
         .action-content p {
@@ -464,12 +656,12 @@
 
         /* Quick Stats Section */
         .quick-stats-section {
-            background: #fff;
-            border-radius: 8px;
-            padding: 24px;
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
             margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            border: 1px solid #dadce0;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
         }
 
         .quick-stats-title {
@@ -492,22 +684,50 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #dadce0;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.05), rgba(66, 133, 244, 0.05));
+            border-radius: 12px;
+            border: 1px solid rgba(26, 115, 232, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+        }
+
+        .stat-item:nth-child(1) {
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.05), rgba(66, 133, 244, 0.05));
+            border-color: rgba(26, 115, 232, 0.2);
+        }
+
+        .stat-item:nth-child(2) {
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.05), rgba(46, 125, 50, 0.05));
+            border-color: rgba(52, 168, 83, 0.2);
+        }
+
+        .stat-item:nth-child(3) {
+            background: linear-gradient(135deg, rgba(251, 188, 4, 0.05), rgba(245, 124, 0, 0.05));
+            border-color: rgba(251, 188, 4, 0.2);
+        }
+
+        .stat-item:nth-child(4) {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.05), rgba(123, 31, 162, 0.05));
+            border-color: rgba(156, 39, 176, 0.2);
         }
 
         .stat-label {
             color: #5f6368;
-            font-weight: 400;
-            font-size: 14px;
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-value {
             color: #202124;
-            font-weight: 400;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 18px;
         }
 
         /* Routes Section */
@@ -528,21 +748,24 @@
         .routes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 16px;
+            gap: 20px;
         }
         
         .route-card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            border: 1px solid #dadce0;
-            transition: all 0.2s;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
+            border-left: 4px solid #1a73e8;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .route-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,.15);
-            transform: translateY(-1px);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
         }
         
         .route-header {
@@ -607,52 +830,64 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px 24px;
-            background: #1a73e8;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
             color: white;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 8px;
             font-weight: 500;
             font-size: 14px;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0,0,0,.1);
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn:hover {
-            background: #1557b0;
-            box-shadow: 0 2px 4px rgba(0,0,0,.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
             color: white;
             text-decoration: none;
         }
 
         .btn-small {
-            padding: 6px 16px;
+            padding: 8px 16px;
             font-size: 12px;
         }
 
         /* Alerts */
         .alert {
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            border: 1px solid;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: none;
             display: flex;
             align-items: center;
             gap: 12px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
         }
 
         .alert-success {
-            background-color: #e6f4ea;
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.1), rgba(46, 125, 50, 0.1));
             color: #137333;
-            border-color: #34a853;
+            border-left: 4px solid #34a853;
+        }
+
+        .alert-success .material-icons {
+            color: #34a853;
         }
 
         .alert-error {
-            background-color: #fce8e6;
+            background: linear-gradient(135deg, rgba(234, 67, 53, 0.1), rgba(197, 34, 31, 0.1));
             color: #d93025;
-            border-color: #ea4335;
+            border-left: 4px solid #ea4335;
+        }
+
+        .alert-error .material-icons {
+            color: #ea4335;
         }
 
         /* Responsive Design */
@@ -664,12 +899,37 @@
         }
 
         @media (max-width: 768px) {
-            .header-content {
-                padding: 8px 16px;
+            .header {
+                padding: 0 1rem;
             }
 
-            .search-container {
-                display: none;
+            .header-content {
+                padding: 0.75rem 0;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
             }
 
             .container {
@@ -698,25 +958,68 @@
     </style>
 </head>
 <body>
-    <!-- Header Section -->
+    <!-- Header Section / Top Navigation Bar -->
     <header class="header">
         <div class="header-content">
             <div class="header-left">
                 <div class="logo">
-                    <span class="material-icons">recycling</span>
-                    SmartBin
+                    Collector Dashboard
+                </div>
+                <div class="nav-links">
+                    <a href="/collector/dashboard" class="nav-link active">
+                        <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                        Dashboard
+                    </a>
+                    <a href="/collector/routes" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">route</span>
+                        My Routes
+                    </a>
+                    <a href="/collector/scan-qr" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">qr_code_scanner</span>
+                        QR Code Scanner
+                    </a>
+                    <a href="/collector/collections" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">inventory_2</span>
+                        Your Collection Records
+                    </a>
                 </div>
             </div>
             <div class="header-right">
-                <div class="search-container">
-                    <span class="material-icons search-icon">search</span>
-                    <input type="text" class="search-input" placeholder="Search routes, bins...">
+                <div class="user-info">
+                    <div class="notification-icon header-btn">
+                        <span class="material-icons">notifications</span>
+                        <span class="notification-badge" th:if="${newNotifications > 0}" th:text="${newNotifications}">2</span>
+                    </div>
+                    <span class="user-name" th:text="${user.name}">Collector</span>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="user-icon profile-btn" onclick="toggleProfileDropdown()">
+                            <span th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'C'}">C</span>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-user-name" th:text="${user.name}">Collector</div>
+                                <div class="dropdown-user-email" th:text="${user.email}">collector@smartbin.com</div>
+                            </div>
+                            <a href="/collector/dashboard" class="dropdown-item">
+                                <span class="material-icons">dashboard</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="/collector/profile" class="dropdown-item">
+                                <span class="material-icons">person</span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/collector/settings" class="dropdown-item">
+                                <span class="material-icons">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout" class="dropdown-item logout">
+                                <span class="material-icons">logout</span>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <button class="header-btn">
-                    <span class="material-icons">notifications</span>
-                    <span class="notification-badge" th:if="${newNotifications > 0}" th:text="${newNotifications}">2</span>
-                </button>
-                <button class="profile-btn" th:text="${user.name.substring(0,1).toUpperCase()}">C</button>
             </div>
         </div>
     </header>
@@ -908,23 +1211,18 @@
             const greetingElement = document.getElementById('greeting');
             
             let greeting;
-            let emoji;
             
             if (hour >= 5 && hour < 12) {
                 greeting = 'Good morning';
-                emoji = '🌅';
             } else if (hour >= 12 && hour < 17) {
                 greeting = 'Good afternoon';
-                emoji = '☀️';
             } else if (hour >= 17 && hour < 21) {
                 greeting = 'Good evening';
-                emoji = '🌆';
             } else {
                 greeting = 'Good night';
-                emoji = '🌙';
             }
             
-            greetingElement.innerHTML = emoji + ' ' + greeting;
+            greetingElement.innerHTML = greeting;
         }
         
         // Update greeting on page load
@@ -1089,6 +1387,34 @@
                 clearInterval(updateInterval);
             }
         });
+
+        // Profile Dropdown Functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const isClickInside = dropdown && dropdown.contains(event.target);
+            
+            if (!isClickInside && dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                // Allow links to navigate
+                if (event.target.tagName === 'A' || event.target.closest('a')) {
+                    return;
+                }
+                event.stopPropagation();
+            });
+        }
     </script>
 </body>
 </html>
