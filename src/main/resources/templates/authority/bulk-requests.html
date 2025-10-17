@@ -339,14 +339,118 @@
 
         .export-buttons {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
         .export-buttons .btn {
-            font-size: 0.75rem;
-            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            padding: 0.875rem 1.5rem;
             white-space: nowrap;
+            border-radius: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: none;
+            min-width: 160px;
+        }
+
+        .export-buttons .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .export-buttons .btn:hover::before {
+            left: 100%;
+        }
+
+        .export-buttons .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .export-buttons .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .export-buttons .btn i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .export-buttons .btn:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Enhanced button styles for PDF and HTML buttons */
+        .export-buttons .btn.btn-success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+            color: white;
+        }
+
+        .export-buttons .btn.btn-success:hover {
+            background: linear-gradient(135deg, #229954, #27ae60) !important;
+        }
+
+        .export-buttons .btn.btn-info {
+            background: linear-gradient(135deg, #3498db, #5dade2) !important;
+            color: white;
+        }
+
+        .export-buttons .btn.btn-info:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db) !important;
+        }
+
+        .export-buttons .btn.btn-primary {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad) !important;
+            color: white;
+        }
+
+        .export-buttons .btn.btn-primary:hover {
+            background: linear-gradient(135deg, #8e44ad, #7d3c98) !important;
+        }
+
+        /* Add subtle animation on page load */
+        .export-buttons .btn {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Add a subtle pulse effect for the buttons */
+        .export-buttons .btn {
+            animation: slideInUp 0.6s ease-out, subtlePulse 3s ease-in-out infinite;
+            animation-delay: 0s, 1s;
+        }
+
+        @keyframes subtlePulse {
+            0%, 100% {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+            50% {
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            }
         }
 
         .stats-grid {
@@ -741,23 +845,22 @@
                     </div>
                     <div class="filter-group" style="flex: 0 0 auto;">
                         <label style="visibility: hidden;">Action</label>
-                        <button type="button" onclick="window.location.href='/authority/bulk-requests'" class="btn btn-primary">
-                            <i class="fas fa-sync"></i> Reset Filters
-                        </button>
+                        <div class="export-buttons">
+                            <button type="button" onclick="window.location.href='/authority/bulk-requests'" class="btn btn-primary" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                                <i class="fas fa-sync"></i> Reset Filters
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- PDF Download Buttons -->
                     <div class="filter-group" style="flex: 0 0 auto;">
                         <label style="visibility: hidden;">Export</label>
                         <div class="export-buttons">
-                            <button type="button" onclick="downloadAllPdf()" class="btn btn-success">
+                            <button type="button" onclick="downloadAllPdf()" class="btn btn-success" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
                                 <i class="fas fa-file-pdf"></i> Download PDF
                             </button>
-                            <button type="button" onclick="downloadFilteredPdf()" class="btn btn-success">
-                                <i class="fas fa-file-pdf"></i> Download Filtered PDF
-                            </button>
-                            <button type="button" onclick="downloadHtmlReport()" class="btn btn-info">
-                                <i class="fas fa-file-code"></i> Download HTML
+                            <button type="button" onclick="downloadHtmlReport()" class="btn btn-info" style="background: linear-gradient(135deg, #3498db, #5dade2);">
+                                <i class="fas fa-code"></i> Download HTML
                             </button>
                         </div>
                     </div>
@@ -1109,25 +1212,6 @@
             setTimeout(hideDownloadLoading, 2000);
         }
 
-        function downloadFilteredPdf() {
-            // Get current filter status
-            const statusFilter = document.getElementById('statusFilter');
-            const selectedStatus = statusFilter.value || 'ALL';
-            
-            // Show loading indicator
-            showDownloadLoading();
-            
-            if (selectedStatus === '' || selectedStatus === 'ALL') {
-                // Download all requests
-                window.open('/authority/bulk-requests/download-pdf', '_blank');
-            } else {
-                // Download filtered requests
-                window.open(`/authority/bulk-requests/download-pdf-by-status?status=${selectedStatus}`, '_blank');
-            }
-            
-            // Hide loading indicator after a delay
-            setTimeout(hideDownloadLoading, 2000);
-        }
 
         function downloadHtmlReport() {
             // Show loading indicator
