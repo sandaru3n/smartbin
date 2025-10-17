@@ -6,8 +6,19 @@ import com.sliit.smartbin.smartbin.model.WasteDisposal;
 import java.util.List;
 
 /**
- * Service interface for managing waste disposal operations
- * Following Single Responsibility Principle - handles only waste disposal logic
+ * SOLID PRINCIPLES APPLIED IN WASTE DISPOSAL SERVICE
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This service has ONE responsibility: Manage waste disposal reporting.
+ *     Doesn't handle recycling, bin creation, or route management.
+ * 
+ * I - Interface Segregation Principle (ISP):
+ *     This interface is focused only on waste disposal operations.
+ *     Clients using disposal features don't need recycling or collection methods.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     High-level modules (controllers) depend on this interface abstraction,
+ *     not on the concrete implementation class.
  */
 public interface WasteDisposalService {
     
