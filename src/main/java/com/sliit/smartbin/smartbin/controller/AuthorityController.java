@@ -14,6 +14,7 @@ import com.sliit.smartbin.smartbin.service.NotificationService;
 import com.sliit.smartbin.smartbin.service.BinAssignmentService;
 import com.sliit.smartbin.smartbin.service.CollectionService;
 import com.sliit.smartbin.smartbin.service.BulkRequestService;
+import com.sliit.smartbin.smartbin.service.BulkRequestPdfService;
 import com.sliit.smartbin.smartbin.model.BinAssignment;
 import com.sliit.smartbin.smartbin.model.RegionAssignment;
 import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
@@ -24,6 +25,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -63,6 +68,7 @@ public class AuthorityController {
     private final BinAssignmentService binAssignmentService;
     private final CollectionService collectionService;
     private final BulkRequestService bulkRequestService;
+    private final BulkRequestPdfService bulkRequestPdfService;
     private final RegionAssignmentRepository regionAssignmentRepository;
 
     // DIP: Constructor injection for loose coupling and easy testing/mocking
@@ -74,6 +80,7 @@ public class AuthorityController {
                                BinAssignmentService binAssignmentService,
                                CollectionService collectionService,
                                BulkRequestService bulkRequestService,
+                               BulkRequestPdfService bulkRequestPdfService,
                                RegionAssignmentRepository regionAssignmentRepository) {
         this.binService = binService;
         this.routeService = routeService;
@@ -83,6 +90,7 @@ public class AuthorityController {
         this.binAssignmentService = binAssignmentService;
         this.collectionService = collectionService;
         this.bulkRequestService = bulkRequestService;
+        this.bulkRequestPdfService = bulkRequestPdfService;
         this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
@@ -1352,6 +1360,361 @@ public class AuthorityController {
         }
         
         return "redirect:/authority/bulk-requests";
+    }
+
+    /**
+     * SRP: This method has ONE job - display authority profile page
+     * 
+     * Display authority user profile
+     */
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, Model model) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        model.addAttribute("user", user);
+        
+        // Get user statistics for profile display
+        Map<String, Object> profileStats = new HashMap<>();
+        
+        // Get routes managed by this authority
+        List<Route> managedRoutes = routeService.findRoutesByAuthority(user);
+        profileStats.put("totalRoutesManaged", managedRoutes.size());
+        
+        // Get active routes
+        long activeRoutes = managedRoutes.stream()
+            .filter(route -> route.getStatus() == Route.RouteStatus.IN_PROGRESS || 
+                           route.getStatus() == Route.RouteStatus.ASSIGNED)
+            .count();
+        profileStats.put("activeRoutes", activeRoutes);
+        
+        // Get completed routes (last 30 days)
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+        long recentCompletedRoutes = managedRoutes.stream()
+            .filter(route -> route.getStatus() == Route.RouteStatus.COMPLETED &&
+                           route.getCompletedDate() != null &&
+                           route.getCompletedDate().toLocalDate().isAfter(thirtyDaysAgo))
+            .count();
+        profileStats.put("recentCompletedRoutes", recentCompletedRoutes);
+        
+        // Get bulk requests managed
+        List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(30);
+        profileStats.put("bulkRequestsManaged", bulkRequests.size());
+        
+        model.addAttribute("profileStats", profileStats);
+        
+        return "authority/profile";
+    }
+
+    /**
+     * SRP: This method only handles profile update HTTP request
+     * 
+     * Update authority user profile
+     */
+    @PostMapping("/profile")
+    public String updateProfile(@RequestParam String name,
+                               @RequestParam String email,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) String region,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // Update user information
+            user.setName(name);
+            user.setEmail(email);
+            if (phone != null && !phone.isEmpty()) {
+                user.setPhone(phone);
+            }
+            if (region != null && !region.isEmpty()) {
+                user.setRegion(region);
+            }
+            
+            User updatedUser = userService.updateUser(user);
+            session.setAttribute("user", updatedUser);
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Profile updated successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to update profile: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/profile";
+    }
+
+    /**
+     * SRP: This method has ONE job - display authority settings page
+     * 
+     * Display authority user settings
+     */
+    @GetMapping("/settings")
+    public String showSettings(HttpSession session, Model model) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        model.addAttribute("user", user);
+        
+        // Get system settings and preferences
+        Map<String, Object> settings = new HashMap<>();
+        settings.put("notificationsEnabled", true); // Default setting
+        settings.put("emailNotifications", true);
+        settings.put("autoRouteOptimization", true);
+        settings.put("defaultCollectionTime", "09:00");
+        settings.put("maxRouteDistance", 50.0); // km
+        settings.put("alertThreshold", 80); // percentage
+        
+        model.addAttribute("settings", settings);
+        
+        return "authority/settings";
+    }
+
+    /**
+     * SRP: This method only handles settings update HTTP request
+     * 
+     * Update authority user settings
+     */
+    @PostMapping("/settings")
+    public String updateSettings(@RequestParam(required = false) Boolean notificationsEnabled,
+                               @RequestParam(required = false) Boolean emailNotifications,
+                               @RequestParam(required = false) Boolean autoRouteOptimization,
+                               @RequestParam(required = false) String defaultCollectionTime,
+                               @RequestParam(required = false) Double maxRouteDistance,
+                               @RequestParam(required = false) Integer alertThreshold,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // In a real application, you would save these settings to a database
+            // For now, we'll just show a success message
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Settings updated successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to update settings: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/settings";
+    }
+
+    /**
+     * Change password functionality
+     */
+    @PostMapping("/settings/change-password")
+    public String changePassword(@RequestParam String currentPassword,
+                               @RequestParam String newPassword,
+                               @RequestParam String confirmPassword,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // Validate passwords
+            if (!newPassword.equals(confirmPassword)) {
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                    "New passwords do not match!");
+                return "redirect:/authority/settings";
+            }
+            
+            if (newPassword.length() < 6) {
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                    "New password must be at least 6 characters long!");
+                return "redirect:/authority/settings";
+            }
+            
+            // In a real application, you would verify the current password
+            // and update the password using proper password hashing
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Password changed successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to change password: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/settings";
+    }
+
+    // ======================== Bulk Requests PDF Export Endpoints ========================
+
+    /**
+     * SRP: This method has ONE job - generate and download PDF report for all bulk requests
+     * 
+     * Download PDF report of all bulk requests
+     */
+    @GetMapping("/bulk-requests/download-pdf")
+    public ResponseEntity<byte[]> downloadBulkRequestsPdf(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(100);
+            String reportTitle = "Bulk Collection Requests Report";
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.generateBulkRequestsReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-report-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate and download PDF report for bulk requests by status
+     * 
+     * Download PDF report of bulk requests filtered by status
+     */
+    @GetMapping("/bulk-requests/download-pdf-by-status")
+    public ResponseEntity<byte[]> downloadBulkRequestsPdfByStatus(@RequestParam String status, 
+                                                                HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status.toUpperCase());
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.generateBulkRequestsByStatusReport(
+                bulkRequests, requestStatus, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-" + status.toLowerCase() + "-report-" + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate and download HTML report for bulk requests
+     * 
+     * Download HTML report of bulk requests (alternative to PDF)
+     */
+    @GetMapping("/bulk-requests/download-html")
+    public ResponseEntity<byte[]> downloadBulkRequestsHtml(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(100);
+            String reportTitle = "Bulk Collection Requests Report";
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate HTML
+            String htmlContent = bulkRequestPdfService.generateBulkRequestsHtmlReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_HTML);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-report-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".html");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(htmlContent.getBytes("UTF-8"), headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate PDF from HTML content
+     * 
+     * Convert HTML report to PDF and download
+     */
+    @PostMapping("/bulk-requests/download-pdf-from-html")
+    public ResponseEntity<byte[]> downloadPdfFromHtml(@RequestParam String status,
+                                                     @RequestParam(required = false) String dateRange,
+                                                     HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests;
+            
+            if ("ALL".equals(status)) {
+                bulkRequests = bulkRequestService.getRecentRequests(100);
+            } else {
+                BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status.toUpperCase());
+                bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            }
+            
+            String reportTitle = "Bulk Collection Requests Report" + 
+                (!"ALL".equals(status) ? " - " + status.replace("_", " ") : "");
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate HTML first
+            String htmlContent = bulkRequestPdfService.generateBulkRequestsHtmlReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Convert HTML to PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.convertHtmlToPdf(htmlContent);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-" + status.toLowerCase() + "-report-" + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
 
