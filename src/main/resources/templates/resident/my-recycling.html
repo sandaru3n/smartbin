@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Recycling History - SmartBin</title>
+    
+    <!-- Google Fonts & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #202124;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-link {
+            color: #5f6368;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #dadce0;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .back-link .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .page-header h1 {
+            color: #202124;
+            font-size: 1.75rem;
+            font-weight: 400;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-top: 0.25rem;
+            margin-left: 56px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card .icon {
+            width: 64px;
+            height: 64px;
+            background: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .stat-card .icon .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .transactions-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .transactions-section h2 {
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .transactions-section h2 .material-icons {
+            font-size: 1.5rem;
+            color: #34a853;
+        }
+
+        .transaction-card {
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #34a853;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .transaction-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            border-left-color: #2d904a;
+        }
+
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .transaction-type {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .transaction-type .material-icons {
+            font-size: 1.25rem;
+            color: #34a853;
+        }
+
+        .transaction-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-CONFIRMED {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .status-PENDING {
+            background: #fef7e0;
+            color: #b06000;
+        }
+
+        .status-FAILED {
+            background: #fce8e6;
+            color: #c5221f;
+        }
+
+        .transaction-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item .label {
+            color: #5f6368;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item .value {
+            color: #202124;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .transaction-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .points-earned {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #34a853;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .points-earned .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .transaction-date {
+            color: #5f6368;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .transaction-date .material-icons {
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #5f6368;
+        }
+
+        .empty-state .icon {
+            width: 80px;
+            height: 80px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .empty-state .icon .material-icons {
+            font-size: 3rem;
+            color: #80868b;
+        }
+
+        .empty-state h3 {
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #5f6368;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            background: #34a853;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 24px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn:hover {
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+        }
+
+        .btn .material-icons {
+            font-size: 1.125rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .transaction-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin
+            </div>
+            <div class="user-info">
+                <span th:text="${user != null ? user.name : 'Guest'}">Guest</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <a href="/resident/dashboard" class="back-link">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1>My Recycling History</h1>
+            </div>
+            <p>Track your recycling transactions and environmental impact</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon">
+                    <span class="material-icons">stars</span>
+                </div>
+                <div class="value" th:text="${totalPoints}">0</div>
+                <div class="label">Total Points</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon">
+                    <span class="material-icons">recycling</span>
+                </div>
+                <div class="value" th:text="${transactions.size()}">0</div>
+                <div class="label">Total Transactions</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon">
+                    <span class="material-icons">attach_money</span>
+                </div>
+                <div class="value">
+                    LKR <span th:text="${#aggregates.sum(transactions.![priceValue])}">0</span>
+                </div>
+                <div class="label">Total Value Earned</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon">
+                    <span class="material-icons">eco</span>
+                </div>
+                <div class="value">
+                    <span th:text="${#aggregates.sum(transactions.![weight])}">0</span> kg
+                </div>
+                <div class="label">Total Weight Recycled</div>
+            </div>
+        </div>
+
+        <div class="transactions-section">
+            <h2>
+                <span class="material-icons">receipt_long</span>
+                Transaction History
+            </h2>
+
+            <div th:if="${!transactions.empty}">
+                <div class="transaction-card" th:each="transaction : ${transactions}">
+                    <div class="transaction-header">
+                        <div class="transaction-type">
+                            <span class="material-icons">recycling</span>
+                            <span th:text="${#strings.capitalize(transaction.itemType)}">Item Type</span>
+                        </div>
+                        <div class="transaction-status" 
+                             th:classappend="'status-' + ${transaction.status}"
+                             th:text="${transaction.status}">
+                            Status
+                        </div>
+                    </div>
+
+                    <div class="transaction-details">
+                        <div class="detail-item">
+                            <div class="label">Recycling Unit</div>
+                            <div class="value" th:text="${transaction.recyclingUnitQrCode}">RU001</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="label">Weight</div>
+                            <div class="value" th:text="${transaction.weight} + ' kg'">0 kg</div>
+                        </div>
+
+                        <div class="detail-item" th:if="${transaction.quantity != null}">
+                            <div class="label">Quantity</div>
+                            <div class="value" th:text="${transaction.quantity} + ' items'">0 items</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="label">Value</div>
+                            <div class="value" th:text="'LKR ' + ${transaction.priceValue}">LKR 0</div>
+                        </div>
+                    </div>
+
+                    <div class="transaction-footer">
+                        <div class="points-earned">
+                            <span class="material-icons">stars</span>
+                            +<span th:text="${transaction.pointsEarned}">0</span> points
+                        </div>
+                        <div class="transaction-date">
+                            <span class="material-icons">schedule</span>
+                            <span th:text="${#temporals.format(transaction.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${transactions.empty}" class="empty-state">
+                <div class="icon">
+                    <span class="material-icons">inbox</span>
+                </div>
+                <h3>No Recycling Transactions Yet</h3>
+                <p>Start recycling today and earn points for your contributions!</p>
+                <a href="/resident/recycling-units" class="btn">
+                    <span class="material-icons">search</span>
+                    Find Recycling Units
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

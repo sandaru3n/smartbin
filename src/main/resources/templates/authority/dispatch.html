@@ -4,8 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dispatch Collector - SmartBin Authority</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-hover: #1557b0;
+            --secondary-color: #34a853;
+            --danger-color: #ea4335;
+            --warning-color: #fbbc04;
+            --success-color: #34a853;
+            --info-color: #4285f4;
+            --purple-color: #9c27b0;
+            --orange-color: #ff9800;
+            --teal-color: #00bcd4;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --text-tertiary: #9aa0a6;
+            --background-primary: #ffffff;
+            --background-secondary: #f8f9fa;
+            --background-tertiary: #f1f3f4;
+            --border-color: #dadce0;
+            --border-hover: #1a73e8;
+            --shadow-sm: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            --shadow-md: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            --shadow-lg: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,277 +48,427 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
             min-height: 100vh;
-            color: #333;
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 14px;
+            font-weight: 400;
         }
 
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
         }
 
-        .header-content {
+        /* Top Navigation Bar */
+        .top-nav {
+            background: var(--background-primary);
+            padding: var(--spacing-md) var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            margin: 0;
+        }
+
+        .top-nav-inner {
+            max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-lg);
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
+        .nav-title {
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: -0.5px;
         }
 
-        .nav-breadcrumb {
+        .nav-links {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #666;
+            gap: var(--spacing-lg);
         }
 
-        .nav-breadcrumb a {
-            color: #3498db;
+        .nav-link {
+            color: var(--text-secondary);
             text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
 
-        .nav-breadcrumb a:hover {
-            text-decoration: underline;
+        .nav-link:hover {
+            color: var(--primary-color);
+            background: rgba(26, 115, 232, 0.08);
         }
 
-        .main-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+        .nav-link.active {
+            color: var(--primary-color);
+            background: rgba(26, 115, 232, 0.1);
         }
 
-        .page-header {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            color: var(--text-secondary);
+        }
+
+        .notification-icon {
+            font-size: 18px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: var(--spacing-sm);
+            border-radius: 50%;
+        }
+
+        .notification-icon:hover {
+            color: var(--primary-color);
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-icon:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Main Content */
+        .content {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
         }
 
         .page-title {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: var(--spacing-md);
         }
 
         .page-icon {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            font-size: 24px;
+            box-shadow: var(--shadow-md);
         }
 
-        .page-title h1 {
-            font-size: 2rem;
-            color: #2c3e50;
-            margin: 0;
+        .page-title-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
         }
 
         .page-description {
-            color: #666;
-            font-size: 1.1rem;
-            line-height: 1.6;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: var(--spacing-xs);
         }
 
-        .dispatch-form {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
         }
 
+        .stats-card {
+            background: var(--background-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stats-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .stats-icon.primary { background: linear-gradient(135deg, var(--primary-color), var(--info-color)); }
+        .stats-icon.success { background: linear-gradient(135deg, var(--success-color), #2e7d32); }
+        .stats-icon.warning { background: linear-gradient(135deg, var(--warning-color), #f57c00); }
+        .stats-icon.danger { background: linear-gradient(135deg, var(--danger-color), #c62828); }
+
+        .stats-content h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stats-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        /* Form Sections */
         .form-section {
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border: 1px solid #e9ecef;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .section-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #dee2e6;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--background-tertiary);
         }
 
         .step-number {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: var(--shadow-sm);
         }
 
         .section-title h3 {
-            margin: 0;
-            color: #2c3e50;
-            font-size: 1.2rem;
+            font-size: 20px;
             font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
         }
 
         .section-title p {
-            margin: 0.25rem 0 0 0;
-            color: #666;
-            font-size: 0.9rem;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
+        /* Form Controls */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--spacing-lg);
         }
 
-        .form-group label {
+        .form-label {
             display: block;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.95rem;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
         }
 
         .select-wrapper {
             position: relative;
         }
 
-        .select-wrapper select {
+        .form-select {
             width: 100%;
-            padding: 1rem 3rem 1rem 1rem;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            background: white;
-            transition: all 0.3s ease;
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--background-primary);
             appearance: none;
             cursor: pointer;
         }
 
-        .select-wrapper select:focus {
+        .form-select:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
         }
 
         .select-arrow {
             position: absolute;
-            right: 1rem;
+            right: var(--spacing-md);
             top: 50%;
             transform: translateY(-50%);
-            color: #666;
+            color: var(--text-secondary);
             pointer-events: none;
-            font-size: 0.8rem;
+            font-size: 16px;
         }
 
+        /* Filter Buttons */
         .filter-options {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
             flex-wrap: wrap;
         }
 
         .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid #e9ecef;
-            background: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--border-color);
+            background: var(--background-primary);
             border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            font-size: 12px;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
         }
 
         .filter-btn:hover {
-            border-color: #3498db;
-            background: #f8f9ff;
+            border-color: var(--primary-color);
+            background: rgba(26, 115, 232, 0.05);
+            transform: translateY(-1px);
         }
 
         .filter-btn.active {
-            background: #3498db;
+            background: var(--primary-color);
             color: white;
-            border-color: #3498db;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
         }
 
+        /* Selection Controls */
         .selection-controls {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--background-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
         }
 
         .control-btn {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border: 1px solid #dee2e6;
-            background: white;
-            border-radius: 6px;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            background: var(--background-primary);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .control-btn:hover {
-            background: #e9ecef;
-            border-color: #adb5bd;
-        }
-
-        .control-icon {
-            font-size: 0.9rem;
+            background: var(--background-tertiary);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
         }
 
         .selection-info {
             margin-left: auto;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--text-primary);
+            font-size: 14px;
         }
 
+        /* Bin List */
         .bin-list {
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--background-primary);
         }
 
         .bin-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-bottom: 1px solid #f8f9fa;
-            transition: all 0.3s ease;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
         .bin-item:hover {
-            background: #f8f9ff;
+            background: var(--background-secondary);
+            transform: translateX(4px);
         }
 
         .bin-item:last-child {
@@ -303,16 +488,16 @@
         .bin-checkbox-custom {
             width: 20px;
             height: 20px;
-            border: 2px solid #dee2e6;
-            border-radius: 4px;
-            background: white;
-            transition: all 0.3s ease;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--background-primary);
+            transition: all 0.2s ease;
             position: relative;
         }
 
         .bin-checkbox:checked + .bin-checkbox-custom {
-            background: #3498db;
-            border-color: #3498db;
+            background: var(--primary-color);
+            border-color: var(--primary-color);
         }
 
         .bin-checkbox:checked + .bin-checkbox-custom::after {
@@ -322,7 +507,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 0.8rem;
+            font-size: 12px;
             font-weight: bold;
         }
 
@@ -333,79 +518,86 @@
         .bin-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
         }
 
         .bin-qr {
             font-weight: 700;
-            color: #2c3e50;
-            font-size: 1rem;
+            color: var(--text-primary);
+            font-size: 16px;
         }
 
         .bin-status-badge {
-            padding: 0.25rem 0.75rem;
+            padding: var(--spacing-xs) var(--spacing-sm);
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .bin-status-badge.EMPTY {
-            background: #d4edda;
-            color: #155724;
+            background: rgba(52, 168, 83, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(52, 168, 83, 0.2);
         }
 
         .bin-status-badge.PARTIAL {
-            background: #d1ecf1;
-            color: #0c5460;
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--orange-color);
+            border: 1px solid rgba(255, 152, 0, 0.2);
         }
 
         .bin-status-badge.FULL {
-            background: #fff3cd;
-            color: #856404;
+            background: rgba(234, 67, 53, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(234, 67, 53, 0.2);
         }
 
         .bin-status-badge.OVERDUE {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(156, 39, 176, 0.1);
+            color: var(--purple-color);
+            border: 1px solid rgba(156, 39, 176, 0.2);
         }
 
         .bin-location {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: var(--spacing-sm);
         }
 
         .bin-details {
             display: flex;
-            gap: 2rem;
+            gap: var(--spacing-lg);
             align-items: center;
         }
 
         .detail-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--spacing-sm);
         }
 
         .detail-label {
-            font-size: 0.8rem;
-            color: #666;
+            font-size: 11px;
+            color: var(--text-secondary);
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .fill-bar {
             width: 60px;
             height: 6px;
-            background: #e9ecef;
+            background: var(--background-tertiary);
             border-radius: 3px;
             overflow: hidden;
         }
 
         .fill-progress {
             height: 100%;
-            background: #27ae60;
+            background: var(--success-color);
             transition: width 0.3s ease;
         }
 
@@ -414,48 +606,49 @@
         .fill-progress[data-level="97"],
         .fill-progress[data-level="98"],
         .fill-progress[data-level="99"] {
-            background: #e74c3c;
+            background: var(--danger-color);
         }
 
         .fill-percentage {
-            font-size: 0.8rem;
+            font-size: 11px;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--text-primary);
         }
 
         .detail-value {
-            font-size: 0.8rem;
-            color: #2c3e50;
+            font-size: 11px;
+            color: var(--text-primary);
             font-weight: 500;
         }
 
         .bin-actions {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--spacing-sm);
         }
 
         .action-btn-small {
             width: 32px;
             height: 32px;
-            border: 1px solid #dee2e6;
-            background: white;
-            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--background-primary);
+            border-radius: var(--radius-sm);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            font-size: 14px;
         }
 
         .action-btn-small:hover {
-            background: #f8f9fa;
-            border-color: #adb5bd;
+            background: var(--background-secondary);
+            border-color: var(--primary-color);
+            transform: scale(1.1);
         }
 
         .alert-indicator {
-            font-size: 1.2rem;
+            font-size: 16px;
             animation: pulse 2s infinite;
         }
 
@@ -465,61 +658,71 @@
             100% { opacity: 1; }
         }
 
+        /* Route Preview */
         .route-preview {
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 2px dashed #dee2e6;
+            padding: var(--spacing-lg);
+            background: var(--background-secondary);
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-color);
             text-align: center;
-            color: #666;
+            color: var(--text-secondary);
         }
 
+        /* Form Actions */
         .form-actions {
             display: flex;
-            gap: 1rem;
+            gap: var(--spacing-md);
             justify-content: flex-end;
-            padding-top: 2rem;
-            border-top: 1px solid #e9ecef;
+            padding: var(--spacing-xl);
+            border-top: 1px solid var(--border-color);
+            background: var(--background-secondary);
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: var(--spacing-md) var(--spacing-lg);
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
+            gap: var(--spacing-sm);
             text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: var(--background-primary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: var(--background-tertiary);
+            color: var(--text-primary);
+            transform: translateY(-1px);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
             color: white;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            box-shadow: var(--shadow-sm);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-primary:disabled {
-            opacity: 0.6;
+            background: var(--background-tertiary);
+            color: var(--text-tertiary);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .dispatch-btn {
@@ -533,11 +736,11 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: var(--spacing-sm);
             color: white;
         }
 
@@ -555,23 +758,125 @@
             100% { transform: rotate(360deg); }
         }
 
-        .btn-icon {
-            font-size: 1rem;
+        /* Assignment History */
+        .assignment-history {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-top: var(--spacing-lg);
+            overflow: hidden;
         }
 
+        .history-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            padding: var(--spacing-md) var(--spacing-lg);
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--background-tertiary);
+        }
+
+        .history-table td {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .history-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .history-table tbody tr:hover {
+            background: var(--background-secondary);
+        }
+
+        .collector-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .collector-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .bin-locations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+
+        .location-badge {
+            background: rgba(26, 115, 232, 0.1);
+            color: var(--primary-color);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge {
+            background: rgba(52, 168, 83, 0.1);
+            color: var(--success-color);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Notification */
         .notification {
             position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: #27ae60;
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 2000;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: var(--background-primary);
+            color: var(--text-primary);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
             transform: translateX(400px);
             transition: transform 0.3s ease;
             max-width: 400px;
+            border-left: 4px solid var(--success-color);
         }
 
         .notification.show {
@@ -579,77 +884,199 @@
         }
 
         .notification.error {
-            background: #e74c3c;
+            border-left-color: var(--danger-color);
         }
 
-        /* Responsive Design */
+        .notification.success {
+            border-left-color: var(--success-color);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .main-container {
-                padding: 0 1rem;
-                margin: 1rem auto;
+            .container {
+                padding: var(--spacing-md);
             }
-            
-            .page-header {
-                padding: 1.5rem;
+
+            .top-nav {
+                padding: var(--spacing-md);
             }
-            
-            .dispatch-form {
-                padding: 1rem;
+
+            .top-nav-inner {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                align-items: flex-start;
             }
-            
-            .form-section {
-                padding: 1rem;
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: var(--spacing-sm);
+            }
+
+            .nav-link {
+                font-size: 12px;
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
             
             .bin-details {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.5rem;
+                gap: var(--spacing-sm);
             }
             
             .form-actions {
                 flex-direction: column;
             }
             
-            .header-content {
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .history-header {
                 flex-direction: column;
-                gap: 1rem;
+                gap: var(--spacing-md);
                 align-items: flex-start;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">🗑️ SmartBin Authority</div>
-            <nav class="nav-breadcrumb">
-                <a href="/authority/dashboard">Dashboard</a>
-                <span>›</span>
-                <span>Dispatch Collector</span>
-            </nav>
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="top-nav-inner">
+            <h1 class="nav-title">Dispatch Collector</h1>
+            <div class="nav-links">
+                <a href="/authority/dashboard" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="/authority/manage-collectors" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">group</span>
+                    Manage Collectors
+                </a>
+                <a href="/authority/dispatch" class="nav-link active">
+                    <span class="material-icons" style="font-size: 18px;">local_shipping</span>
+                    Dispatch
+                </a>
+                <a href="/authority/reports" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">assessment</span>
+                    Reports
+                </a>
+                <a href="/authority/bulk-requests" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">inventory</span>
+                    Bulk Requests
+                </a>
         </div>
-    </header>
+            <div class="user-info">
+                <div class="notification-icon">
+                    <span class="material-icons">notifications</span>
+                </div>
+                <span class="user-name" th:text="${user.name}">Authority User</span>
+                <div class="user-icon">A</div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Page Header -->
-        <div class="page-header">
+    <div class="container">
+
+        <!-- Main Content -->
+        <div class="content">
+            <div class="content-header">
             <div class="page-title">
-                <div class="page-icon">🚛</div>
+                    <div class="page-icon">
+                        <span class="material-icons">local_shipping</span>
+                    </div>
                 <div>
-                    <h1>Dispatch Collector</h1>
+                        <h2 class="page-title-text">Dispatch Collector</h2>
+                        <p class="page-description">Create optimized routes for efficient waste collection</p>
                 </div>
             </div>
-            <p class="page-description">
-                Create an optimized route for waste collection. Select a collector and bins that need to be collected. 
-                Our AI will automatically optimize the route for maximum efficiency.
-            </p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <div class="stats-icon primary">
+                            <span class="material-icons">group</span>
+                        </div>
+                        <div class="stats-content">
+                            <h3 id="totalCollectors" th:text="${collectors != null ? collectors.size() : 0}">0</h3>
+                            <p>Available Collectors</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <div class="stats-icon success">
+                            <span class="material-icons">inventory</span>
+                        </div>
+                        <div class="stats-content">
+                            <h3 id="totalBinsCount">0</h3>
+                            <p>Total Bins</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <div class="stats-icon warning">
+                            <span class="material-icons">warning</span>
+                        </div>
+                        <div class="stats-content">
+                            <h3 id="fullBinsCount">0</h3>
+                            <p>Full Bins</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <div class="stats-icon danger">
+                            <span class="material-icons">schedule</span>
+                        </div>
+                        <div class="stats-content">
+                            <h3 id="overdueBinsCount">0</h3>
+                            <p>Overdue Bins</p>
+                        </div>
+                    </div>
+                </div>
         </div>
 
         <!-- Dispatch Form -->
-        <form class="dispatch-form" id="dispatchForm">
+            <form id="dispatchForm">
             <!-- Step 1: Select Collector -->
             <div class="form-section">
                 <div class="section-header">
@@ -660,9 +1087,9 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="collectorSelect">Available Collectors</label>
+                        <label for="collectorSelect" class="form-label">Available Collectors</label>
                     <div class="select-wrapper">
-                        <select id="collectorSelect" required>
+                            <select id="collectorSelect" class="form-select" required>
                             <option value="">Choose a collector...</option>
                             <option th:each="collector : ${collectors}" th:value="${collector.id}" th:text="${collector.name}">Collector Name</option>
                         </select>
@@ -684,27 +1111,27 @@
                 <!-- Filter Options -->
                 <div class="filter-options">
                     <button type="button" class="filter-btn active" data-filter="all">
-                        All Bins (<span id="totalBinsCount">0</span>)
+                            All Bins (<span id="totalBinsCountFilter">0</span>)
                     </button>
                     <button type="button" class="filter-btn" data-filter="full">
-                        Full Bins (<span id="fullBinsCount">0</span>)
+                            Full Bins (<span id="fullBinsCountFilter">0</span>)
                     </button>
                     <button type="button" class="filter-btn" data-filter="overdue">
-                        Overdue (<span id="overdueBinsCount">0</span>)
+                            Overdue (<span id="overdueBinsCountFilter">0</span>)
                     </button>
                     <button type="button" class="filter-btn" data-filter="alert">
-                        With Alerts (<span id="alertBinsCount">0</span>)
+                            With Alerts (<span id="alertBinsCountFilter">0</span>)
                     </button>
                 </div>
 
                 <!-- Select All/None -->
                 <div class="selection-controls">
                     <button type="button" class="control-btn" onclick="selectAllBins()">
-                        <span class="control-icon">☑️</span>
+                            <span class="material-icons" style="font-size: 16px;">check_box</span>
                         Select All
                     </button>
                     <button type="button" class="control-btn" onclick="selectNoneBins()">
-                        <span class="control-icon">☐</span>
+                            <span class="material-icons" style="font-size: 16px;">check_box_outline_blank</span>
                         Select None
                     </button>
                     <div class="selection-info">
@@ -714,7 +1141,7 @@
 
                 <!-- Bin List -->
                 <div class="bin-list" id="binList">
-                    <div th:each="bin : ${fullBins}" class="bin-item" th:data-status="${bin.status}" th:data-alert="${bin.alertFlag}">
+                    <div th:each="bin : ${fullBins}" class="bin-item" th:data-status="${bin.status}" th:data-alert="${bin.alertFlag}" th:data-bin-id="${bin.id}">
                         <label class="bin-checkbox-wrapper">
                             <input type="checkbox" class="bin-checkbox" th:value="${bin.id}" th:id="'bin_' + ${bin.id}" onchange="updateSelectionCount()">
                             <div class="bin-checkbox-custom"></div>
@@ -741,9 +1168,11 @@
                         </div>
                         <div class="bin-actions">
                             <button type="button" class="action-btn-small" onclick="viewBinDetails(this)" title="View Details">
-                                👁️
+                                    <span class="material-icons" style="font-size: 16px;">visibility</span>
                             </button>
-                            <div class="alert-indicator" th:if="${bin.alertFlag}" title="Alert Active">🚨</div>
+                                <div class="alert-indicator" th:if="${bin.alertFlag}" title="Alert Active">
+                                    <span class="material-icons" style="font-size: 16px; color: var(--danger-color);">warning</span>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -766,10 +1195,11 @@
             <!-- Form Actions -->
             <div class="form-actions">
                 <a href="/authority/dashboard" class="btn btn-secondary">
+                        <span class="material-icons" style="font-size: 16px;">cancel</span>
                     Cancel
                 </a>
                 <button type="submit" class="btn btn-primary dispatch-btn" id="dispatchBtn">
-                    <span class="btn-icon">🚀</span>
+                        <span class="material-icons" style="font-size: 16px;">rocket_launch</span>
                     <span class="btn-text">Optimize & Dispatch Route</span>
                     <div class="btn-loading" style="display: none;">
                         <div class="spinner"></div>
@@ -780,12 +1210,94 @@
         </form>
     </div>
 
+        <!-- Assignment History -->
+        <div class="assignment-history" id="assignmentHistoryContainer" style="display: none;">
+            <div class="history-header">
+                <h2 class="history-title">
+                    <span class="material-icons">history</span>
+                    Assignment History
+                </h2>
+                <button class="btn btn-secondary" onclick="clearAssignmentHistory()" style="padding: var(--spacing-sm) var(--spacing-md); font-size: 12px;">
+                    <span class="material-icons" style="font-size: 16px;">delete</span>
+                    Clear History
+                </button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="history-table" id="assignmentHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Collector</th>
+                            <th>Bins Assigned</th>
+                            <th>Assigned By</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignmentHistoryBody">
+                        <!-- Assignment rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
     <script>
+        // Track assigned bins
+        let assignedBins = new Set();
+        let assignmentHistory = [];
+
+        // Load assignment history from database
+        function loadAssignmentHistory() {
+            console.log('Loading assignment history from database...');
+            
+            fetch('/authority/api/assignments/all')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Loaded assignments from database:', data);
+                    
+                    // Convert database format to local format
+                    assignmentHistory = data.map(assignment => ({
+                        collectorId: assignment.collectorId,
+                        collectorName: assignment.collectorName,
+                        binIds: assignment.binIds,
+                        binLocations: assignment.binLocations,
+                        assignedBy: assignment.assignedBy,
+                        dateTime: new Date(assignment.assignedAt).toLocaleString(),
+                        status: assignment.status
+                    }));
+                    
+                    assignedBins = new Set(assignmentHistory.flatMap(a => a.binIds));
+                    
+                    // Also save to localStorage as backup
+                    saveAssignmentHistory();
+                    
+                    displayAssignmentHistory();
+                    removeAssignedBinsFromList();
+                })
+                .catch(error => {
+                    console.error('Failed to load assignments from database:', error);
+                    // Fallback to localStorage
+                    const saved = localStorage.getItem('binAssignmentHistory');
+                    if (saved) {
+                        assignmentHistory = JSON.parse(saved);
+                        assignedBins = new Set(assignmentHistory.flatMap(a => a.binIds));
+                        displayAssignmentHistory();
+                        removeAssignedBinsFromList();
+                    }
+                });
+        }
+
+        // Save assignment history to localStorage
+        function saveAssignmentHistory() {
+            localStorage.setItem('binAssignmentHistory', JSON.stringify(assignmentHistory));
+        }
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
+            loadAssignmentHistory();
             updateBinCounts();
             updateSelectionCount();
             initializeFilterButtons();
@@ -799,9 +1311,12 @@
             const alertBins = document.querySelectorAll('.bin-item[data-alert="true"]').length;
             
             document.getElementById('totalBinsCount').textContent = totalBins;
+            document.getElementById('totalBinsCountFilter').textContent = totalBins;
             document.getElementById('fullBinsCount').textContent = fullBins;
+            document.getElementById('fullBinsCountFilter').textContent = fullBins;
             document.getElementById('overdueBinsCount').textContent = overdueBins;
-            document.getElementById('alertBinsCount').textContent = alertBins;
+            document.getElementById('overdueBinsCountFilter').textContent = overdueBins;
+            document.getElementById('alertBinsCountFilter').textContent = alertBins;
         }
 
         function updateSelectionCount() {
@@ -891,14 +1406,105 @@
             }, 5000);
         }
 
+        function removeAssignedBinsFromList() {
+            assignedBins.forEach(binId => {
+                const binItem = document.querySelector(`.bin-item[data-bin-id="${binId}"]`);
+                if (binItem) {
+                    binItem.remove();
+                }
+            });
+            updateBinCounts();
+        }
+
+        function displayAssignmentHistory() {
+            const tbody = document.getElementById('assignmentHistoryBody');
+            const container = document.getElementById('assignmentHistoryContainer');
+            
+            if (assignmentHistory.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            
+            tbody.innerHTML = assignmentHistory.map((assignment, index) => `
+                <tr style="transition: background 0.2s ease;">
+                    <td>
+                        <div class="collector-info">
+                            <div class="collector-avatar">
+                                ${assignment.collectorName.charAt(0)}
+                            </div>
+                            <strong>${assignment.collectorName}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="bin-locations">
+                            ${assignment.binLocations.map(loc => `
+                                <span class="location-badge">${loc}</span>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top: var(--spacing-xs); color: var(--text-secondary); font-size: 11px;">
+                            ${assignment.binIds.length} bin(s)
+                        </div>
+                    </td>
+                    <td>${assignment.assignedBy}</td>
+                    <td style="color: var(--text-secondary);">${assignment.dateTime}</td>
+                    <td>
+                        <span class="status-badge">Assigned</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function clearAssignmentHistory() {
+            if (confirm('Are you sure you want to clear all assignment history? This will make all bins available for assignment again.')) {
+                // Clear from database
+                fetch('/authority/api/assignments/clear', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Database assignments cleared:', data);
+                    
+                    // Clear local data
+                    assignmentHistory = [];
+                    assignedBins = new Set();
+                    localStorage.removeItem('binAssignmentHistory');
+                    displayAssignmentHistory();
+                    
+                    showNotification('Assignment history cleared. Page will reload.', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Failed to clear assignments from database:', error);
+                    
+                    // Clear localStorage anyway
+                    assignmentHistory = [];
+                    assignedBins = new Set();
+                    localStorage.removeItem('binAssignmentHistory');
+                    displayAssignmentHistory();
+                    
+                    showNotification('Local history cleared. Page will reload.', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                });
+            }
+        }
+
         function showRoutePreview(routeData) {
             const routePreviewSection = document.getElementById('routePreviewSection');
             const routePreview = document.getElementById('routePreview');
             
             routePreview.innerHTML = `
-                <div style="text-align: left; background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #e9ecef;">
-                    <h4 style="margin: 0 0 1rem 0; color: #2c3e50;">Route Summary</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div style="text-align: left; background: var(--background-primary); padding: var(--spacing-lg); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <h4 style="margin: 0 0 var(--spacing-md) 0; color: var(--text-primary);">Route Summary</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
                         <div>
                             <strong>Route ID:</strong> ${routeData.routeId}
                         </div>
@@ -912,8 +1518,8 @@
                             <strong>Number of Bins:</strong> ${routeData.numBins}
                         </div>
                     </div>
-                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; border-left: 4px solid #27ae60;">
-                        <strong>✅ Route optimized and dispatched successfully!</strong><br>
+                    <div style="background: rgba(52, 168, 83, 0.1); padding: var(--spacing-md); border-radius: var(--radius-sm); border-left: 4px solid var(--success-color);">
+                        <strong style="color: var(--success-color);">✅ Route optimized and dispatched successfully!</strong><br>
                         The collector has been notified and the route is now active.
                     </div>
                 </div>
@@ -968,15 +1574,84 @@
                 btnLoading.style.display = 'none';
                 
                 if (data.success) {
-                    showNotification('Route optimized and dispatched successfully!', 'success');
+                    // Get collector name
+                    const collectorSelect = document.getElementById('collectorSelect');
+                    const collectorName = collectorSelect.options[collectorSelect.selectedIndex].text;
                     
-                    // Show route preview
-                    showRoutePreview(data);
+                    // Get bin locations
+                    const binLocations = selectedBins.map(binId => {
+                        const binItem = document.querySelector(`.bin-item[data-bin-id="${binId}"]`);
+                        if (binItem) {
+                            return binItem.querySelector('.bin-location').textContent;
+                        }
+                        return `Bin #${binId}`;
+                    });
                     
-                    // Redirect to dashboard after 3 seconds
-                    setTimeout(() => {
-                        window.location.href = '/authority/dashboard';
-                    }, 3000);
+                    // Save assignment to database
+                    fetch('/authority/api/assignments/save', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            collectorId: collectorId,
+                            binIds: selectedBins,
+                            binLocations: binLocations,
+                            routeId: data.routeId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(assignmentData => {
+                        console.log('Assignment saved to database:', assignmentData);
+                        
+                        // Create assignment record for local display
+                        const assignment = {
+                            collectorId: collectorId,
+                            collectorName: collectorName,
+                            binIds: selectedBins,
+                            binLocations: binLocations,
+                            assignedBy: 'Authority User',
+                            dateTime: new Date().toLocaleString(),
+                            status: 'Assigned'
+                        };
+                        
+                        // Add to assignment history
+                        assignmentHistory.push(assignment);
+                        selectedBins.forEach(binId => assignedBins.add(binId));
+                        saveAssignmentHistory();
+                        
+                        // Remove assigned bins from the list
+                        selectedBins.forEach(binId => {
+                            const binItem = document.querySelector(`.bin-item[data-bin-id="${binId}"]`);
+                            if (binItem) {
+                                binItem.remove();
+                            }
+                        });
+                        
+                        // Update counts
+                        updateBinCounts();
+                        updateSelectionCount();
+                        
+                        // Display assignment history
+                        displayAssignmentHistory();
+                        
+                        showNotification(`Successfully assigned ${selectedBins.length} bin(s) to ${collectorName}!`, 'success');
+                        
+                        // Show route preview
+                        showRoutePreview(data);
+                        
+                        // Reset form
+                        document.getElementById('dispatchForm').reset();
+                        
+                        // Scroll to assignment history
+                        setTimeout(() => {
+                            document.getElementById('assignmentHistoryContainer').scrollIntoView({ behavior: 'smooth' });
+                        }, 500);
+                    })
+                    .catch(error => {
+                        console.error('Failed to save assignment to database:', error);
+                        showNotification('Assignment created but not saved to database', 'error');
+                    });
                 } else {
                     showNotification(data.message, 'error');
                 }

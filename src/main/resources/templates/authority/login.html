@@ -4,7 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authority Login - SmartBin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css">
     <style>
+        :root {
+            --primary-color: #ea4335;
+            --primary-dark: #c5221f;
+            --primary-light: #ff6f60;
+            --secondary-color: #fbbc04;
+            --accent-color: #34a853;
+            --surface-color: #ffffff;
+            --background-color: #f8f9fa;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+            --shadow-sm: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            --shadow-md: 0 1px 2px 0 rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.15);
+            --shadow-lg: 0 4px 8px 0 rgba(60,64,67,.3), 0 8px 12px 4px rgba(60,64,67,.15);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,28 +31,154 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            font-family: 'Roboto', 'Google Sans', sans-serif;
+            background: url('/authority.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.375rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover {
+            opacity: 0.8;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: #f8f9fa;
+            color: var(--text-primary);
+        }
+
+        .nav-links .btn-signin {
+            color: var(--text-primary);
+        }
+
+        .nav-links .btn-getstarted {
+            background: #1a73e8;
+            color: white;
+            padding: 0.625rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px 0 rgba(26,115,232,.451), 0 1px 3px 1px rgba(26,115,232,.302);
+        }
+
+        .nav-links .btn-getstarted:hover {
+            background: #0d47a1;
+            color: white;
+            box-shadow: 0 2px 4px 0 rgba(60,64,67,.4), 0 2px 6px 2px rgba(60,64,67,.2);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         .login-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: var(--surface-color);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 45% 55%;
+            animation: slideUp 0.6s ease-out;
         }
 
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Login Sidebar */
         .login-sidebar {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
             color: white;
             padding: 3rem;
             display: flex;
@@ -41,23 +186,73 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .login-sidebar .icon {
+        .login-sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .login-sidebar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/authority.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, -20px) rotate(180deg); }
+        }
+
+        .login-sidebar > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar-icon {
             font-size: 5rem;
             margin-bottom: 1.5rem;
+            animation: pulse 3s ease-in-out infinite;
+            color: white;
         }
 
-        .login-sidebar h2 {
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        .sidebar-title {
+            font-family: 'Google Sans', sans-serif;
             font-size: 2rem;
+            font-weight: 500;
             margin-bottom: 1rem;
+            line-height: 1.3;
         }
 
-        .login-sidebar p {
-            opacity: 0.9;
+        .sidebar-description {
+            font-size: 1rem;
             line-height: 1.6;
+            opacity: 0.95;
+            font-weight: 300;
         }
 
+        /* Login Form */
         .login-form {
             padding: 3rem;
             display: flex;
@@ -65,142 +260,316 @@
             justify-content: center;
         }
 
-        .login-form h3 {
-            color: #333;
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-form .subtitle {
-            color: #666;
+        .form-header {
             margin-bottom: 2rem;
         }
 
+        .form-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Form Elements */
         .form-group {
             margin-bottom: 1.5rem;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
-            color: #333;
-            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-weight: 500;
             margin-bottom: 0.5rem;
+            letter-spacing: 0.2px;
         }
 
-        .form-group input {
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+        }
+
+        .form-input {
             width: 100%;
-            padding: 0.9rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
+            padding: 0.95rem 1rem 0.95rem 3rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-primary);
+            background: #fafbff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .form-group input:focus {
+        .form-input:hover {
+            background: #fafbff;
+            border-color: var(--primary-light);
+        }
+
+        .form-input:focus {
             outline: none;
-            border-color: #4facfe;
+            background: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.1);
         }
 
-        .btn {
+        /* Button */
+        .btn-login {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            border-radius: 25px;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 600;
+            font-family: 'Google Sans', sans-serif;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin-top: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px 0 rgba(234,67,53,.4), 0 2px 6px 2px rgba(234,67,53,.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
 
-        .btn:hover {
+        .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+            box-shadow: 0 4px 8px 0 rgba(234,67,53,.5), 0 4px 12px 4px rgba(234,67,53,.3);
         }
 
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Alerts */
         .alert {
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
-            text-align: center;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #f9dedc;
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #e6f4ea;
+            color: #1e8e3e;
+            border: 1px solid #ceead6;
         }
 
-        .links {
+        /* Links */
+        .form-links {
             margin-top: 1.5rem;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .links a {
-            color: #4facfe;
+        .link-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .form-link {
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: 500;
-            margin: 0 0.5rem;
+            transition: all 0.2s;
         }
 
-        .links a:hover {
+        .form-link:hover {
+            color: var(--primary-dark);
             text-decoration: underline;
         }
 
-        @media (max-width: 768px) {
+        .link-text {
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
             .login-container {
                 grid-template-columns: 1fr;
+                max-width: 500px;
             }
 
             .login-sidebar {
-                display: none;
+                padding: 2rem;
+            }
+
+            .sidebar-icon {
+                font-size: 3.5rem;
+            }
+
+            .sidebar-title {
+                font-size: 1.5rem;
+            }
+
+            .sidebar-description {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 0.5rem;
+            }
+
+            .nav-links a {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.813rem;
+            }
+
+            .login-form {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-title {
+                font-size: 1.75rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-sidebar">
-            <div class="icon">🏛️</div>
-            <h2>Management Authority</h2>
-            <p>Monitor operations, analyze data, and manage the entire waste management system with comprehensive tools.</p>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <span class="material-icons">delete</span>
+                </div>
+                <span>SmartBin</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/#features">Features</a>
+                <a href="/#portals">Portals</a>
+                <a href="/#about">About</a>
+                <a href="/login" class="btn-signin">Sign In</a>
+                <a href="/signup" class="btn-getstarted">Get Started</a>
+            </nav>
         </div>
+    </header>
 
-        <div class="login-form">
-            <h3>Welcome Back</h3>
-            <p class="subtitle">Sign in to authority portal</p>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="login-container">
+            <!-- Sidebar -->
+            <div class="login-sidebar">
+                <span class="material-icons sidebar-icon">admin_panel_settings</span>
+                <h2 class="sidebar-title">Authority Portal</h2>
+                <p class="sidebar-description">Access your management dashboard to monitor operations, analyze data, manage users, and oversee the entire waste management system with comprehensive administrative tools.</p>
+            </div>
 
-            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
-            <form th:action="@{/authority/login}" th:object="${loginDTO}" method="post">
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" th:field="*{email}" required placeholder="Enter your email">
+            <!-- Login Form -->
+            <div class="login-form">
+                <div class="form-header">
+                    <h1 class="form-title">Welcome Back</h1>
+                    <p class="form-subtitle">Sign in to authority portal</p>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" th:field="*{password}" required placeholder="Enter your password">
+                <!-- Alerts -->
+                <div th:if="${error}" class="alert alert-error">
+                    <span class="material-icons">error_outline</span>
+                    <span th:text="${error}"></span>
+                </div>
+                <div th:if="${success}" class="alert alert-success">
+                    <span class="material-icons">check_circle_outline</span>
+                    <span th:text="${success}"></span>
                 </div>
 
-                <button type="submit" class="btn">Sign In</button>
-            </form>
+                <!-- Form -->
+                <form th:action="@{/authority/login}" th:object="${loginDTO}" method="post">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <span class="material-icons input-icon">alternate_email</span>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                class="form-input"
+                                th:field="*{email}" 
+                                required 
+                                placeholder="Enter your email address"
+                                autocomplete="email">
+                        </div>
+                    </div>
 
-            <div class="links">
-                <a href="/signup">Create Account</a> | 
-                <a href="/home">Back to Home</a>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="material-icons input-icon">lock_outline</span>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                class="form-input"
+                                th:field="*{password}" 
+                                required 
+                                placeholder="Enter your password"
+                                autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        <span class="material-icons">login</span>
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Links -->
+                <div class="form-links">
+                    <div class="link-row">
+                        <span class="link-text">Don't have an account?</span>
+                        <a href="/signup" class="form-link">Create Account</a>
+                    </div>
+                    <div class="link-row">
+                        <a href="#" class="form-link">Forgot Password?</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-

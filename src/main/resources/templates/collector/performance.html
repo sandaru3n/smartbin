@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Dashboard - SmartBin Collector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #fafafa;
+            color: #202124;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: #fff;
+            color: #202124;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            border-bottom: 1px solid #dadce0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 24px;
+            min-height: 64px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #5f6368;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #f1f3f4;
+            color: #202124;
+            text-decoration: none;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 400;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 24px;
+        }
+
+        .performance-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .performance-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .performance-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,.15);
+            transform: translateY(-1px);
+        }
+
+        .performance-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+        }
+
+        .performance-icon.collections {
+            background: #e6f4ea;
+            color: #34a853;
+        }
+
+        .performance-icon.efficiency {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .performance-icon.routes {
+            background: #fef7e0;
+            color: #ea8600;
+        }
+
+        .performance-icon.rating {
+            background: #fce8e6;
+            color: #ea4335;
+        }
+
+        .performance-number {
+            font-size: 48px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 0.5rem;
+        }
+
+        .performance-label {
+            color: #5f6368;
+            font-weight: 400;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .performance-change {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .performance-change.positive {
+            color: #34a853;
+        }
+
+        .performance-change.negative {
+            color: #ea4335;
+        }
+
+        .performance-change.neutral {
+            color: #5f6368;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .detailed-stats {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+            border: 1px solid #dadce0;
+            margin-bottom: 24px;
+        }
+
+        .stats-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-group {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .stat-group-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-item-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-item-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .achievements-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .achievements-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .achievement-item.unlocked {
+            background: #f8fff8;
+            border-color: #28a745;
+        }
+
+        .achievement-item.locked {
+            background: #f8f9fa;
+            opacity: 0.6;
+        }
+
+        .achievement-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .achievement-icon.unlocked {
+            background: #28a745;
+            color: white;
+        }
+
+        .achievement-icon.locked {
+            background: #6c757d;
+            color: white;
+        }
+
+        .achievement-info h4 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .achievement-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .export-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .export-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .performance-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/collector/dashboard" class="back-btn">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1 class="header-title">
+                    <span class="material-icons">assessment</span>
+                    Performance Dashboard
+                </h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 class="page-title">Your Performance Overview</h2>
+
+        <!-- Performance Summary -->
+        <div class="performance-summary">
+            <div class="performance-card collections">
+                <div class="performance-icon collections">
+                    <span class="material-icons">delete</span>
+                </div>
+                <div class="performance-number" th:text="${totalCollections}">342</div>
+                <div class="performance-label">Total Collections</div>
+                <div class="performance-change positive">
+                    <span class="material-icons" style="font-size: 12px;">arrow_upward</span>
+                    +12% this month
+                </div>
+            </div>
+
+            <div class="performance-card efficiency">
+                <div class="performance-icon efficiency">
+                    <span class="material-icons">speed</span>
+                </div>
+                <div class="performance-number">94%</div>
+                <div class="performance-label">Efficiency Rate</div>
+                <div class="performance-change positive">
+                    <span class="material-icons" style="font-size: 12px;">arrow_upward</span>
+                    +3% this week
+                </div>
+            </div>
+
+            <div class="performance-card routes">
+                <div class="performance-icon routes">
+                    <span class="material-icons">route</span>
+                </div>
+                <div class="performance-number" th:text="${completedRoutes}">28</div>
+                <div class="performance-label">Completed Routes</div>
+                <div class="performance-change positive">
+                    <span class="material-icons" style="font-size: 12px;">arrow_upward</span>
+                    +5 this month
+                </div>
+            </div>
+
+            <div class="performance-card rating">
+                <div class="performance-icon rating">
+                    <span class="material-icons">star</span>
+                </div>
+                <div class="performance-number">4.8</div>
+                <div class="performance-label">Performance Rating</div>
+                <div class="performance-change neutral">
+                    <span class="material-icons" style="font-size: 12px;">remove</span>
+                    No change
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <h3 class="chart-title">Weekly Collection Trend</h3>
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">Waste Type Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="wasteTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Statistics -->
+        <div class="detailed-stats">
+            <h2 class="stats-title">
+                <span class="material-icons">bar_chart</span>
+                Detailed Statistics
+            </h2>
+            
+            <div class="stats-grid">
+                <div class="stat-group">
+                    <h3 class="stat-group-title">
+                        <span class="material-icons">today</span>
+                        Today's Performance
+                    </h3>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Collections Completed</span>
+                        <span class="stat-item-value">12</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Distance Covered</span>
+                        <span class="stat-item-value">45.2 km</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Time Worked</span>
+                        <span class="stat-item-value">6h 30m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Average Time per Bin</span>
+                        <span class="stat-item-value">3.75 min</span>
+                    </div>
+                </div>
+
+                <div class="stat-group">
+                    <h3 class="stat-group-title">
+                        <span class="material-icons">date_range</span>
+                        This Week's Summary
+                    </h3>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Total Collections</span>
+                        <span class="stat-item-value">68</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Routes Completed</span>
+                        <span class="stat-item-value">5</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Total Distance</span>
+                        <span class="stat-item-value">312.8 km</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Total Time</span>
+                        <span class="stat-item-value">42h 15m</span>
+                    </div>
+                </div>
+
+                <div class="stat-group">
+                    <h3 class="stat-group-title">
+                        <span class="material-icons">event</span>
+                        Monthly Overview
+                    </h3>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Collections This Month</span>
+                        <span class="stat-item-value">298</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Routes This Month</span>
+                        <span class="stat-item-value">22</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Efficiency Score</span>
+                        <span class="stat-item-value">94.2%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">On-Time Rate</span>
+                        <span class="stat-item-value">96.8%</span>
+                    </div>
+                </div>
+
+                <div class="stat-group">
+                    <h3 class="stat-group-title">
+                        <span class="material-icons">emoji_events</span>
+                        Performance Metrics
+                    </h3>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Quality Score</span>
+                        <span class="stat-item-value">4.8/5.0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Customer Rating</span>
+                        <span class="stat-item-value">4.7/5.0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Safety Record</span>
+                        <span class="stat-item-value">100%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-item-label">Compliance Rate</span>
+                        <span class="stat-item-value">98.5%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="achievements-section">
+            <h2 class="achievements-title">
+                <span class="material-icons">emoji_events</span>
+                Achievements & Badges
+            </h2>
+            
+            <div class="achievements-grid">
+                <div class="achievement-item unlocked">
+                    <div class="achievement-icon unlocked">
+                        <span class="material-icons">military_tech</span>
+                    </div>
+                    <div class="achievement-info">
+                        <h4>First Collection</h4>
+                        <p>Completed your first waste collection</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item unlocked">
+                    <div class="achievement-icon unlocked">
+                        <span class="material-icons">local_fire_department</span>
+                    </div>
+                    <div class="achievement-info">
+                        <h4>Hot Streak</h4>
+                        <p>5 consecutive days of perfect collections</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item unlocked">
+                    <div class="achievement-icon unlocked">
+                        <span class="material-icons">route</span>
+                    </div>
+                    <div class="achievement-info">
+                        <h4>Route Master</h4>
+                        <p>Completed 25 routes successfully</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item locked">
+                    <div class="achievement-icon locked">
+                        <span class="material-icons">workspace_premium</span>
+                    </div>
+                    <div class="achievement-info">
+                        <h4>Collection King</h4>
+                        <p>Complete 500 collections (298/500)</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item locked">
+                    <div class="achievement-icon locked">
+                        <span class="material-icons">schedule</span>
+                    </div>
+                    <div class="achievement-info">
+                        <h4>Speed Demon</h4>
+                        <p>Average less than 3 minutes per bin (3.75 min)</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item locked">
+                    <div class="achievement-icon locked">
+                        <span class="material-icons">star</span>
+                    </div>
+                    <div class="achievement-info">
+                        <h4>Perfect Score</h4>
+                        <p>Maintain 5.0 rating for 30 days</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <h3 class="export-title">Export Performance Report</h3>
+            <div class="export-buttons">
+                <button class="btn btn-primary" onclick="exportPerformanceReport()">
+                    <span class="material-icons">picture_as_pdf</span>
+                    Generate Performance Report
+                </button>
+                <button class="btn btn-secondary" onclick="exportDetailedStats()">
+                    <span class="material-icons">table_chart</span>
+                    Export Detailed Statistics
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Weekly Collection Trend Chart
+        const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+        new Chart(weeklyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Collections',
+                    data: [12, 15, 18, 14, 16, 10, 8],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Waste Type Distribution Chart
+        const wasteTypeCtx = document.getElementById('wasteTypeChart').getContext('2d');
+        new Chart(wasteTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['General', 'Recyclable', 'Organic', 'Hazardous'],
+                datasets: [{
+                    data: [45, 30, 20, 5],
+                    backgroundColor: [
+                        '#6c757d',
+                        '#17a2b8',
+                        '#28a745',
+                        '#dc3545'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function exportPerformanceReport() {
+            alert('Performance report would be generated and downloaded as PDF here.');
+        }
+
+        function exportDetailedStats() {
+            alert('Detailed statistics would be exported to Excel here.');
+        }
+
+        // Auto-refresh performance data every 5 minutes
+        setInterval(function() {
+            console.log('Refreshing performance data...');
+            // In a real app, this would fetch updated performance data
+        }, 300000);
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Performance dashboard loaded');
+        });
+    </script>
+</body>
+</html>

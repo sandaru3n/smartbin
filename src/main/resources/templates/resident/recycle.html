@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Recycling - SmartBin</title>
+    
+    <!-- Google Fonts & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #202124;
+        }
+
+        .navbar {
+            background: white;
+            color: #202124;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.375rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #202124;
+        }
+
+        .logo .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .back-link {
+            color: #5f6368;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #dadce0;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .back-link .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .page-header h1 {
+            color: #202124;
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: #5f6368;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-left: 56px;
+        }
+
+        .recycle-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: #5f6368;
+        }
+
+        .form-group small {
+            color: #5f6368;
+            font-size: 0.75rem;
+            display: block;
+            margin-top: 0.375rem;
+            font-weight: 400;
+        }
+
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #34a853;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #c8e6c9;
+        }
+
+        .info-box h3 {
+            color: #1b5e20;
+            font-size: 0.9375rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-box h3 .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .info-box p {
+            color: #2e7d32;
+            margin-bottom: 0.375rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .info-box p strong {
+            font-weight: 700;
+            min-width: 100px;
+            display: inline-block;
+        }
+
+        .preview-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid #81c784;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.15);
+        }
+
+        .preview-box .label {
+            color: #2e7d32;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-box .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1b5e20;
+            margin: 0.5rem 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .preview-box .sub-value {
+            color: #1b5e20;
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            background: #34a853;
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #2d9348;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn .material-icons {
+            font-size: 1.25rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .navbar {
+                padding: 0.875rem 1rem;
+            }
+
+            .recycle-card {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .page-header p {
+                margin-left: 0;
+                font-size: 0.8125rem;
+            }
+
+            .preview-box .value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin - Resident Portal
+            </div>
+            <div class="user-info">
+                <span th:text="${user.name}">User</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <a href="/resident/recycling-units" class="back-link">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1>Submit Recycling</h1>
+            </div>
+            <p>Record your recycling contribution and earn points</p>
+        </div>
+
+        <div class="recycle-card">
+            <div class="info-box">
+                <h3>
+                    <span class="material-icons">info</span>
+                    Recycling Rates
+                </h3>
+                <p><strong>Electronics:</strong> 50 points/kg (LKR 200/kg)</p>
+                <p><strong>Metal:</strong> 20 points/kg (LKR 100/kg)</p>
+                <p><strong>Glass:</strong> 15 points/kg (LKR 40/kg)</p>
+                <p><strong>Plastic:</strong> 10 points/kg (LKR 50/kg)</p>
+                <p><strong>Cardboard:</strong> 7 points/kg (LKR 35/kg)</p>
+                <p><strong>Paper:</strong> 5 points/kg (LKR 30/kg)</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;"><em>Bonus: +10% points for bulk recycling (10+ items)</em></p>
+            </div>
+
+            <form action="/resident/submit-recycling" method="post" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="unitQrCode">Recycling Unit QR Code *</label>
+                    <input type="text" id="unitQrCode" name="unitQrCode" 
+                           th:value="${unitQrCode}" 
+                           pattern="RU\d{3,4}"
+                           required 
+                           placeholder="e.g., RU001">
+                    <small>Format: RU + numbers (e.g., RU001, RU1234)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemType">Item Type *</label>
+                    <select id="itemType" name="itemType" required onchange="updatePreview()">
+                        <option value="">-- Select Item Type --</option>
+                        <option value="plastic">Plastic</option>
+                        <option value="paper">Paper</option>
+                        <option value="metal">Metal</option>
+                        <option value="glass">Glass</option>
+                        <option value="cardboard">Cardboard</option>
+                        <option value="electronics">Electronics</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">Weight (kg) *</label>
+                    <input type="number" id="weight" name="weight" 
+                           step="0.01" min="0.01" max="1000" 
+                           required 
+                           placeholder="0.00"
+                           oninput="updatePreview()">
+                    <small>Enter the weight in kilograms (e.g., 2.5 for 2.5 kg)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Quantity (Optional)</label>
+                    <input type="number" id="quantity" name="quantity" 
+                           min="1" max="10000" 
+                           placeholder="Number of items"
+                           oninput="updatePreview()">
+                    <small>Enter the number of items (for bonus points on bulk recycling)</small>
+                </div>
+
+                <div class="preview-box" id="previewBox" style="display: none;">
+                    <div class="label">Estimated Earnings</div>
+                    <div class="value" id="previewPoints">0</div>
+                    <div class="label">Points</div>
+                    <div class="sub-value" id="previewPrice">LKR 0.00</div>
+                </div>
+
+                <button type="submit" class="btn">
+                    <span class="material-icons">check_circle</span>
+                    Confirm & Submit Recycling
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const rates = {
+            'plastic': { points: 10, price: 50 },
+            'paper': { points: 5, price: 30 },
+            'metal': { points: 20, price: 100 },
+            'glass': { points: 15, price: 40 },
+            'cardboard': { points: 7, price: 35 },
+            'electronics': { points: 50, price: 200 }
+        };
+
+        function updatePreview() {
+            const itemType = document.getElementById('itemType').value;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const quantity = parseInt(document.getElementById('quantity').value) || 0;
+            
+            if (itemType && weight > 0) {
+                const rate = rates[itemType];
+                let points = weight * rate.points;
+                let price = weight * rate.price;
+                
+                // Bonus for bulk
+                if (quantity > 10) {
+                    points *= 1.1;
+                }
+                
+                points = Math.round(points * 100) / 100;
+                price = Math.round(price * 100) / 100;
+                
+                document.getElementById('previewPoints').textContent = points.toFixed(2);
+                document.getElementById('previewPrice').textContent = 'LKR ' + price.toFixed(2);
+                document.getElementById('previewBox').style.display = 'block';
+            } else {
+                document.getElementById('previewBox').style.display = 'none';
+            }
+        }
+
+        function validateForm() {
+            const unitQrCode = document.getElementById('unitQrCode').value;
+            if (!unitQrCode.match(/^RU\d{3,4}$/)) {
+                alert('Invalid QR code format. Must be RU followed by 3-4 digits (e.g., RU001)');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
+

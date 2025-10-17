@@ -38,6 +38,9 @@ public class User {
     
     private String region;
     
+    @Column(name = "recycling_points")
+    private Double recyclingPoints = 0.0;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     

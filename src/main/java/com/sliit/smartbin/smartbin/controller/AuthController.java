@@ -39,21 +39,18 @@ public class AuthController {
             userService.registerUser(userDTO);
             redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
             
-            // Redirect to appropriate login page based on role
-            switch (userDTO.getRole()) {
-                case RESIDENT:
-                    return "redirect:/resident/login";
-                case COLLECTOR:
-                    return "redirect:/collector/login";
-                case AUTHORITY:
-                    return "redirect:/authority/login";
-                default:
-                    return "redirect:/home";
-            }
+            // Redirect to unified login page
+            return "redirect:/login";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Registration failed: " + e.getMessage());
             return "redirect:/signup";
         }
+    }
+
+    // Unified Login Page
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
     }
 
     // Resident Login

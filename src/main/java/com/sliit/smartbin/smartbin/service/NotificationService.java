@@ -1,6 +1,7 @@
 package com.sliit.smartbin.smartbin.service;
 
 import com.sliit.smartbin.smartbin.model.Bin;
+import com.sliit.smartbin.smartbin.model.BulkRequest;
 import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.User;
 
@@ -55,4 +56,32 @@ public interface NotificationService {
      * @param recipients List of recipient users
      */
     void sendSystemNotification(String message, List<User> recipients);
+    
+    /**
+     * Notify user about bulk request status
+     * @param user User to notify
+     * @param statusMessage Status message
+     * @param bulkRequest Related bulk request
+     */
+    void notifyUserBulkRequest(User user, String statusMessage, BulkRequest bulkRequest);
+    
+    /**
+     * Notify authority about bulk request payment
+     * @param bulkRequest Bulk request with payment info
+     */
+    void notifyAuthorityBulkPayment(BulkRequest bulkRequest);
+    
+    /**
+     * Send pickup schedule notification to user
+     * @param user User to notify
+     * @param bulkRequest Bulk request with schedule
+     */
+    void sendPickupScheduleNotification(User user, BulkRequest bulkRequest);
+    
+    /**
+     * Notify collector about bulk request assignment
+     * @param collector Collector assigned
+     * @param bulkRequest Bulk request assigned
+     */
+    void notifyCollectorBulkAssignment(User collector, BulkRequest bulkRequest);
 }
