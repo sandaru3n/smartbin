@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - SmartBin Authority</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
+            color: #202124;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Top Navigation Bar */
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            margin: 0;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-title {
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #5f6368;
+        }
+
+        .notification-icon {
+            font-size: 1.125rem;
+            color: #5f6368;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .notification-icon:hover {
+            background: rgba(95, 99, 104, 0.1);
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #34a853);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e8eaed;
+        }
+
+        .dropdown-header h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-header p {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #202124;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fce8e6;
+            color: #d33b2c;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            color: #202124;
+            margin: 0;
+        }
+
+        .page-title .material-icons {
+            font-size: 2rem;
+            color: #1a73e8;
+        }
+
+        .page-subtitle {
+            color: #5f6368;
+            font-size: 1rem;
+            margin-left: 3rem;
+        }
+
+        /* Profile Content */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8eaed;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #34a853);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #202124;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-role {
+            color: #5f6368;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 1rem;
+            background: #f8f9fa;
+            border-radius: 20px;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .profile-info {
+            list-style: none;
+            padding: 0;
+        }
+
+        .profile-info li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .profile-info li:last-child {
+            border-bottom: none;
+        }
+
+        .profile-info .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .profile-info span {
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8eaed;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a73e8;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Edit Profile Form */
+        .edit-profile-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8eaed;
+        }
+
+        .form-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #202124;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 4px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f3f4;
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            color: #137333;
+            border: 1px solid #34a853;
+        }
+
+        .alert-error {
+            background: #fce8e6;
+            color: #d33b2c;
+            border: 1px solid #ea4335;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .profile-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .page-subtitle {
+                margin-left: 0;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-card, .edit-profile-form, .stat-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <header class="header">
+        <div class="header-inner">
+            <h1 class="nav-title">My Profile</h1>
+            
+            <nav class="nav-links">
+                <a href="/authority/dashboard" class="nav-link">
+                    <span class="material-icons">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="/authority/manage-collectors" class="nav-link">
+                    <span class="material-icons">people</span>
+                    Manage Collectors
+                </a>
+                <a href="/authority/dispatch" class="nav-link">
+                    <span class="material-icons">local_shipping</span>
+                    Dispatch
+                </a>
+                <a href="/authority/reports" class="nav-link">
+                    <span class="material-icons">assessment</span>
+                    Reports
+                </a>
+                <a href="/authority/bulk-requests" class="nav-link">
+                    <span class="material-icons">delete_sweep</span>
+                    Bulk Requests
+                </a>
+            </nav>
+
+            <div class="user-info">
+                <span class="material-icons notification-icon">notifications</span>
+                <span th:text="${user.name}">Waste Manager</span>
+                
+                <div class="user-dropdown">
+                    <div class="user-avatar" onclick="toggleDropdown()">
+                        <span th:text="${user.name.substring(0,1)}">W</span>
+                    </div>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-header">
+                            <h3 th:text="${user.name}">Waste Manager</h3>
+                            <p th:text="${user.email}">waste@gmail.com</p>
+                        </div>
+                        <hr style="margin: 0; border: none; border-top: 1px solid #e8eaed;">
+                        <a href="/authority/dashboard" class="dropdown-item">
+                            <span class="material-icons">home</span>
+                            Dashboard
+                        </a>
+                        <a href="/authority/profile" class="dropdown-item">
+                            <span class="material-icons">person</span>
+                            My Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <span class="material-icons">settings</span>
+                            Settings
+                        </a>
+                        <a href="/logout" class="dropdown-item logout">
+                            <span class="material-icons">logout</span>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <span class="material-icons">person</span>
+                <h1>My Profile</h1>
+            </div>
+            <p class="page-subtitle">Manage your account information and view your activity statistics</p>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span class="material-icons">check_circle</span>
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <span class="material-icons">error</span>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${profileStats.totalRoutesManaged}">0</div>
+                <div class="stat-label">Total Routes Managed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${profileStats.activeRoutes}">0</div>
+                <div class="stat-label">Active Routes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${profileStats.recentCompletedRoutes}">0</div>
+                <div class="stat-label">Recently Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${profileStats.bulkRequestsManaged}">0</div>
+                <div class="stat-label">Bulk Requests Managed</div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-container">
+            <!-- Profile Information Card -->
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <span th:text="${user.name.substring(0,1)}">W</span>
+                </div>
+                <h2 class="profile-name" th:text="${user.name}">Waste Manager</h2>
+                <div class="profile-role">Waste Management Authority</div>
+                
+                <ul class="profile-info">
+                    <li>
+                        <span class="material-icons">email</span>
+                        <span th:text="${user.email}">waste@gmail.com</span>
+                    </li>
+                    <li>
+                        <span class="material-icons">phone</span>
+                        <span th:text="${user.phone ?: 'Not provided'}">Not provided</span>
+                    </li>
+                    <li>
+                        <span class="material-icons">location_on</span>
+                        <span th:text="${user.region ?: 'Not specified'}">Not specified</span>
+                    </li>
+                    <li>
+                        <span class="material-icons">badge</span>
+                        <span th:text="${user.role}">AUTHORITY</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Edit Profile Form -->
+            <div class="edit-profile-form">
+                <h2 class="form-title">
+                    <span class="material-icons">edit</span>
+                    Edit Profile Information
+                </h2>
+
+                <form th:action="@{/authority/profile}" method="post">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-input" 
+                               th:value="${user.name}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" 
+                               th:value="${user.email}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" 
+                               th:value="${user.phone ?: ''}" placeholder="Enter phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="region" class="form-label">Region/Area</label>
+                        <input type="text" id="region" name="region" class="form-input" 
+                               th:value="${user.region ?: ''}" placeholder="Enter your region">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <span class="material-icons">refresh</span>
+                            Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">save</span>
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Dropdown toggle functionality
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userDropdown = event.target.closest('.user-dropdown');
+            
+            if (!userDropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Reset form to original values
+        function resetForm() {
+            const form = document.querySelector('form');
+            form.reset();
+        }
+
+        // Auto-hide success/error messages after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            if (!name || !email) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                alert('Please enter a valid email address.');
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

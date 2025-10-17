@@ -1354,5 +1354,93 @@ public class AuthorityController {
         
         return "redirect:/authority/bulk-requests";
     }
+
+    /**
+     * SRP: This method has ONE job - display authority profile page
+     * 
+     * Display authority user profile
+     */
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, Model model) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        model.addAttribute("user", user);
+        
+        // Get user statistics for profile display
+        Map<String, Object> profileStats = new HashMap<>();
+        
+        // Get routes managed by this authority
+        List<Route> managedRoutes = routeService.findRoutesByAuthority(user);
+        profileStats.put("totalRoutesManaged", managedRoutes.size());
+        
+        // Get active routes
+        long activeRoutes = managedRoutes.stream()
+            .filter(route -> route.getStatus() == Route.RouteStatus.IN_PROGRESS || 
+                           route.getStatus() == Route.RouteStatus.ASSIGNED)
+            .count();
+        profileStats.put("activeRoutes", activeRoutes);
+        
+        // Get completed routes (last 30 days)
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+        long recentCompletedRoutes = managedRoutes.stream()
+            .filter(route -> route.getStatus() == Route.RouteStatus.COMPLETED &&
+                           route.getCompletedDate() != null &&
+                           route.getCompletedDate().toLocalDate().isAfter(thirtyDaysAgo))
+            .count();
+        profileStats.put("recentCompletedRoutes", recentCompletedRoutes);
+        
+        // Get bulk requests managed
+        List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(30);
+        profileStats.put("bulkRequestsManaged", bulkRequests.size());
+        
+        model.addAttribute("profileStats", profileStats);
+        
+        return "authority/profile";
+    }
+
+    /**
+     * SRP: This method only handles profile update HTTP request
+     * 
+     * Update authority user profile
+     */
+    @PostMapping("/profile")
+    public String updateProfile(@RequestParam String name,
+                               @RequestParam String email,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) String region,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // Update user information
+            user.setName(name);
+            user.setEmail(email);
+            if (phone != null && !phone.isEmpty()) {
+                user.setPhone(phone);
+            }
+            if (region != null && !region.isEmpty()) {
+                user.setRegion(region);
+            }
+            
+            User updatedUser = userService.updateUser(user);
+            session.setAttribute("user", updatedUser);
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Profile updated successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to update profile: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/profile";
+    }
 }
 
