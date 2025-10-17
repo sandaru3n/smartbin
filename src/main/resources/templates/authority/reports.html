@@ -8,6 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -26,7 +28,8 @@
             line-height: 1.5;
         }
 
-        .header {
+        /* Top Navigation Bar */
+        .top-nav {
             background: white;
             padding: 1rem 1.5rem;
             box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
@@ -37,24 +40,44 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            margin-bottom: 1.5rem;
         }
 
-        .back-btn {
+        .nav-title {
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #5f6368;
-            text-decoration: none;
-            font-weight: 400;
-            font-size: 0.875rem;
-            padding: 0.5rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
         }
 
-        .back-btn:hover {
+        .nav-link:hover {
             color: #1a73e8;
             background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
         }
 
         .user-info {
@@ -64,8 +87,22 @@
             color: #5f6368;
         }
 
+        .notification-icon {
+            font-size: 1.125rem;
+            color: #5f6368;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .notification-icon:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
         .user-name {
-            font-weight: 400;
+            font-weight: 500;
             color: #202124;
             font-size: 0.875rem;
         }
@@ -73,13 +110,13 @@
         .user-icon {
             width: 32px;
             height: 32px;
-            background: #1a73e8;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.875rem;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -455,6 +492,22 @@
         }
 
         @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
             .main-container {
                 padding: 1rem;
             }
@@ -480,16 +533,38 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <a href="/authority/dashboard" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+    
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <h1 class="nav-title">Reports & Analytics</h1>
+        <div class="nav-links">
+            <a href="/authority/dashboard" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                Dashboard
+            </a>
+            <a href="/authority/manage-collectors" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">group</span>
+                Manage Collectors
+            </a>
+            <a href="/authority/dispatch" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">local_shipping</span>
+                Dispatch
+            </a>
+            <a href="/authority/reports" class="nav-link active">
+                <span class="material-icons" style="font-size: 18px;">assessment</span>
+                Reports
+            </a>
+            <a href="/authority/bulk-requests" class="nav-link">
+                <span class="material-icons" style="font-size: 18px;">inventory</span>
+                Bulk Requests
+            </a>
+        </div>
         <div class="user-info">
-            <span class="user-name" th:text="${user.name}">Authority User</span>
-            <div class="user-icon">
-                <i class="fas fa-user"></i>
+            <div class="notification-icon">
+                <span class="material-icons">notifications</span>
             </div>
+            <span class="user-name" th:text="${user.name}">Authority User</span>
+            <div class="user-icon">A</div>
         </div>
     </div>
 
