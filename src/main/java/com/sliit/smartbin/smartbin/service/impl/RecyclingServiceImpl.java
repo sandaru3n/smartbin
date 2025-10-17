@@ -14,16 +14,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of RecyclingService
- * Following Dependency Inversion Principle - depends on repository abstractions
+ * SOLID PRINCIPLES APPLIED IN RECYCLING SERVICE IMPLEMENTATION
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This class ONLY handles recycling transaction processing logic.
+ *     It doesn't manage bins, routes, or user authentication.
+ * 
+ * O - Open/Closed Principle (OCP):
+ *     Open for extension (new item types can be added to RECYCLING_RATES map)
+ *     Closed for modification (core logic doesn't change when adding new items).
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Depends on Repository interfaces, not concrete database implementations.
+ *     If we switch from JPA to MongoDB, only repository implementation changes.
  */
 @Service
 public class RecyclingServiceImpl implements RecyclingService {
     
+    // DIP: Depend on Repository abstractions, not concrete database access
     private final RecyclingTransactionRepository recyclingTransactionRepository;
     private final UserRepository userRepository;
     
-    // Mock data for recycling rates (points per kg)
+    // OCP: New item types can be added here without modifying existing code
     private static final Map<String, Double> RECYCLING_RATES = new HashMap<>();
     private static final Map<String, Double> PRICE_RATES = new HashMap<>();
     
@@ -45,18 +57,20 @@ public class RecyclingServiceImpl implements RecyclingService {
         PRICE_RATES.put("electronics", 200.0);
     }
     
+    // DIP: Constructor injection of repository dependencies
     public RecyclingServiceImpl(RecyclingTransactionRepository recyclingTransactionRepository,
                                 UserRepository userRepository) {
         this.recyclingTransactionRepository = recyclingTransactionRepository;
         this.userRepository = userRepository;
     }
     
+    // SRP: This method only processes transactions, doesn't handle HTTP or UI concerns
     @Override
     @Transactional
     public RecyclingTransaction processRecyclingTransaction(User user, String recyclingUnitQrCode,
                                                             String itemType, Double weight, Integer quantity) {
         try {
-            // Calculate points and price
+            // SRP: Calculation logic delegated to separate methods
             Double points = calculatePoints(itemType, weight, quantity);
             Double price = calculatePrice(itemType, weight);
             

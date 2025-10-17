@@ -14,6 +14,7 @@ import com.sliit.smartbin.smartbin.repository.RouteRepository;
 import com.sliit.smartbin.smartbin.repository.UserRepository;
 import com.sliit.smartbin.smartbin.repository.WasteDisposalRepository;
 import com.sliit.smartbin.smartbin.repository.BinAssignmentRepository;
+import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     private final WasteDisposalRepository wasteDisposalRepository;
     private final BinAssignmentRepository binAssignmentRepository;
     private final BulkRequestRepository bulkRequestRepository;
+    private final RegionAssignmentRepository regionAssignmentRepository;
 
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -46,7 +48,8 @@ public class DataInitializer implements CommandLineRunner {
                            RecyclingTransactionRepository recyclingTransactionRepository,
                            WasteDisposalRepository wasteDisposalRepository,
                            BinAssignmentRepository binAssignmentRepository,
-                           BulkRequestRepository bulkRequestRepository) {
+                           BulkRequestRepository bulkRequestRepository,
+                           RegionAssignmentRepository regionAssignmentRepository) {
 
         this.userRepository = userRepository;
         this.binRepository = binRepository;
@@ -57,6 +60,7 @@ public class DataInitializer implements CommandLineRunner {
         this.wasteDisposalRepository = wasteDisposalRepository;
         this.binAssignmentRepository = binAssignmentRepository;
         this.bulkRequestRepository = bulkRequestRepository;
+        this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
     @Override
@@ -66,6 +70,7 @@ public class DataInitializer implements CommandLineRunner {
         // Clear existing data to ensure fresh start
         System.out.println("Clearing existing data...");
         binAssignmentRepository.deleteAll(); // Delete bin assignments first (has FK to users)
+        regionAssignmentRepository.deleteAll(); // Delete region assignments (has FK to users)
         routeBinRepository.deleteAll();
         collectionRepository.deleteAll();
         routeRepository.deleteAll();
@@ -278,6 +283,12 @@ public class DataInitializer implements CommandLineRunner {
     
     private void createBin(String qrCode, String location, Double latitude, Double longitude, 
                           Bin.BinType binType, Bin.BinStatus status, Integer fillLevel, int hoursAgo) {
+        // Check if bin with this QR code already exists
+        if (binRepository.findByQrCode(qrCode).isPresent()) {
+            System.out.println("⚠ Skipped bin: " + qrCode + " already exists");
+            return;
+        }
+        
         Bin bin = new Bin();
         bin.setQrCode(qrCode);
         bin.setLocation(location);

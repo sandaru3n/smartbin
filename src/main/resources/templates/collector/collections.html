@@ -20,36 +20,99 @@
             line-height: 1.5;
         }
 
+        /* Header Section - Google Material Design */
         .header {
             background: #fff;
             color: #202124;
-            padding: 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            padding: 0 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             border-bottom: 1px solid #dadce0;
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
         }
 
         .header-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 24px;
+            padding: 1rem 0;
             min-height: 64px;
+            gap: 1.5rem;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 2rem;
+            flex: 1;
         }
 
-        .back-btn {
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5f6368;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #5f6368;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+        }
+
+        .header-btn {
             background: none;
-            border: none;
+            border: 1px solid #dadce0;
             color: #5f6368;
             width: 40px;
             height: 40px;
@@ -58,23 +121,138 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
-            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
-        .back-btn:hover {
-            background: #f1f3f4;
-            color: #202124;
-            text-decoration: none;
+        .header-btn:hover {
+            border-color: #5f6368;
         }
 
-        .header-title {
-            font-size: 22px;
-            font-weight: 400;
-            color: #202124;
+        .header-btn .material-icons {
+            font-size: 1.375rem;
+            color: #5f6368;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ea4335;
+            color: white;
+            border-radius: 10px;
+            min-width: 18px;
+            height: 18px;
+            font-size: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .profile-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #202124;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+        }
+
+        .dropdown-item.logout .material-icons {
+            color: #ea4335;
         }
 
         .container {
@@ -98,115 +276,158 @@
         }
 
         .stat-card {
-            background: #fff;
-            border-radius: 8px;
+            background: white;
+            border-radius: 12px;
             padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            border: 1px solid #dadce0;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
             text-align: center;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
 
         .stat-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,.15);
-            transform: translateY(-1px);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
         }
 
         .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 16px;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .stat-icon.today {
-            background: #e6f4ea;
-            color: #34a853;
+            background: linear-gradient(135deg, #34a853, #2e7d32);
         }
 
         .stat-icon.week {
-            background: #e8f0fe;
-            color: #1a73e8;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
         }
 
         .stat-icon.month {
-            background: #fef7e0;
-            color: #ea8600;
+            background: linear-gradient(135deg, #fbbc04, #f57c00);
         }
 
         .stat-icon.total {
-            background: #fce8e6;
-            color: #ea4335;
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        }
+
+        .stat-icon .material-icons {
+            font-size: 32px;
         }
 
         .stat-number {
-            font-size: 48px;
-            font-weight: 400;
-            color: #202124;
+            font-size: 36px;
+            font-weight: 600;
             margin-bottom: 8px;
             line-height: 1;
         }
 
+        .stat-card:nth-child(1) .stat-number {
+            background: linear-gradient(135deg, #34a853, #2e7d32);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card:nth-child(2) .stat-number {
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card:nth-child(3) .stat-number {
+            background: linear-gradient(135deg, #fbbc04, #f57c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card:nth-child(4) .stat-number {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .stat-label {
             color: #5f6368;
-            font-weight: 400;
-            font-size: 14px;
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .filter-section {
-            background: #fff;
-            border-radius: 8px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            border: 1px solid #dadce0;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
             margin-bottom: 24px;
         }
 
         .filter-title {
-            font-size: 16px;
-            font-weight: 400;
+            font-size: 18px;
+            font-weight: 500;
             color: #202124;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .filter-options {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .filter-btn {
-            padding: 6px 16px;
-            border: 1px solid #dadce0;
-            border-radius: 16px;
-            background: #fff;
+            padding: 10px 20px;
+            border: 2px solid #dadce0;
+            border-radius: 24px;
+            background: white;
             color: #5f6368;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3);
         }
 
         .filter-btn.active {
-            border-color: #1a73e8;
-            background: #e8f0fe;
-            color: #1a73e8;
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 6px -1px rgba(26,115,232,.4), 0 2px 4px -1px rgba(26,115,232,.3);
         }
 
-        .filter-btn:hover {
+        .filter-btn:hover:not(.active) {
             border-color: #1a73e8;
-            background: #f8f9fa;
+            background: rgba(26, 115, 232, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.active:hover {
+            background: linear-gradient(135deg, #1557b0, #1a73e8);
+            transform: translateY(-1px);
         }
 
         .collections-section {
-            background: #fff;
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-            border: 1px solid #dadce0;
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            border: none;
             margin-bottom: 24px;
         }
 
@@ -226,16 +447,18 @@
         }
 
         .collection-item {
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            padding: 16px;
-            transition: all 0.2s;
-            background: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+            background: white;
+            border-left: 4px solid #34a853;
         }
 
         .collection-item:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,.15);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 10px 15px -3px rgba(0,0,0,.1);
         }
 
         .collection-item.completed {
@@ -258,43 +481,57 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 1rem;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f3f4;
         }
 
         .collection-info h3 {
-            font-size: 1.2rem;
+            font-size: 18px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 0.25rem;
+            color: #202124;
+            margin-bottom: 8px;
         }
 
         .collection-location {
-            color: #666;
-            font-size: 0.9rem;
+            color: #5f6368;
+            font-size: 13px;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .collection-location .material-icons {
+            font-size: 16px;
+            color: #1a73e8;
         }
 
         .collection-status {
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .status-COMPLETED {
-            background-color: #d4edda;
-            color: #155724;
+            background: rgba(52, 168, 83, 0.1);
+            color: #34a853;
+            border: 1px solid rgba(52, 168, 83, 0.3);
         }
 
         .status-PENDING {
-            background-color: #fff3cd;
-            color: #856404;
+            background: rgba(251, 188, 4, 0.1);
+            color: #f57c00;
+            border: 1px solid rgba(251, 188, 4, 0.3);
         }
 
         .status-FAILED {
-            background-color: #f8d7da;
-            color: #721c24;
+            background: rgba(234, 67, 53, 0.1);
+            color: #ea4335;
+            border: 1px solid rgba(234, 67, 53, 0.3);
         }
 
         .collection-details {
@@ -307,50 +544,61 @@
         .detail-item {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 6px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.02), rgba(66, 133, 244, 0.02));
+            border-radius: 8px;
+            border: 1px solid rgba(26, 115, 232, 0.08);
         }
 
         .detail-label {
-            color: #666;
-            font-size: 0.8rem;
+            color: #5f6368;
+            font-size: 11px;
             font-weight: 500;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .detail-value {
-            color: #333;
+            color: #202124;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 15px;
         }
 
         .waste-type-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .waste-type-GENERAL {
-            background: #e9ecef;
-            color: #495057;
+            background: rgba(95, 99, 104, 0.1);
+            color: #5f6368;
+            border: 1px solid rgba(95, 99, 104, 0.2);
         }
 
         .waste-type-RECYCLABLE {
-            background: #d1ecf1;
-            color: #0c5460;
+            background: rgba(0, 188, 212, 0.1);
+            color: #00bcd4;
+            border: 1px solid rgba(0, 188, 212, 0.2);
         }
 
         .waste-type-ORGANIC {
-            background: #d4edda;
-            color: #155724;
+            background: rgba(52, 168, 83, 0.1);
+            color: #34a853;
+            border: 1px solid rgba(52, 168, 83, 0.2);
         }
 
         .waste-type-HAZARDOUS {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(234, 67, 53, 0.1);
+            color: #ea4335;
+            border: 1px solid rgba(234, 67, 53, 0.2);
         }
 
         .collection-actions {
@@ -360,34 +608,57 @@
         }
 
         .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            gap: 8px;
             border: none;
-            font-size: 0.9rem;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px 0 rgba(60,64,67,.3);
+        }
+
+        .btn .material-icons {
+            font-size: 20px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
             color: white;
+            box-shadow: 0 2px 4px 0 rgba(26,115,232,.4);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1557b0, #1a73e8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(26, 115, 232, 0.5);
+            text-decoration: none;
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: white;
+            color: #5f6368;
+            border: 2px solid #dadce0;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3);
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #5f6368;
+            color: #202124;
+            transform: translateY(-1px);
+            text-decoration: none;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             text-decoration: none;
-            color: inherit;
         }
 
         .empty-state {
@@ -461,10 +732,37 @@
                 flex-direction: column;
             }
 
+            .header {
+                padding: 0 1rem;
+            }
+
             .header-content {
+                padding: 0.75rem 0;
                 flex-direction: column;
-                gap: 1rem;
-                text-align: center;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
             }
         }
     </style>
@@ -473,13 +771,64 @@
     <header class="header">
         <div class="header-content">
             <div class="header-left">
-                <a href="/collector/dashboard" class="back-btn">
-                    <span class="material-icons">arrow_back</span>
-                </a>
-                <h1 class="header-title">
-                    <span class="material-icons">history</span>
-                    Collection History
-                </h1>
+                <div class="logo">
+                    Your Collection Records
+                </div>
+                <div class="nav-links">
+                    <a href="/collector/dashboard" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                        Dashboard
+                    </a>
+                    <a href="/collector/routes" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">route</span>
+                        My Routes
+                    </a>
+                    <a href="/collector/scan-qr" class="nav-link">
+                        <span class="material-icons" style="font-size: 18px;">qr_code_scanner</span>
+                        QR Code Scanner
+                    </a>
+                    <a href="/collector/collections" class="nav-link active">
+                        <span class="material-icons" style="font-size: 18px;">inventory_2</span>
+                        Your Collection Records
+                    </a>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="notification-icon header-btn">
+                        <span class="material-icons">notifications</span>
+                        <span class="notification-badge" th:if="${newNotifications > 0}" th:text="${newNotifications}">2</span>
+                    </div>
+                    <span class="user-name" th:text="${user.name}">Collector</span>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="user-icon profile-btn" onclick="toggleProfileDropdown()">
+                            <span th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'C'}">C</span>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-user-name" th:text="${user.name}">Collector</div>
+                                <div class="dropdown-user-email" th:text="${user.email}">collector@smartbin.com</div>
+                            </div>
+                            <a href="/collector/dashboard" class="dropdown-item">
+                                <span class="material-icons">dashboard</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="/collector/profile" class="dropdown-item">
+                                <span class="material-icons">person</span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/collector/settings" class="dropdown-item">
+                                <span class="material-icons">settings</span>
+                                <span>Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="/logout" class="dropdown-item logout">
+                                <span class="material-icons">logout</span>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -793,6 +1142,34 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Collections page loaded');
         });
+
+        // Profile Dropdown Functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const isClickInside = dropdown && dropdown.contains(event.target);
+            
+            if (!isClickInside && dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                // Allow links to navigate
+                if (event.target.tagName === 'A' || event.target.closest('a')) {
+                    return;
+                }
+                event.stopPropagation();
+            });
+        }
     </script>
 </body>
 </html>

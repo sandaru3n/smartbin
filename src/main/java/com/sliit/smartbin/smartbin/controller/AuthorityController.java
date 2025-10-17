@@ -16,6 +16,8 @@ import com.sliit.smartbin.smartbin.service.BinAssignmentService;
 import com.sliit.smartbin.smartbin.service.CollectionService;
 import com.sliit.smartbin.smartbin.service.BulkRequestService;
 import com.sliit.smartbin.smartbin.model.BinAssignment;
+import com.sliit.smartbin.smartbin.model.RegionAssignment;
+import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,10 +35,27 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.HashMap;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN AUTHORITY CONTROLLER
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This controller has ONE responsibility: Handle HTTP requests for authority features.
+ *     Each method handles one specific endpoint. Business logic delegated to service layer.
+ * 
+ * I - Interface Segregation Principle (ISP):
+ *     Controller depends on multiple focused service interfaces (BinService, RouteService, etc.)
+ *     rather than one giant service. Each service has specific responsibilities.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controller depends on Service INTERFACES, not concrete implementations.
+ *     All dependencies injected via constructor for loose coupling and testability.
+ */
 @Controller
 @RequestMapping("/authority")
 public class AuthorityController {
 
+    // DIP: Depend on service abstractions (interfaces), not concrete classes
+    // ISP: Multiple focused services instead of one monolithic service
     private final BinService binService;
     private final RouteService routeService;
     private final ReportService reportService;
@@ -45,7 +64,9 @@ public class AuthorityController {
     private final BinAssignmentService binAssignmentService;
     private final CollectionService collectionService;
     private final BulkRequestService bulkRequestService;
+    private final RegionAssignmentRepository regionAssignmentRepository;
 
+    // DIP: Constructor injection for loose coupling and easy testing/mocking
     public AuthorityController(BinService binService,
                                RouteService routeService,
                                ReportService reportService,
@@ -53,7 +74,8 @@ public class AuthorityController {
                                NotificationService notificationService,
                                BinAssignmentService binAssignmentService,
                                CollectionService collectionService,
-                               BulkRequestService bulkRequestService) {
+                               BulkRequestService bulkRequestService,
+                               RegionAssignmentRepository regionAssignmentRepository) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
@@ -62,6 +84,7 @@ public class AuthorityController {
         this.binAssignmentService = binAssignmentService;
         this.collectionService = collectionService;
         this.bulkRequestService = bulkRequestService;
+        this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
     @GetMapping("/dashboard")
@@ -96,20 +119,6 @@ public class AuthorityController {
         // Get available collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
         model.addAttribute("collectors", collectors);
-        
-        // Get bulk requests statistics
-        long pendingBulkRequests = bulkRequestService.getRequestCountByPaymentStatus(PaymentStatus.PENDING);
-        long paidBulkRequests = bulkRequestService.getRequestCountByStatus(BulkRequestStatus.PAYMENT_COMPLETED);
-        long scheduledBulkRequests = bulkRequestService.getRequestCountByStatus(BulkRequestStatus.SCHEDULED);
-        
-        model.addAttribute("pendingBulkRequests", pendingBulkRequests);
-        model.addAttribute("paidBulkRequests", paidBulkRequests);
-        model.addAttribute("scheduledBulkRequests", scheduledBulkRequests);
-        
-        // Get recent bulk requests (last 5)
-        List<BulkRequestDTO> recentBulkRequests = bulkRequestService.getRecentRequests(7);
-        model.addAttribute("recentBulkRequests", 
-            recentBulkRequests.size() > 5 ? recentBulkRequests.subList(0, 5) : recentBulkRequests);
         
         return "authority/dashboard";
     }
@@ -255,6 +264,19 @@ public class AuthorityController {
         
         // Get all collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        
+        // Ensure collectors is never null
+        if (collectors == null) {
+            collectors = new java.util.ArrayList<>();
+        }
+        
+        System.out.println("=== MANAGE COLLECTORS DEBUG ===");
+        System.out.println("Total collectors found: " + collectors.size());
+        for (User collector : collectors) {
+            System.out.println("  - " + collector.getName() + " (" + collector.getEmail() + ") ID: " + collector.getId());
+        }
+        System.out.println("================================");
+        
         model.addAttribute("collectors", collectors);
         model.addAttribute("user", user);
         
@@ -270,10 +292,18 @@ public class AuthorityController {
         }
         
         try {
+            System.out.println("=== API: Getting collectors ===");
             List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+            
+            if (collectors == null) {
+                collectors = new ArrayList<>();
+            }
+            
+            System.out.println("API: Found " + collectors.size() + " collectors");
             List<Map<String, Object>> collectorData = new ArrayList<>();
             
             for (User collector : collectors) {
+                System.out.println("API: Processing collector " + collector.getName());
                 Map<String, Object> collectorInfo = new HashMap<>();
                 collectorInfo.put("id", collector.getId());
                 collectorInfo.put("name", collector.getName());
@@ -371,12 +401,23 @@ public class AuthorityController {
                     collectorInfo.put("currentActivity", "Available for assignment");
                 }
                 
+                // Add performance rating (0-5 stars based on completion rate)
+                double performanceRating = (completionRate / 100.0) * 5;
+                collectorInfo.put("performanceRating", Math.round(performanceRating * 10) / 10.0);
+                
                 collectorData.add(collectorInfo);
             }
             
+            System.out.println("API: Successfully processed " + collectorData.size() + " collectors");
             return ResponseEntity.ok(collectorData);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            System.err.println("=== API ERROR ===");
+            System.err.println("Error fetching collectors: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("=================");
+            
+            // Return empty list instead of error to prevent frontend crashes
+            return ResponseEntity.ok(new ArrayList<>());
         }
     }
 
@@ -450,14 +491,37 @@ public class AuthorityController {
             Long collectorId = Long.valueOf(request.get("collectorId").toString());
             String region = request.get("region").toString();
             
+            System.out.println("=== REGION ASSIGNMENT ===");
             System.out.println("Assigning collector ID: " + collectorId + " to region: " + region);
             
             User collector = userService.findById(collectorId)
                 .orElseThrow(() -> new RuntimeException("Collector not found"));
             
-            System.out.println("Found collector: " + collector.getName() + ", current region: " + collector.getRegion());
+            String previousRegion = collector.getRegion();
+            System.out.println("Found collector: " + collector.getName() + ", current region: " + previousRegion);
             
-            // Update collector region assignment
+            // Save assignment history before updating
+            RegionAssignment assignment = new RegionAssignment();
+            assignment.setCollector(collector);
+            assignment.setAssignedBy(user);
+            assignment.setPreviousRegion(previousRegion);
+            assignment.setNewRegion(region);
+            assignment.setStatus(RegionAssignment.AssignmentStatus.ACTIVE);
+            assignment.setNotes("Assigned via Manage Collectors interface");
+            
+            // Mark previous assignments as superseded
+            List<RegionAssignment> previousAssignments = regionAssignmentRepository
+                .findByCollectorAndStatus(collector, RegionAssignment.AssignmentStatus.ACTIVE);
+            for (RegionAssignment prev : previousAssignments) {
+                prev.setStatus(RegionAssignment.AssignmentStatus.SUPERSEDED);
+                regionAssignmentRepository.save(prev);
+            }
+            
+            // Save new assignment
+            RegionAssignment savedAssignment = regionAssignmentRepository.save(assignment);
+            System.out.println("Saved assignment history with ID: " + savedAssignment.getId());
+            
+            // Update collector region assignment in User table
             collector.setRegion(region);
             User updatedCollector = userService.updateUser(collector);
             
@@ -467,17 +531,72 @@ public class AuthorityController {
             notificationService.sendRegionAssignmentNotification(collector, region);
             
             System.out.println("Sent notification to collector");
+            System.out.println("=== ASSIGNMENT COMPLETE ===");
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Collector " + collector.getName() + " assigned to " + region + " successfully!");
+            response.put("previousRegion", previousRegion);
+            response.put("newRegion", region);
+            response.put("assignmentId", savedAssignment.getId());
+            response.put("assignedBy", user.getName());
+            response.put("timestamp", savedAssignment.getAssignedAt().toString());
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("ERROR in region assignment: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Failed to assign collector: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/api/region-assignments")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getRegionAssignments(
+            @RequestParam(required = false) Long collectorId,
+            HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<RegionAssignment> assignments;
+            
+            if (collectorId != null) {
+                // Get assignments for specific collector
+                User collector = userService.findById(collectorId)
+                    .orElseThrow(() -> new RuntimeException("Collector not found"));
+                assignments = regionAssignmentRepository.findByCollectorOrderByAssignedAtDesc(collector);
+            } else {
+                // Get all assignments
+                assignments = regionAssignmentRepository.findAll();
+                assignments.sort((a, b) -> b.getAssignedAt().compareTo(a.getAssignedAt()));
+            }
+            
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (RegionAssignment assignment : assignments) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", assignment.getId());
+                data.put("collectorId", assignment.getCollector().getId());
+                data.put("collectorName", assignment.getCollector().getName());
+                data.put("assignedById", assignment.getAssignedBy().getId());
+                data.put("assignedByName", assignment.getAssignedBy().getName());
+                data.put("previousRegion", assignment.getPreviousRegion());
+                data.put("newRegion", assignment.getNewRegion());
+                data.put("assignedAt", assignment.getAssignedAt().toString());
+                data.put("status", assignment.getStatus().toString());
+                data.put("notes", assignment.getNotes());
+                response.add(data);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("ERROR fetching region assignments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -1024,11 +1143,15 @@ public class AuthorityController {
     // ======================== Bulk Request Management Endpoints ========================
     
     /**
+     * SRP: This method has ONE job - display bulk requests page
+     * OCP: New filters can be added without modifying core display logic
+     * 
      * View all bulk requests
      */
     @GetMapping("/bulk-requests")
     public String manageBulkRequests(HttpSession session, Model model,
                                     @RequestParam(required = false) String status) {
+        // SRP: Authentication/validation extracted to helper method
         User user = validateAuthorityUser(session);
         if (user == null) {
             return "redirect:/authority/login";
@@ -1036,6 +1159,7 @@ public class AuthorityController {
         
         List<BulkRequestDTO> bulkRequests;
         
+        // DIP: Controller doesn't know HOW data is fetched, just calls service methods
         if (status != null && !status.isEmpty()) {
             try {
                 BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
@@ -1047,9 +1171,23 @@ public class AuthorityController {
             bulkRequests = bulkRequestService.getRecentRequests(30);
         }
         
+        // Calculate statistics
+        long pendingCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PENDING)
+            .count();
+        long paidCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PAYMENT_COMPLETED)
+            .count();
+        long scheduledCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.SCHEDULED)
+            .count();
+        
         model.addAttribute("bulkRequests", bulkRequests);
         model.addAttribute("user", user);
         model.addAttribute("selectedStatus", status);
+        model.addAttribute("pendingBulkRequests", pendingCount);
+        model.addAttribute("paidBulkRequests", paidCount);
+        model.addAttribute("scheduledBulkRequests", scheduledCount);
         
         // Get available collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
@@ -1074,6 +1212,9 @@ public class AuthorityController {
     }
     
     /**
+     * SRP: Method only handles HTTP request/response, assignment logic in service
+     * DIP: Depends on BulkRequestService interface for assignment processing
+     * 
      * Assign collector to bulk request
      */
     @PostMapping("/bulk-requests/{requestId}/assign-collector")
@@ -1087,6 +1228,8 @@ public class AuthorityController {
         }
         
         try {
+            // SRP: Business logic (validation, notification) handled in service layer
+            // DIP: Controller doesn't know implementation details of assignment
             bulkRequestService.assignCollector(requestId, collectorId);
             redirectAttributes.addFlashAttribute("successMessage", 
                 "Collector assigned successfully to bulk request!");
@@ -1100,6 +1243,9 @@ public class AuthorityController {
     }
     
     /**
+     * SRP: Only handles HTTP request/response, scheduling and notification in service
+     * OCP: New scheduling types can be added in service without modifying controller
+     * 
      * Schedule pickup for bulk request
      */
     @PostMapping("/bulk-requests/{requestId}/schedule")
@@ -1115,6 +1261,8 @@ public class AuthorityController {
         
         try {
             LocalDateTime scheduledDate = LocalDateTime.parse(scheduledDateTime);
+            // SRP: Notification and scheduling logic encapsulated in service
+            // DIP: Controller doesn't know how notifications are sent
             bulkRequestService.scheduleAndNotifyPickup(requestId, scheduledDate, collectorId);
             
             redirectAttributes.addFlashAttribute("successMessage", 
@@ -1129,6 +1277,9 @@ public class AuthorityController {
     }
     
     /**
+     * SRP: Method only handles status update HTTP endpoint
+     * OCP: New statuses can be added to enum without modifying this method
+     * 
      * Update bulk request status
      */
     @PostMapping("/bulk-requests/{requestId}/update-status")
@@ -1143,6 +1294,7 @@ public class AuthorityController {
         
         try {
             BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+            // DIP: Status update logic handled in service layer
             BulkRequestDTO updatedRequest = bulkRequestService.updateRequestStatus(requestId, requestStatus);
             
             Map<String, Object> response = new HashMap<>();

@@ -6,6 +6,9 @@
     <title>Bulk Collection Requests - SmartBin Authority</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,33 +17,209 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            color: #2c3e50;
+            font-family: 'Google Sans', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
+            color: #202124;
+            min-height: 100vh;
+            line-height: 1.5;
         }
 
+        /* Top Navigation Bar */
         .header {
             background: white;
-            padding: 1.5rem 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            margin: 0;
         }
 
-        .header h1 {
-            color: #2c3e50;
-            font-size: 1.75rem;
-            font-weight: 600;
+        .header-inner {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-title {
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            color: #5f6368;
+        }
+
+        .notification-icon {
+            font-size: 1.125rem;
+            color: #5f6368;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .notification-icon:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .notification-icon .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .user-name {
+            font-weight: 400;
+            color: #202124;
+            font-size: 0.875rem;
+        }
+
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            background: #1a73e8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .user-icon:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #202124;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item i,
+        .dropdown-item .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+        }
+
+        .dropdown-item.logout i,
+        .dropdown-item.logout .material-icons {
+            color: #ea4335;
         }
 
         .container {
@@ -49,24 +228,38 @@
             padding: 0 2rem;
         }
 
-        .nav-breadcrumb {
-            margin-bottom: 1.5rem;
+        .page-title-section {
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #666;
+            gap: 1rem;
         }
 
-        .nav-breadcrumb a {
-            color: #3498db;
-            text-decoration: none;
+        .page-title-icon {
+            width: 48px;
+            height: 48px;
+            background: #28a5df;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 6px rgba(41, 182, 246, 0.25);
         }
 
-        .nav-breadcrumb a:hover {
-            text-decoration: underline;
+        .page-title-content h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #202124;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .page-title-content p {
+            font-size: 0.875rem;
+            color: #5f6368;
+            margin: 0.25rem 0 0 0;
         }
 
         .filters-section {
@@ -380,32 +573,104 @@
             margin-bottom: 1rem;
             color: #ddd;
         }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .header-inner {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header / Top Navigation Bar -->
     <div class="header">
-        <h1>
-            <i class="fas fa-box"></i>
-            Bulk Collection Requests
-        </h1>
-        <div class="user-info">
-            <span th:text="${user.name}">Authority User</span>
-            <a href="/authority/dashboard" class="btn btn-primary btn-small">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
+        <div class="header-inner">
+            <h1 class="nav-title">Bulk Requests</h1>
+            <div class="nav-links">
+                <a href="/authority/dashboard" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="/authority/manage-collectors" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">group</span>
+                    Manage Collectors
+                </a>
+                <a href="/authority/dispatch" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">local_shipping</span>
+                    Dispatch
+                </a>
+                <a href="/authority/reports" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">assessment</span>
+                    Reports
+                </a>
+                <a href="/authority/bulk-requests" class="nav-link active">
+                    <span class="material-icons" style="font-size: 18px;">inventory</span>
+                    Bulk Requests
+                </a>
+            </div>
+            <div class="user-info">
+                <div class="notification-icon">
+                    <span class="material-icons">notifications</span>
+                </div>
+                <span class="user-name" th:text="${user.name}">Waste Manager</span>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="user-icon" onclick="toggleProfileDropdown()">
+                        <span th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'W'}">W</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" th:text="${user.name}">Waste Manager</div>
+                            <div class="dropdown-user-email" th:text="${user.email}">admin@smartbin.com</div>
+                        </div>
+                        <a href="/authority/dashboard" class="dropdown-item">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/authority/profile" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="/authority/settings" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout" class="dropdown-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="nav-breadcrumb">
-            <a href="/authority/dashboard">
-                <span class="material-icons">dashboard</span>
-                Dashboard
-            </a>
-            <span>/</span>
-            <span>Bulk Collection Requests</span>
+        <!-- Page Title Section -->
+        <div class="page-title-section">
+            <div class="page-title-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="page-title-content">
+                <h1>Bulk Collection Requests</h1>
+                <p>Manage and process bulk waste collection requests from residents</p>
+            </div>
         </div>
 
         <!-- Success/Error Messages -->
@@ -419,23 +684,20 @@
         <!-- Statistics -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" th:text="${bulkRequests.size()}">0</div>
+                <div class="stat-value" th:text="${bulkRequests != null ? bulkRequests.size() : 0}">0</div>
                 <div class="stat-label">Total Requests</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" style="color: #fbbc04;" 
-                     th:text="${#lists.size(#lists.select(bulkRequests, br.status.name() == 'PAYMENT_COMPLETED'))}">0</div>
+                <div class="stat-value" style="color: #fbbc04;" th:text="${pendingBulkRequests != null ? pendingBulkRequests : 0}">0</div>
+                <div class="stat-label">Pending Payment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: #ff9800;" th:text="${paidBulkRequests != null ? paidBulkRequests : 0}">0</div>
                 <div class="stat-label">Awaiting Assignment</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" style="color: #1a73e8;" 
-                     th:text="${#lists.size(#lists.select(bulkRequests, br.status.name() == 'SCHEDULED'))}">0</div>
+                <div class="stat-value" style="color: #1a73e8;" th:text="${scheduledBulkRequests != null ? scheduledBulkRequests : 0}">0</div>
                 <div class="stat-label">Scheduled</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" style="color: #34a853;" 
-                     th:text="${#lists.size(#lists.select(bulkRequests, br.status.name() == 'COMPLETED'))}">0</div>
-                <div class="stat-label">Completed</div>
             </div>
         </div>
 
@@ -456,7 +718,8 @@
                             <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">Cancelled</option>
                         </select>
                     </div>
-                    <div class="filter-group" style="display: flex; align-items: flex-end;">
+                    <div class="filter-group" style="flex: 0 0 auto;">
+                        <label style="visibility: hidden;">Action</label>
                         <button type="button" onclick="window.location.href='/authority/bulk-requests'" class="btn btn-primary">
                             <i class="fas fa-sync"></i> Reset Filters
                         </button>
@@ -516,7 +779,7 @@
                             <div class="detail-value">
                                 LKR <span th:text="${#numbers.formatDecimal(request.totalAmount, 0, 2)}">4,200.00</span>
                             </div>
-                            <div style="font-size: 0.8rem; color: #27ae60;" th:if="${request.paymentStatus.name() == 'COMPLETED'}">
+                            <div style="font-size: 0.8rem; color: #27ae60;" th:if="${request.paymentStatus.name == 'COMPLETED'}">
                                 <i class="fas fa-check-circle"></i> Paid
                             </div>
                         </div>
@@ -547,7 +810,7 @@
                 <!-- Action Buttons -->
                 <div class="request-actions">
                     <!-- Assign Collector Button -->
-                    <button th:if="${request.status.name() == 'PAYMENT_COMPLETED' and request.collectorAssigned == null}" 
+                    <button th:if="${request.status.name == 'PAYMENT_COMPLETED' and request.collectorAssigned == null}" 
                             class="btn btn-success btn-small"
                             onclick="openAssignModal(this)"
                             th:data-request-id="${request.id}"
@@ -566,7 +829,7 @@
                     </button>
 
                     <!-- Complete Button -->
-                    <button th:if="${request.status.name() == 'IN_PROGRESS'}" 
+                    <button th:if="${request.status.name == 'IN_PROGRESS'}" 
                             class="btn btn-success btn-small"
                             onclick="openCompleteModal(this)"
                             th:data-request-id="${request.id}"
@@ -724,7 +987,7 @@
                     details += `Customer: ${data.userName} (${data.userEmail})\n\n`;
                     details += `Pickup Address:\n${data.streetAddress}\n${data.city}, ${data.zipCode}\n\n`;
                     details += `Amount: LKR ${data.totalAmount.toFixed(2)}\n`;
-                    details += `Payment Status: ${data.paymentStatus.name()}\n`;
+                    details += `Payment Status: ${data.paymentStatus.name}\n`;
                     if (data.paymentMethod) {
                         details += `Payment Method: ${data.paymentMethod}\n`;
                     }
@@ -768,6 +1031,34 @@
                 }, 500);
             });
         }, 5000);
+
+        // Profile Dropdown Functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const isClickInside = dropdown && dropdown.contains(event.target);
+            
+            if (!isClickInside && dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                // Allow links to navigate
+                if (event.target.tagName === 'A' || event.target.closest('a')) {
+                    return;
+                }
+                event.stopPropagation();
+            });
+        }
     </script>
 </body>
 </html>

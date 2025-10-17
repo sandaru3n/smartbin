@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment - SmartBin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -15,71 +16,192 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #f8f9fa;
+            color: #202124;
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
-            color: #2c3e50;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #202124;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            gap: 0.5rem;
+        }
+
+        .logo .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .payment-container {
-            background: white;
-            border-radius: 20px;
-            padding: 0;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            max-width: 600px;
+            background: #f8f9fa;
             width: 100%;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .payment-header {
-            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
-            color: white;
-            padding: 2.5rem 2rem;
-            text-align: center;
+        .page-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 3rem 1.5rem;
+            width: 100%;
         }
 
-        .payment-header .material-icons {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .payment-header h1 {
+        .back-link {
+            color: #5f6368;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #dadce0;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .back-link .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header h1 .material-icons {
             font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            color: #34a853;
         }
 
-        .payment-header p {
-            opacity: 0.9;
-            font-size: 1rem;
+        .page-header p {
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-top: 0.25rem;
+            margin-left: 56px;
         }
 
         .payment-body {
-            padding: 2.5rem 2rem;
+            padding: 0 3rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         .request-summary {
-            background: #f8f9fa;
-            padding: 1.5rem;
+            background: white;
+            padding: 2rem;
             border-radius: 12px;
-            margin-bottom: 2rem;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
         }
 
         .request-summary h3 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
+            color: #202124;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .request-summary h3 .material-icons {
+            color: #1a73e8;
+            font-size: 1.25rem;
         }
 
         .summary-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 0.75rem 0;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .summary-item:last-child {
@@ -87,79 +209,106 @@
         }
 
         .summary-label {
-            color: #666;
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
         .summary-value {
-            font-weight: 600;
-            color: #2c3e50;
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
         }
 
         .amount-card {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: #34a853;
             color: white;
             padding: 2rem;
-            border-radius: 16px;
+            border-radius: 12px;
             text-align: center;
-            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
         }
 
         .amount-label {
-            font-size: 1rem;
-            opacity: 0.9;
+            font-size: 0.875rem;
+            opacity: 0.95;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .amount-value {
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: 2.25rem;
+            font-weight: 600;
+        }
+
+        .amount-card p {
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
+            opacity: 0.95;
         }
 
         .payment-methods {
-            margin-bottom: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
         }
 
         .payment-methods h3 {
-            color: #2c3e50;
+            color: #202124;
             margin-bottom: 1.5rem;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-methods h3 .material-icons {
+            color: #34a853;
+            font-size: 1.25rem;
         }
 
         .payment-option {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1.25rem;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            background: #f8f9fa;
         }
 
         .payment-option:hover {
-            border-color: #3498db;
-            background: #f8f9fa;
+            border-color: #34a853;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .payment-option input[type="radio"] {
             width: 20px;
             height: 20px;
             cursor: pointer;
-        }
-
-        .payment-option input[type="radio"]:checked ~ .payment-info {
-            color: #27ae60;
+            accent-color: #34a853;
         }
 
         .payment-option.selected {
-            border-color: #27ae60;
-            background: #f1f9f5;
+            border-color: #34a853;
+            background: #e6f4ea;
+            box-shadow: 0 2px 6px rgba(52, 168, 83, 0.2);
+        }
+
+        .payment-option.selected .payment-icon {
+            color: #34a853;
         }
 
         .payment-icon {
-            font-size: 2rem;
-            color: #3498db;
+            font-size: 1.75rem;
+            color: #5f6368;
+            transition: all 0.2s;
         }
 
         .payment-info {
@@ -168,186 +317,389 @@
 
         .payment-name {
             font-weight: 600;
-            color: #2c3e50;
+            color: #202124;
             margin-bottom: 0.25rem;
+            font-size: 0.875rem;
         }
 
         .payment-desc {
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 0.75rem;
+            color: #5f6368;
+            font-weight: 400;
+        }
+
+        /* Card Details Section */
+        .card-details {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .card-details.active {
+            display: block;
+        }
+
+        .card-details h3 {
+            color: #202124;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-details h3 .material-icons {
+            color: #1a73e8;
+            font-size: 1.25rem;
+        }
+
+        .card-form-group {
+            margin-bottom: 1rem;
+        }
+
+        .card-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+
+        .card-form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            color: #202124;
+        }
+
+        .card-form-group input:focus {
+            border-color: #1a73e8;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .card-form-group input:hover {
+            border-color: #80868b;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
         }
 
         .security-badge {
-            background: #f8f9fa;
+            background: #e6f4ea;
             padding: 1rem;
             border-radius: 8px;
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            margin-bottom: 2rem;
+            border: 1px solid #c8e6c9;
         }
 
         .security-badge .material-icons {
-            color: #27ae60;
-            font-size: 1.5rem;
+            color: #34a853;
+            font-size: 1.25rem;
         }
 
         .security-badge p {
-            font-size: 0.85rem;
-            color: #666;
+            font-size: 0.875rem;
+            color: #137333;
             margin: 0;
+            font-weight: 400;
+            line-height: 1.5;
         }
 
         .action-buttons {
             display: flex;
             gap: 1rem;
+            margin-top: 1.5rem;
         }
 
         .btn {
             flex: 1;
-            padding: 1.25rem;
+            padding: 0.75rem 2rem;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 24px;
+            font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn .material-icons {
+            font-size: 1.125rem;
         }
 
         .btn-secondary {
-            background: #e9ecef;
-            color: #2c3e50;
+            background: white;
+            color: #5f6368;
+            border: 1px solid #dadce0;
         }
 
         .btn-secondary:hover {
-            background: #dee2e6;
+            background: #f8f9fa;
+            border-color: #80868b;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: #34a853;
             color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        .btn-primary:disabled {
+            background: #dadce0;
+            color: #80868b;
+            cursor: not-allowed;
+            box-shadow: none;
         }
 
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        @media (max-width: 1024px) {
+            .payment-body {
+                grid-template-columns: 1fr;
+                padding: 2rem;
+                gap: 1.5rem;
+            }
+
+            .page-header {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .logo .material-icons {
+                font-size: 1.75rem;
+            }
+
+            .page-header {
+                padding: 1rem 1.25rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.375rem;
+            }
+
+            .page-header h1 .material-icons {
+                font-size: 1.75rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .amount-value {
+                font-size: 2rem;
+            }
+
+            .payment-body {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin
+            </div>
+            <div class="user-info">
+                <span th:text="${user != null ? user.name : 'Guest'}">Guest</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="payment-container">
-        <div class="payment-header">
-            <span class="material-icons">payment</span>
-            <h1>Complete Your Payment</h1>
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <a href="/resident/my-bulk-requests" class="back-link">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1>
+                    <span class="material-icons">payment</span>
+                    Complete Payment
+                </h1>
+            </div>
             <p>Secure payment for your bulk collection request</p>
         </div>
 
         <div class="payment-body">
-            <!-- Request Summary -->
-            <div class="request-summary">
-                <h3>Request Summary</h3>
-                <div class="summary-item">
-                    <span class="summary-label">Request ID:</span>
-                    <span class="summary-value" th:text="${bulkRequest.requestId}">BULK-123</span>
+            <!-- Left Column: Summary & Amount -->
+            <div class="left-column">
+                <!-- Request Summary -->
+                <div class="request-summary">
+                    <h3>
+                        <span class="material-icons">receipt_long</span>
+                        Request Summary
+                    </h3>
+                    <div class="summary-item">
+                        <span class="summary-label">Request ID:</span>
+                        <span class="summary-value" th:text="${bulkRequest.requestId}">BULK-123</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Category:</span>
+                        <span class="summary-value" th:text="${bulkRequest.category.displayName}">Furniture</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Description:</span>
+                        <span class="summary-value" th:text="${bulkRequest.description}">Old furniture items</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Location:</span>
+                        <span class="summary-value" th:text="${bulkRequest.streetAddress + ', ' + bulkRequest.city}">123 Main St, Colombo</span>
+                    </div>
                 </div>
-                <div class="summary-item">
-                    <span class="summary-label">Category:</span>
-                    <span class="summary-value" th:text="${bulkRequest.category.displayName}">Furniture</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">Location:</span>
-                    <span class="summary-value" th:text="${bulkRequest.city}">Colombo</span>
+
+                <!-- Amount to Pay -->
+                <div class="amount-card">
+                    <div class="amount-label">Total Amount</div>
+                    <div class="amount-value">LKR <span th:text="${#numbers.formatDecimal(bulkRequest.totalAmount, 1, 2)}">4,200.00</span></div>
+                    <p>
+                        Base: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.basePrice, 1, 2)}">3,500</span> + 
+                        Processing: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.processingFee, 1, 2)}">500</span> + 
+                        Tax: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.taxAmount, 1, 2)}">200</span>
+                    </p>
                 </div>
             </div>
 
-            <!-- Amount to Pay -->
-            <div class="amount-card">
-                <div class="amount-label">Total Amount</div>
-                <div class="amount-value">LKR <span th:text="${#numbers.formatDecimal(bulkRequest.totalAmount, 1, 2)}">4,200.00</span></div>
-                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
-                    Base: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.basePrice, 1, 2)}">3,500</span> + 
-                    Processing: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.processingFee, 1, 2)}">500</span> + 
-                    Tax: LKR <span th:text="${#numbers.formatDecimal(bulkRequest.taxAmount, 1, 2)}">200</span>
-                </p>
+            <!-- Right Column: Payment Methods & Actions -->
+            <div class="right-column">
+                <form th:action="@{/resident/bulk-request/{id}/payment(id=${bulkRequest.id})}" method="post" id="paymentForm">
+                    <div class="payment-methods">
+                        <h3>
+                            <span class="material-icons">payment</span>
+                            Select Payment Method
+                        </h3>
+                        
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="CREDIT_CARD" onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">credit_card</span>
+                            <div class="payment-info">
+                                <div class="payment-name">Credit/Debit Card</div>
+                                <div class="payment-desc">Visa, Mastercard, RuPay</div>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="UPI" onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">smartphone</span>
+                            <div class="payment-info">
+                                <div class="payment-name">UPI</div>
+                                <div class="payment-desc">Google Pay, PhonePe, Paytm</div>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="NET_BANKING" onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">account_balance</span>
+                            <div class="payment-info">
+                                <div class="payment-name">Net Banking</div>
+                                <div class="payment-desc">All major banks supported</div>
+                            </div>
+                        </label>
+
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="DIGITAL_WALLET" onchange="selectPaymentMethod(this)">
+                            <span class="material-icons payment-icon">account_balance_wallet</span>
+                            <div class="payment-info">
+                                <div class="payment-name">Digital Wallet</div>
+                                <div class="payment-desc">Paytm, Amazon Pay</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Card Details Section (shows only for Credit/Debit Card) -->
+                    <div class="card-details" id="cardDetailsSection">
+                        <h3>
+                            <span class="material-icons">credit_card</span>
+                            Card Details
+                        </h3>
+                        
+                        <div class="card-form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+                        </div>
+
+                        <div class="card-row">
+                            <div class="card-form-group">
+                                <label for="expiryDate">Expiry Date</label>
+                                <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+                            </div>
+                            
+                            <div class="card-form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="3" autocomplete="cc-csc">
+                            </div>
+                        </div>
+
+                        <div class="card-form-group">
+                            <label for="cardHolder">Cardholder Name</label>
+                            <input type="text" id="cardHolder" name="cardHolder" placeholder="Name as on card" autocomplete="cc-name">
+                        </div>
+                    </div>
+
+                    <!-- Security Badge -->
+                    <div class="security-badge">
+                        <span class="material-icons">security</span>
+                        <p>Your payment is secured with 256-bit SSL encryption. We don't store your card details.</p>
+                    </div>
+
+                    <input type="hidden" name="paymentReference" th:value="${'PAY-' + #dates.format(#dates.createNow(), 'yyyyMMddHHmmss')}">
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="/resident/my-bulk-requests" class="btn btn-secondary">
+                            <span class="material-icons">arrow_back</span>
+                            Back
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="payBtn">
+                            <span class="material-icons">lock</span>
+                            Pay Now
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <!-- Payment Methods -->
-            <form th:action="@{/resident/bulk-request/{id}/payment(id=${bulkRequest.id})}" method="post" id="paymentForm">
-                <div class="payment-methods">
-                    <h3>Select Payment Method</h3>
-                    
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">credit_card</span>
-                        <div class="payment-info">
-                            <div class="payment-name">Credit/Debit Card</div>
-                            <div class="payment-desc">Visa, Mastercard, RuPay</div>
-                        </div>
-                    </label>
-
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="UPI" onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">smartphone</span>
-                        <div class="payment-info">
-                            <div class="payment-name">UPI</div>
-                            <div class="payment-desc">Google Pay, PhonePe, Paytm</div>
-                        </div>
-                    </label>
-
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="NET_BANKING" onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">account_balance</span>
-                        <div class="payment-info">
-                            <div class="payment-name">Net Banking</div>
-                            <div class="payment-desc">All major banks supported</div>
-                        </div>
-                    </label>
-
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="DIGITAL_WALLET" onchange="selectPaymentMethod(this)">
-                        <span class="material-icons payment-icon">account_balance_wallet</span>
-                        <div class="payment-info">
-                            <div class="payment-name">Digital Wallet</div>
-                            <div class="payment-desc">Paytm, Amazon Pay</div>
-                        </div>
-                    </label>
-                </div>
-
-                <!-- Security Badge -->
-                <div class="security-badge">
-                    <span class="material-icons">security</span>
-                    <p>Your payment is secured with 256-bit SSL encryption. We don't store your card details.</p>
-                </div>
-
-                <input type="hidden" name="paymentReference" th:value="${'PAY-' + #dates.format(#dates.createNow(), 'yyyyMMddHHmmss')}">
-
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <a href="/resident/my-bulk-requests" class="btn btn-secondary">
-                        <span class="material-icons">arrow_back</span>
-                        Back
-                    </a>
-                    <button type="submit" class="btn btn-primary" id="payBtn">
-                        <span class="material-icons">lock</span>
-                        Pay Now
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -360,18 +712,107 @@
             
             // Add selected class to chosen option
             radio.closest('.payment-option').classList.add('selected');
+
+            // Show/hide card details based on payment method
+            const cardDetailsSection = document.getElementById('cardDetailsSection');
+            if (radio.value === 'CREDIT_CARD') {
+                cardDetailsSection.classList.add('active');
+                // Make card fields required
+                document.getElementById('cardNumber').required = true;
+                document.getElementById('expiryDate').required = true;
+                document.getElementById('cvv').required = true;
+                document.getElementById('cardHolder').required = true;
+            } else {
+                cardDetailsSection.classList.remove('active');
+                // Remove required attribute
+                document.getElementById('cardNumber').required = false;
+                document.getElementById('expiryDate').required = false;
+                document.getElementById('cvv').required = false;
+                document.getElementById('cardHolder').required = false;
+            }
         }
 
-        // Set first option as selected on load
+        // Card number formatting - add space every 4 digits
         document.addEventListener('DOMContentLoaded', function() {
-            const firstRadio = document.querySelector('input[type="radio"][checked]');
-            if (firstRadio) {
-                firstRadio.closest('.payment-option').classList.add('selected');
-            }
+            const cardNumberInput = document.getElementById('cardNumber');
+            const expiryDateInput = document.getElementById('expiryDate');
+            const cvvInput = document.getElementById('cvv');
+
+            // Card Number - 16 digits with spaces
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, ''); // Remove spaces
+                value = value.replace(/\D/g, ''); // Remove non-digits
+                value = value.substring(0, 16); // Max 16 digits
+                
+                // Add space every 4 digits
+                let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formatted;
+            });
+
+            // Expiry Date - MM/YY format with auto /
+            expiryDateInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                
+                e.target.value = value;
+            });
+
+            // CVV - 3 digits only
+            cvvInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                e.target.value = value.substring(0, 3); // Max 3 digits
+            });
+
+            // No default selection - user must choose
         });
 
         // Form submission with loading state
         document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            const paymentMethodRadio = document.querySelector('input[name="paymentMethod"]:checked');
+            
+            if (!paymentMethodRadio) {
+                alert('Please select a payment method');
+                e.preventDefault();
+                return false;
+            }
+
+            const paymentMethod = paymentMethodRadio.value;
+            
+            // Validate card details if credit card is selected
+            if (paymentMethod === 'CREDIT_CARD') {
+                const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                const expiryDate = document.getElementById('expiryDate').value;
+                const cvv = document.getElementById('cvv').value;
+                const cardHolder = document.getElementById('cardHolder').value;
+
+                if (cardNumber.length !== 16) {
+                    alert('Please enter a valid 16-digit card number');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (!expiryDate.match(/^\d{2}\/\d{2}$/)) {
+                    alert('Please enter a valid expiry date (MM/YY)');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (cvv.length !== 3) {
+                    alert('Please enter a valid 3-digit CVV');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (!cardHolder.trim()) {
+                    alert('Please enter the cardholder name');
+                    e.preventDefault();
+                    return false;
+                }
+            }
+
             const payBtn = document.getElementById('payBtn');
             payBtn.innerHTML = '<span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span> Processing Payment...';
             payBtn.disabled = true;

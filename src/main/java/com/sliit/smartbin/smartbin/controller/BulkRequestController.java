@@ -19,10 +19,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN BULK REQUEST CONTROLLER
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This controller has ONE job: Handle HTTP requests for bulk waste collection requests.
+ *     Business logic (fee calculation, payment processing) delegated to BulkRequestService.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controller depends on BulkRequestService interface, not concrete implementation.
+ *     Service can be swapped or mocked for testing without changing controller.
+ */
 @Controller
 @RequestMapping("/resident")
 public class BulkRequestController {
     
+    // DIP: Depend on service interface abstraction
     @Autowired
     private BulkRequestService bulkRequestService;
     

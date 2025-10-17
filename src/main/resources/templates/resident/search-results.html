@@ -8,8 +8,8 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
@@ -20,19 +20,23 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #f8f9fa;
-            color: #333;
+            color: #202124;
+            min-height: 100vh;
         }
 
         .navbar {
             background: white;
             padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .navbar-content {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -40,62 +44,127 @@
         }
 
         .logo {
-            font-size: 1.2rem;
+            font-size: 1.375rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #202124;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .logo .material-icons {
-            font-size: 1.5rem;
-            color: #3498db;
+            font-size: 2rem;
+            color: #34a853;
         }
 
-        .btn-back {
-            background: transparent;
-            color: #666;
-            text-decoration: none;
-            font-weight: 500;
+        .user-info {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: all 0.3s;
+            gap: 1.5rem;
         }
 
-        .btn-back:hover {
-            color: #333;
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout:hover {
             background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
 
         .page-header {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
         }
 
-        .page-header h1 {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            font-weight: 600;
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             margin-bottom: 0.5rem;
         }
 
+        .back-link {
+            color: #5f6368;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #dadce0;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .back-link .material-icons {
+            font-size: 1.25rem;
+        }
+
+        .page-header h1 {
+            color: #202124;
+            font-size: 1.75rem;
+            font-weight: 400;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
         .page-header p {
-            color: #666;
-            font-size: 0.9rem;
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-top: 0.25rem;
+            margin-left: 56px;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .search-card h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #202124;
             margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-card h3 .material-icons {
+            font-size: 1.25rem;
+            color: #34a853;
         }
 
         .search-form {
@@ -122,67 +191,80 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: #2c3e50;
-            font-size: 0.9rem;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .form-group input[type="number"] {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: white;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
         }
 
         .form-group input[type="number"]:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .form-group input[type="number"]:hover {
+            border-color: #80868b;
         }
 
         .btn-search {
-            background: #2c3e50;
+            background: #34a853;
             color: white;
             border: none;
             padding: 0.75rem 2rem;
-            border-radius: 8px;
+            border-radius: 24px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: background 0.3s ease;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
             justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-search:hover {
-            background: #34495e;
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         .btn-location {
-            background: #3498db;
+            background: #1a73e8;
             color: white;
             padding: 0.75rem 2rem;
             border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 1rem;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 0.875rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             justify-content: center;
-            transition: background 0.3s ease;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-location:hover {
-            background: #2980b9;
+            background: #1557b0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         .btn-location:disabled {
-            background: #95a5a6;
+            background: #dadce0;
+            color: #80868b;
             cursor: not-allowed;
+            box-shadow: none;
         }
 
         .btn-location .material-icons {
@@ -207,15 +289,15 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #666;
-            font-size: 0.85rem;
+            color: #5f6368;
+            font-size: 0.875rem;
         }
 
         .radius-slider {
             width: 100%;
             height: 6px;
             border-radius: 10px;
-            background: #ddd;
+            background: #dadce0;
             outline: none;
             appearance: none;
             -webkit-appearance: none;
@@ -227,31 +309,33 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #3498db;
+            background: #1a73e8;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .radius-slider::-webkit-slider-thumb:hover {
             transform: scale(1.1);
-            background: #2980b9;
+            background: #1557b0;
         }
 
         .radius-slider::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #3498db;
+            background: #1a73e8;
             cursor: pointer;
             border: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .radius-value-badge {
-            background: #2c3e50;
+            background: #1a73e8;
             color: white;
             padding: 0.4rem 1rem;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             font-weight: 600;
             min-width: 70px;
             text-align: center;
@@ -314,7 +398,23 @@
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .map-container h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .map-container h3 .material-icons {
+            font-size: 1.25rem;
+            color: #34a853;
         }
 
         .map-wrapper {
@@ -325,9 +425,9 @@
         }
 
         #map {
-            height: 500px;
+            height: 400px;
             border-radius: 8px;
-            border: 1px solid #ddd;
+            border: 1px solid #dadce0;
         }
 
         .leaflet-popup-content-wrapper {
@@ -373,45 +473,45 @@
         }
 
         .fill-low {
-            background: #27ae60;
+            background: #34a853;
         }
 
         .fill-medium {
-            background: #f39c12;
+            background: #fbbc04;
         }
 
         .fill-high {
-            background: #e74c3c;
+            background: #ea4335;
         }
 
         .map-legend {
             background: #f8f9fa;
-            padding: 1.5rem;
+            padding: 1.25rem;
             border-radius: 8px;
             height: fit-content;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            gap: 0.75rem;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .map-legend h4 {
             margin: 0;
-            color: #2c3e50;
-            font-size: 1rem;
+            color: #202124;
+            font-size: 0.875rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid #3498db;
+            border-bottom: 2px solid #34a853;
         }
 
         .map-legend-item {
             display: flex;
             align-items: flex-start;
             gap: 0.75rem;
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 0.875rem;
+            color: #5f6368;
             padding: 0.5rem 0;
         }
 
@@ -421,7 +521,7 @@
 
         .map-legend-item small {
             font-size: 0.75rem;
-            color: #999;
+            color: #80868b;
         }
 
         .legend-icon {
@@ -433,19 +533,19 @@
         }
 
         .legend-user {
-            background: #3498db;
+            background: #1a73e8;
         }
 
         .legend-empty {
-            background: #27ae60;
+            background: #34a853;
         }
 
         .legend-partial {
-            background: #f39c12;
+            background: #fbbc04;
         }
 
         .legend-full {
-            background: #e74c3c;
+            background: #ea4335;
         }
 
         .bins-grid {
@@ -458,16 +558,16 @@
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s;
             cursor: pointer;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e0e0e0;
         }
 
         .bin-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
+            border-color: #34a853;
         }
 
         .bin-header {
@@ -478,68 +578,68 @@
         }
 
         .bin-qr {
-            font-weight: 700;
-            color: #2c3e50;
-            font-size: 1.1rem;
+            font-weight: 600;
+            color: #202124;
+            font-size: 1rem;
         }
 
         .bin-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 8px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
             font-size: 0.75rem;
             font-weight: 500;
             text-transform: none;
         }
 
         .status-EMPTY {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #e6f4ea;
+            color: #137333;
         }
 
         .status-PARTIAL {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: #fef7e0;
+            color: #b06000;
         }
 
         .status-FULL {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #fce8e6;
+            color: #c5221f;
         }
 
         .status-OVERDUE {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #fce8e6;
+            color: #c5221f;
         }
 
         .bin-location {
-            color: #666;
+            color: #5f6368;
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
 
         .bin-location .material-icons {
             font-size: 18px;
-            color: #e74c3c;
+            color: #ea4335;
         }
 
         .bin-type {
             display: inline-block;
             background: #f8f9fa;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            color: #666;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            color: #5f6368;
             margin-bottom: 0.75rem;
             font-weight: 500;
         }
 
         .fill-bar-card {
-            background: #e9ecef;
+            background: #e0e0e0;
             border-radius: 6px;
-            height: 20px;
+            height: 18px;
             overflow: hidden;
             margin-bottom: 1rem;
         }
@@ -551,30 +651,32 @@
             justify-content: center;
             color: white;
             font-size: 0.75rem;
-            font-weight: bold;
+            font-weight: 600;
             transition: width 0.3s ease;
         }
 
         .btn-view {
-            background: #3498db;
+            background: #34a853;
             color: white;
             padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 6px;
+            border-radius: 24px;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            font-weight: 500;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 0.875rem;
             width: 100%;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-view:hover {
-            background: #2980b9;
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         .btn-view .material-icons {
@@ -584,27 +686,30 @@
         .empty-state {
             text-align: center;
             padding: 3rem 2rem;
-            color: #666;
+            color: #5f6368;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
         }
 
         .empty-state .icon {
             font-size: 4rem;
             margin-bottom: 1rem;
-            color: #95a5a6;
+            color: #80868b;
         }
 
         .empty-state h3 {
-            color: #2c3e50;
-            font-size: 1.2rem;
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 400;
             margin-bottom: 0.5rem;
         }
 
         .empty-state p {
-            color: #666;
+            color: #5f6368;
             margin-bottom: 1rem;
+            font-size: 0.875rem;
         }
 
         .results-header {
@@ -612,25 +717,25 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e0e0e0;
         }
 
         .results-count {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #2c3e50;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .results-info {
-            color: #666;
-            font-size: 0.85rem;
+            color: #5f6368;
+            font-size: 0.875rem;
             margin-top: 0.25rem;
         }
 
@@ -640,21 +745,21 @@
         }
 
         .quick-action-hint {
-            background: #e8f4f8;
-            color: #2c3e50;
+            background: #e8f5e9;
+            color: #137333;
             padding: 0.75rem 1.25rem;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             margin-top: 1rem;
-            border: 1px solid #d1e7f0;
+            border: 1px solid #c8e6c9;
         }
 
         .quick-action-hint .material-icons {
             font-size: 18px;
-            color: #3498db;
+            color: #34a853;
         }
 
         @media (max-width: 768px) {
@@ -703,27 +808,42 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Navbar -->
     <div class="navbar">
         <div class="navbar-content">
             <div class="logo">
-                <span class="material-icons">search</span>
-                Search Nearby Bins
+                <span class="material-icons">delete_outline</span>
+                SmartBin
             </div>
-            <a href="/resident/dashboard" class="btn-back">
-                ← Back to Dashboard
-            </a>
+            <div class="user-info">
+                <span th:text="${user != null ? user.name : 'Guest'}">Guest</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
         </div>
     </div>
 
     <div class="container">
+        <!-- Page Header -->
         <div class="page-header">
-            <h1>🔍 Search Waste Bins Near You</h1>
+            <div class="header-content">
+                <a href="/resident/dashboard" class="back-link">
+                    <span class="material-icons">arrow_back</span>
+                </a>
+                <h1>Search Nearby Bins</h1>
+            </div>
             <p>Use your current location or enter coordinates manually to find nearby waste bins.</p>
+        </div>
+
+        <!-- Search Form Card -->
+        <div class="search-card">
+            <h3>
+                <span class="material-icons">tune</span>
+                Search Parameters
+            </h3>
             
             <div class="quick-action-hint">
                 <span class="material-icons">info</span>
-                <span>Quick Tip: Click "My Location" then "Search" to find bins near you!</span>
+                <span>Quick Tip: Click "Use My Location" then "Search Bins" to find bins near you!</span>
             </div>
 
             <div id="locationStatus" class="location-status"></div>
@@ -799,16 +919,10 @@
         </div>
 
         <div class="map-container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="font-size: 1.1rem; font-weight: 600; color: #2c3e50; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="material-icons" style="color: #3498db;">map</span>
-                    Interactive Map
-                </h2>
-                <div style="color: #666; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="material-icons" style="font-size: 16px;">touch_app</span>
-                    <span>Click markers for details</span>
-                </div>
-            </div>
+            <h3>
+                <span class="material-icons">map</span>
+                Interactive Map
+            </h3>
 
             <div class="map-wrapper">
                 <div id="map"></div>
@@ -838,14 +952,14 @@
         <div th:if="${bins != null and !bins.empty}" class="results-header">
             <div>
                 <div class="results-count">
-                    <span class="material-icons" style="color: #3498db;">location_on</span>
+                    <span class="material-icons" style="color: #34a853;">location_on</span>
                     Found <span th:text="${bins.size()}">0</span> Bins
                 </div>
                 <div class="results-info">
                     Within <span th:text="${searchRadius}">5.0</span> km radius of your search location
                 </div>
             </div>
-            <div style="color: #666; font-size: 0.85rem;">
+            <div style="color: #5f6368; font-size: 0.875rem;">
                 <span class="material-icons" style="font-size: 16px; vertical-align: middle;">info</span>
                 Colors indicate fill level
             </div>
