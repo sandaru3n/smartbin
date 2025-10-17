@@ -176,8 +176,8 @@ class RecyclingServiceImplTest {
         // Then
         assertNotNull(result);
         assertEquals(5, result.size());
-        assertEquals("RU001", result.get(0).getUnitId());
-        assertEquals("Colombo Central Recycling Hub", result.get(0).getUnitName());
+        assertEquals("RU001", result.get(0).getQrCode());
+        assertEquals("Colombo Central Recycling Hub", result.get(0).getName());
     }
 
     // ========== NEGATIVE TEST CASES (Sad Path) ==========
