@@ -1,8 +1,6 @@
 package com.sliit.smartbin.smartbin.controller;
 
 import com.sliit.smartbin.smartbin.dto.BulkRequestDTO;
-import com.sliit.smartbin.smartbin.model.BulkRequest;
-import com.sliit.smartbin.smartbin.model.BulkRequestStatus;
 import com.sliit.smartbin.smartbin.model.PaymentStatus;
 import com.sliit.smartbin.smartbin.model.User;
 import com.sliit.smartbin.smartbin.service.BulkRequestService;
@@ -15,7 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 
