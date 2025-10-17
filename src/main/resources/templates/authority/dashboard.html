@@ -8,6 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -26,9 +28,10 @@
             line-height: 1.5;
         }
 
+        /* Top Navigation Bar */
         .header {
             background: white;
-            padding: 1rem 1.5rem;
+            padding: 1rem 2rem;
             box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
             display: flex;
             justify-content: space-between;
@@ -37,14 +40,55 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
+            margin: 0;
         }
 
-        .header h1 {
+        .header-inner {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-title {
             color: #202124;
-            font-size: 1.375rem;
-            font-weight: 400;
+            font-size: 1.25rem;
+            font-weight: 500;
             margin: 0;
-            letter-spacing: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
         }
 
         .user-info {
@@ -55,7 +99,7 @@
         }
 
         .notification-icon {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             color: #5f6368;
             cursor: pointer;
             transition: color 0.2s ease;
@@ -66,6 +110,10 @@
         .notification-icon:hover {
             color: #1a73e8;
             background: rgba(26, 115, 232, 0.08);
+        }
+
+        .notification-icon .material-icons {
+            font-size: 1.25rem;
         }
 
         .user-name {
@@ -87,10 +135,95 @@
             font-size: 0.875rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .user-icon:hover {
             box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(60,64,67,.2), 0 4px 5px 0 rgba(60,64,67,.14), 0 1px 10px 0 rgba(60,64,67,.12);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dropdown-user-name {
+            font-weight: 500;
+            color: #202124;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #202124;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item i,
+        .dropdown-item .material-icons {
+            color: #5f6368;
+            font-size: 1.125rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+        }
+
+        .dropdown-item.logout i,
+        .dropdown-item.logout .material-icons {
+            color: #ea4335;
         }
 
         .main-container {
@@ -726,8 +859,48 @@
             background: #e74c3c;
         }
 
+        .status-pending {
+            background: #fef7e0;
+            color: #fbbc04;
+        }
+
+        .status-success {
+            background: #e6f4ea;
+            color: #34a853;
+        }
+
+        .status-info {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .status-warning {
+            background: #fce8e6;
+            color: #ea4335;
+        }
+
 
         @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .header-inner {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.375rem 0.5rem;
+            }
+
             .main-container {
                 padding: 1rem;
             }
@@ -767,15 +940,66 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header / Top Navigation Bar -->
     <div class="header">
-        <h1>Waste Management Dashboard</h1>
-        <div class="user-info">
-            <div class="notification-icon">
-                <i class="fas fa-bell"></i>
+        <div class="header-inner">
+            <h1 class="nav-title">Dashboard</h1>
+            <div class="nav-links">
+                <a href="/authority/dashboard" class="nav-link active">
+                    <span class="material-icons" style="font-size: 18px;">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="/authority/manage-collectors" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">group</span>
+                    Manage Collectors
+                </a>
+                <a href="/authority/dispatch" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">local_shipping</span>
+                    Dispatch
+                </a>
+                <a href="/authority/reports" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">assessment</span>
+                    Reports
+                </a>
+                <a href="/authority/bulk-requests" class="nav-link">
+                    <span class="material-icons" style="font-size: 18px;">inventory</span>
+                    Bulk Requests
+                </a>
             </div>
-            <span class="user-name" th:text="${user.name}">Waste Manager</span>
-            <div class="user-icon">W</div>
+            <div class="user-info">
+                <div class="notification-icon">
+                    <span class="material-icons">notifications</span>
+                </div>
+                <span class="user-name" th:text="${user.name}">Waste Manager</span>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="user-icon" onclick="toggleProfileDropdown()">
+                        <span th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'W'}">W</span>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" th:text="${user.name}">Waste Manager</div>
+                            <div class="dropdown-user-email" th:text="${user.email}">admin@smartbin.com</div>
+                        </div>
+                        <a href="/authority/dashboard" class="dropdown-item">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/authority/profile" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="/authority/settings" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout" class="dropdown-item logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -815,15 +1039,6 @@
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon" style="background: #e6f4ea; color: #34a853;">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="metric-content">
-                    <div class="metric-label">Last Collection</div>
-                    <div class="metric-value" th:text="${systemOverview.lastCollectionTime}">0h ago</div>
-                </div>
-            </div>
-            <div class="metric-card">
                 <div class="metric-icon" style="background: #fff3e0; color: #ff9800;">
                     <i class="fas fa-users"></i>
                 </div>
@@ -857,33 +1072,76 @@
                 <i class="fas fa-users"></i>
                 Manage Collectors
             </a>
+            <a href="/authority/bulk-requests" class="action-btn secondary">
+                <i class="fas fa-box"></i>
+                Bulk Collection Requests
+            </a>
         </div>
 
-        <!-- Real-time Collector Tracking Section -->
-        <div class="map-section">
+        <!-- Bulk Collection Requests Section -->
+        <div class="map-section" th:if="${recentBulkRequests != null and !recentBulkRequests.empty}">
             <div class="map-header">
-                <h2 class="map-title">Real-time Collector Tracking</h2>
+                <h2 class="map-title">Recent Bulk Collection Requests</h2>
                 <div class="legend">
                     <div class="legend-item">
-                        <div class="legend-dot" style="background: #4caf50;"></div>
-                        <span>Available</span>
+                        <span>Pending Payment: </span>
+                        <strong th:text="${pendingBulkRequests}">0</strong>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-dot" style="background: #ff9800;"></div>
-                        <span>On Route</span>
+                        <span>Awaiting Assignment: </span>
+                        <strong th:text="${paidBulkRequests}">0</strong>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-dot" style="background: #f44336;"></div>
-                        <span>Busy</span>
+                        <span>Scheduled: </span>
+                        <strong th:text="${scheduledBulkRequests}">0</strong>
                     </div>
-                    <div class="auto-refresh">
-                        <i class="fas fa-sync-alt refresh-icon"></i>
-                        <span>Live Updates</span>
-                    </div>
+                    <a href="/authority/bulk-requests" style="text-decoration: none;">
+                        <button class="btn btn-primary" style="margin-left: auto;">
+                            <i class="fas fa-list"></i> View All
+                        </button>
+                    </a>
                 </div>
             </div>
-            <div class="collectors-grid" id="collectorsGrid">
-                <!-- Collectors will be loaded here dynamically -->
+            <div class="collectors-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                <div th:each="request : ${recentBulkRequests}" class="collector-card available">
+                    <div class="collector-header">
+                        <div class="collector-avatar" style="background: #ff9800;">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="collector-info">
+                            <h4 th:text="${request.requestId}">BULK-123</h4>
+                            <p th:text="${request.category.displayName}">Category</p>
+                        </div>
+                        <span class="collector-status" 
+                              th:classappend="${request.status.name() == 'PENDING' ? 'status-pending' : 
+                                             request.status.name() == 'PAYMENT_COMPLETED' ? 'status-success' : 
+                                             request.status.name() == 'SCHEDULED' ? 'status-info' : 
+                                             request.status.name() == 'COMPLETED' ? 'status-success' : 'status-warning'}"
+                              style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                            <span th:text="${request.status.displayName}">Status</span>
+                        </span>
+                    </div>
+                    <div class="collector-activity" style="margin-top: 0.75rem;">
+                        <p><i class="fas fa-user"></i> <span th:text="${request.userName}">User</span></p>
+                        <p><i class="fas fa-map-marker-alt"></i> <span th:text="${request.streetAddress + ', ' + request.city}">Location</span></p>
+                        <p><i class="fas fa-rupee-sign"></i> LKR <span th:text="${#numbers.formatDecimal(request.totalAmount, 0, 2)}">0.00</span></p>
+                        <p th:if="${request.scheduledDate != null}">
+                            <i class="fas fa-calendar"></i> 
+                            <span th:text="${#temporals.format(request.scheduledDate, 'MMM dd, yyyy hh:mm a')}">Schedule</span>
+                        </p>
+                    </div>
+                    <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+                        <a th:href="@{/authority/bulk-requests}" class="action-btn secondary" style="flex: 1; text-align: center; padding: 0.5rem; font-size: 0.875rem;">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <button th:if="${request.status.name() == 'PAYMENT_COMPLETED'}" 
+                                class="action-btn" 
+                                style="flex: 1; padding: 0.5rem; font-size: 0.875rem;"
+                                onclick="alert('Please go to Bulk Requests page to assign collector')">
+                            <i class="fas fa-user-plus"></i> Assign
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -949,7 +1207,6 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             initializeMap();
-            loadCollectors();
             startAutoRefresh();
             updateLastUpdatedTime();
         });
@@ -1068,120 +1325,11 @@
             }
         }
 
-        // Load and display collectors
-        function loadCollectors() {
-            fetch('/authority/api/collectors')
-                .then(response => response.json())
-                .then(collectors => {
-                    displayCollectors(collectors);
-                })
-                .catch(error => {
-                    console.error('Failed to fetch collectors:', error);
-                });
-        }
-
-        function displayCollectors(collectors) {
-            const grid = document.getElementById('collectorsGrid');
-            grid.innerHTML = '';
-
-            collectors.forEach(collector => {
-                const card = createCollectorCard(collector);
-                grid.appendChild(card);
-            });
-        }
-
-        function createCollectorCard(collector) {
-            const card = document.createElement('div');
-            card.className = `collector-card ${collector.status}`;
-            
-            const statusText = getStatusText(collector.status);
-            const statusColor = getStatusColor(collector.status);
-            
-            // Build routes HTML
-            let routesHTML = '';
-            if (collector.routes && collector.routes.length > 0) {
-                routesHTML = '<div class="assigned-routes-list">';
-                collector.routes.forEach(route => {
-                    const statusBadge = route.status === 'ASSIGNED' ? 
-                        '<span class="route-badge assigned">Assigned</span>' : 
-                        '<span class="route-badge in-progress">In Progress</span>';
-                    routesHTML += `
-                        <div class="route-item">
-                            <div class="route-name">${route.name} ${statusBadge}</div>
-                            <div class="route-meta">
-                                <span><i class="material-icons">location_on</i> ${route.binCount} bins</span>
-                                <span><i class="material-icons">route</i> ${route.distance} km</span>
-                                <span><i class="material-icons">schedule</i> ${route.duration} min</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                routesHTML += '</div>';
-            }
-            
-            card.innerHTML = `
-                <div class="collector-header">
-                    <div class="collector-avatar">${collector.name.charAt(0)}</div>
-                    <div class="collector-info">
-                        <h4>${collector.name}</h4>
-                        <p>${collector.region || 'No region assigned'}</p>
-                    </div>
-                    <div class="collector-status">
-                        <div class="status-dot ${collector.status}"></div>
-                        <span style="color: ${statusColor}">${statusText}</span>
-                    </div>
-                </div>
-                <div class="collector-activity">
-                    <p>${collector.currentActivity || 'No current activity'}</p>
-                </div>
-                <div class="collector-stats">
-                    <div class="stat-item">
-                        <div class="stat-value">${collector.assignedRoutes || 0}</div>
-                        <div class="stat-label">Assigned</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${collector.inProgressRoutes || 0}</div>
-                        <div class="stat-label">In Progress</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${collector.todayCompletedRoutes || 0}</div>
-                        <div class="stat-label">Completed Today</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${collector.todayCollections || 0}</div>
-                        <div class="stat-label">Collections</div>
-                    </div>
-                </div>
-                ${routesHTML}
-            `;
-            
-            return card;
-        }
-
-        function getStatusText(status) {
-            switch(status) {
-                case 'available': return 'Available';
-                case 'on-route': return 'On Route';
-                case 'busy': return 'Busy';
-                default: return 'Unknown';
-            }
-        }
-
-        function getStatusColor(status) {
-            switch(status) {
-                case 'available': return '#4caf50';
-                case 'on-route': return '#ff9800';
-                case 'busy': return '#f44336';
-                default: return '#9e9e9e';
-            }
-        }
-
         // Auto-refresh functionality
         function startAutoRefresh() {
             refreshInterval = setInterval(() => {
                 refreshMap();
                 updateBinStatus();
-                loadCollectors();
                 updateLastUpdatedTime();
             }, 30000); // 30 seconds
         }
@@ -1316,6 +1464,34 @@
                 clearInterval(refreshInterval);
             }
         });
+
+        // Profile Dropdown Functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const isClickInside = dropdown && dropdown.contains(event.target);
+            
+            if (!isClickInside && dropdown && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function(event) {
+                // Allow links to navigate
+                if (event.target.tagName === 'A' || event.target.closest('a')) {
+                    return;
+                }
+                event.stopPropagation();
+            });
+        }
     </script>
 </body>
 </html>

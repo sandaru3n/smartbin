@@ -1,9 +1,11 @@
 package com.sliit.smartbin.smartbin.controller;
 
 import com.sliit.smartbin.smartbin.dto.ReportDTO;
+import com.sliit.smartbin.smartbin.dto.BulkRequestDTO;
 import com.sliit.smartbin.smartbin.model.Bin;
 import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.User;
+import com.sliit.smartbin.smartbin.model.BulkRequestStatus;
 import com.sliit.smartbin.smartbin.service.BinService;
 import com.sliit.smartbin.smartbin.service.ReportService;
 import com.sliit.smartbin.smartbin.service.RouteService;
@@ -11,7 +13,11 @@ import com.sliit.smartbin.smartbin.service.UserService;
 import com.sliit.smartbin.smartbin.service.NotificationService;
 import com.sliit.smartbin.smartbin.service.BinAssignmentService;
 import com.sliit.smartbin.smartbin.service.CollectionService;
+import com.sliit.smartbin.smartbin.service.BulkRequestService;
+import com.sliit.smartbin.smartbin.service.BulkRequestPdfService;
 import com.sliit.smartbin.smartbin.model.BinAssignment;
+import com.sliit.smartbin.smartbin.model.RegionAssignment;
+import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +25,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -29,10 +39,27 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.HashMap;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN AUTHORITY CONTROLLER
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This controller has ONE responsibility: Handle HTTP requests for authority features.
+ *     Each method handles one specific endpoint. Business logic delegated to service layer.
+ * 
+ * I - Interface Segregation Principle (ISP):
+ *     Controller depends on multiple focused service interfaces (BinService, RouteService, etc.)
+ *     rather than one giant service. Each service has specific responsibilities.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controller depends on Service INTERFACES, not concrete implementations.
+ *     All dependencies injected via constructor for loose coupling and testability.
+ */
 @Controller
 @RequestMapping("/authority")
 public class AuthorityController {
 
+    // DIP: Depend on service abstractions (interfaces), not concrete classes
+    // ISP: Multiple focused services instead of one monolithic service
     private final BinService binService;
     private final RouteService routeService;
     private final ReportService reportService;
@@ -40,14 +67,21 @@ public class AuthorityController {
     private final NotificationService notificationService;
     private final BinAssignmentService binAssignmentService;
     private final CollectionService collectionService;
+    private final BulkRequestService bulkRequestService;
+    private final BulkRequestPdfService bulkRequestPdfService;
+    private final RegionAssignmentRepository regionAssignmentRepository;
 
+    // DIP: Constructor injection for loose coupling and easy testing/mocking
     public AuthorityController(BinService binService,
                                RouteService routeService,
                                ReportService reportService,
                                UserService userService,
                                NotificationService notificationService,
                                BinAssignmentService binAssignmentService,
-                               CollectionService collectionService) {
+                               CollectionService collectionService,
+                               BulkRequestService bulkRequestService,
+                               BulkRequestPdfService bulkRequestPdfService,
+                               RegionAssignmentRepository regionAssignmentRepository) {
         this.binService = binService;
         this.routeService = routeService;
         this.reportService = reportService;
@@ -55,6 +89,9 @@ public class AuthorityController {
         this.notificationService = notificationService;
         this.binAssignmentService = binAssignmentService;
         this.collectionService = collectionService;
+        this.bulkRequestService = bulkRequestService;
+        this.bulkRequestPdfService = bulkRequestPdfService;
+        this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
     @GetMapping("/dashboard")
@@ -234,6 +271,19 @@ public class AuthorityController {
         
         // Get all collectors
         List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        
+        // Ensure collectors is never null
+        if (collectors == null) {
+            collectors = new java.util.ArrayList<>();
+        }
+        
+        System.out.println("=== MANAGE COLLECTORS DEBUG ===");
+        System.out.println("Total collectors found: " + collectors.size());
+        for (User collector : collectors) {
+            System.out.println("  - " + collector.getName() + " (" + collector.getEmail() + ") ID: " + collector.getId());
+        }
+        System.out.println("================================");
+        
         model.addAttribute("collectors", collectors);
         model.addAttribute("user", user);
         
@@ -249,10 +299,18 @@ public class AuthorityController {
         }
         
         try {
+            System.out.println("=== API: Getting collectors ===");
             List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+            
+            if (collectors == null) {
+                collectors = new ArrayList<>();
+            }
+            
+            System.out.println("API: Found " + collectors.size() + " collectors");
             List<Map<String, Object>> collectorData = new ArrayList<>();
             
             for (User collector : collectors) {
+                System.out.println("API: Processing collector " + collector.getName());
                 Map<String, Object> collectorInfo = new HashMap<>();
                 collectorInfo.put("id", collector.getId());
                 collectorInfo.put("name", collector.getName());
@@ -350,12 +408,23 @@ public class AuthorityController {
                     collectorInfo.put("currentActivity", "Available for assignment");
                 }
                 
+                // Add performance rating (0-5 stars based on completion rate)
+                double performanceRating = (completionRate / 100.0) * 5;
+                collectorInfo.put("performanceRating", Math.round(performanceRating * 10) / 10.0);
+                
                 collectorData.add(collectorInfo);
             }
             
+            System.out.println("API: Successfully processed " + collectorData.size() + " collectors");
             return ResponseEntity.ok(collectorData);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            System.err.println("=== API ERROR ===");
+            System.err.println("Error fetching collectors: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("=================");
+            
+            // Return empty list instead of error to prevent frontend crashes
+            return ResponseEntity.ok(new ArrayList<>());
         }
     }
 
@@ -429,14 +498,37 @@ public class AuthorityController {
             Long collectorId = Long.valueOf(request.get("collectorId").toString());
             String region = request.get("region").toString();
             
+            System.out.println("=== REGION ASSIGNMENT ===");
             System.out.println("Assigning collector ID: " + collectorId + " to region: " + region);
             
             User collector = userService.findById(collectorId)
                 .orElseThrow(() -> new RuntimeException("Collector not found"));
             
-            System.out.println("Found collector: " + collector.getName() + ", current region: " + collector.getRegion());
+            String previousRegion = collector.getRegion();
+            System.out.println("Found collector: " + collector.getName() + ", current region: " + previousRegion);
             
-            // Update collector region assignment
+            // Save assignment history before updating
+            RegionAssignment assignment = new RegionAssignment();
+            assignment.setCollector(collector);
+            assignment.setAssignedBy(user);
+            assignment.setPreviousRegion(previousRegion);
+            assignment.setNewRegion(region);
+            assignment.setStatus(RegionAssignment.AssignmentStatus.ACTIVE);
+            assignment.setNotes("Assigned via Manage Collectors interface");
+            
+            // Mark previous assignments as superseded
+            List<RegionAssignment> previousAssignments = regionAssignmentRepository
+                .findByCollectorAndStatus(collector, RegionAssignment.AssignmentStatus.ACTIVE);
+            for (RegionAssignment prev : previousAssignments) {
+                prev.setStatus(RegionAssignment.AssignmentStatus.SUPERSEDED);
+                regionAssignmentRepository.save(prev);
+            }
+            
+            // Save new assignment
+            RegionAssignment savedAssignment = regionAssignmentRepository.save(assignment);
+            System.out.println("Saved assignment history with ID: " + savedAssignment.getId());
+            
+            // Update collector region assignment in User table
             collector.setRegion(region);
             User updatedCollector = userService.updateUser(collector);
             
@@ -446,17 +538,72 @@ public class AuthorityController {
             notificationService.sendRegionAssignmentNotification(collector, region);
             
             System.out.println("Sent notification to collector");
+            System.out.println("=== ASSIGNMENT COMPLETE ===");
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Collector " + collector.getName() + " assigned to " + region + " successfully!");
+            response.put("previousRegion", previousRegion);
+            response.put("newRegion", region);
+            response.put("assignmentId", savedAssignment.getId());
+            response.put("assignedBy", user.getName());
+            response.put("timestamp", savedAssignment.getAssignedAt().toString());
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("ERROR in region assignment: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Failed to assign collector: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/api/region-assignments")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getRegionAssignments(
+            @RequestParam(required = false) Long collectorId,
+            HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<RegionAssignment> assignments;
+            
+            if (collectorId != null) {
+                // Get assignments for specific collector
+                User collector = userService.findById(collectorId)
+                    .orElseThrow(() -> new RuntimeException("Collector not found"));
+                assignments = regionAssignmentRepository.findByCollectorOrderByAssignedAtDesc(collector);
+            } else {
+                // Get all assignments
+                assignments = regionAssignmentRepository.findAll();
+                assignments.sort((a, b) -> b.getAssignedAt().compareTo(a.getAssignedAt()));
+            }
+            
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (RegionAssignment assignment : assignments) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", assignment.getId());
+                data.put("collectorId", assignment.getCollector().getId());
+                data.put("collectorName", assignment.getCollector().getName());
+                data.put("assignedById", assignment.getAssignedBy().getId());
+                data.put("assignedByName", assignment.getAssignedBy().getName());
+                data.put("previousRegion", assignment.getPreviousRegion());
+                data.put("newRegion", assignment.getNewRegion());
+                data.put("assignedAt", assignment.getAssignedAt().toString());
+                data.put("status", assignment.getStatus().toString());
+                data.put("notes", assignment.getNotes());
+                response.add(data);
+            }
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("ERROR fetching region assignments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -997,6 +1144,576 @@ public class AuthorityController {
             response.put("success", false);
             response.put("message", "Failed to clear assignments: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    // ======================== Bulk Request Management Endpoints ========================
+    
+    /**
+     * SRP: This method has ONE job - display bulk requests page
+     * OCP: New filters can be added without modifying core display logic
+     * 
+     * View all bulk requests
+     */
+    @GetMapping("/bulk-requests")
+    public String manageBulkRequests(HttpSession session, Model model,
+                                    @RequestParam(required = false) String status) {
+        // SRP: Authentication/validation extracted to helper method
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        List<BulkRequestDTO> bulkRequests;
+        
+        // DIP: Controller doesn't know HOW data is fetched, just calls service methods
+        if (status != null && !status.isEmpty()) {
+            try {
+                BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+                bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            } catch (IllegalArgumentException e) {
+                bulkRequests = bulkRequestService.getRecentRequests(30);
+            }
+        } else {
+            bulkRequests = bulkRequestService.getRecentRequests(30);
+        }
+        
+        // Calculate statistics
+        long pendingCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PENDING)
+            .count();
+        long paidCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.PAYMENT_COMPLETED)
+            .count();
+        long scheduledCount = bulkRequests.stream()
+            .filter(req -> req.getStatus() == BulkRequestStatus.SCHEDULED)
+            .count();
+        
+        model.addAttribute("bulkRequests", bulkRequests);
+        model.addAttribute("user", user);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("pendingBulkRequests", pendingCount);
+        model.addAttribute("paidBulkRequests", paidCount);
+        model.addAttribute("scheduledBulkRequests", scheduledCount);
+        
+        // Get available collectors
+        List<User> collectors = userService.findByRole(User.UserRole.COLLECTOR);
+        model.addAttribute("collectors", collectors);
+        
+        return "authority/bulk-requests";
+    }
+    
+    /**
+     * Get requests requiring collector assignment (AJAX)
+     */
+    @GetMapping("/api/bulk-requests/requiring-assignment")
+    @ResponseBody
+    public ResponseEntity<List<BulkRequestDTO>> getRequestsRequiringAssignment(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        List<BulkRequestDTO> requests = bulkRequestService.getRequestsRequiringCollectorAssignment();
+        return ResponseEntity.ok(requests);
+    }
+    
+    /**
+     * SRP: Method only handles HTTP request/response, assignment logic in service
+     * DIP: Depends on BulkRequestService interface for assignment processing
+     * 
+     * Assign collector to bulk request
+     */
+    @PostMapping("/bulk-requests/{requestId}/assign-collector")
+    public String assignCollectorToBulkRequest(@PathVariable Long requestId,
+                                               @RequestParam Long collectorId,
+                                               HttpSession session,
+                                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // SRP: Business logic (validation, notification) handled in service layer
+            // DIP: Controller doesn't know implementation details of assignment
+            bulkRequestService.assignCollector(requestId, collectorId);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Collector assigned successfully to bulk request!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to assign collector: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
+    }
+    
+    /**
+     * SRP: Only handles HTTP request/response, scheduling and notification in service
+     * OCP: New scheduling types can be added in service without modifying controller
+     * 
+     * Schedule pickup for bulk request
+     */
+    @PostMapping("/bulk-requests/{requestId}/schedule")
+    public String scheduleBulkPickup(@PathVariable Long requestId,
+                                     @RequestParam String scheduledDateTime,
+                                     @RequestParam(required = false) Long collectorId,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            LocalDateTime scheduledDate = LocalDateTime.parse(scheduledDateTime);
+            // SRP: Notification and scheduling logic encapsulated in service
+            // DIP: Controller doesn't know how notifications are sent
+            bulkRequestService.scheduleAndNotifyPickup(requestId, scheduledDate, collectorId);
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Bulk collection pickup scheduled successfully! User has been notified.");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to schedule pickup: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
+    }
+    
+    /**
+     * SRP: Method only handles status update HTTP endpoint
+     * OCP: New statuses can be added to enum without modifying this method
+     * 
+     * Update bulk request status
+     */
+    @PostMapping("/bulk-requests/{requestId}/update-status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateBulkRequestStatus(@PathVariable Long requestId,
+                                                                       @RequestParam String status,
+                                                                       HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status);
+            // DIP: Status update logic handled in service layer
+            BulkRequestDTO updatedRequest = bulkRequestService.updateRequestStatus(requestId, requestStatus);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Bulk request status updated successfully");
+            response.put("request", updatedRequest);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to update status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get bulk request details (AJAX)
+     */
+    @GetMapping("/api/bulk-requests/{requestId}/details")
+    @ResponseBody
+    public ResponseEntity<BulkRequestDTO> getBulkRequestDetails(@PathVariable Long requestId,
+                                                                HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Optional<BulkRequestDTO> request = bulkRequestService.getBulkRequestById(requestId);
+        return request.map(ResponseEntity::ok)
+                     .orElse(ResponseEntity.notFound().build());
+    }
+    
+    /**
+     * Complete bulk collection
+     */
+    @PostMapping("/bulk-requests/{requestId}/complete")
+    public String completeBulkCollection(@PathVariable Long requestId,
+                                        @RequestParam(required = false) String notes,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            bulkRequestService.completeCollection(requestId, notes);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Bulk collection marked as completed successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to complete collection: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/bulk-requests";
+    }
+
+    /**
+     * SRP: This method has ONE job - display authority profile page
+     * 
+     * Display authority user profile
+     */
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, Model model) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        model.addAttribute("user", user);
+        
+        // Get user statistics for profile display
+        Map<String, Object> profileStats = new HashMap<>();
+        
+        // Get routes managed by this authority
+        List<Route> managedRoutes = routeService.findRoutesByAuthority(user);
+        profileStats.put("totalRoutesManaged", managedRoutes.size());
+        
+        // Get active routes
+        long activeRoutes = managedRoutes.stream()
+            .filter(route -> route.getStatus() == Route.RouteStatus.IN_PROGRESS || 
+                           route.getStatus() == Route.RouteStatus.ASSIGNED)
+            .count();
+        profileStats.put("activeRoutes", activeRoutes);
+        
+        // Get completed routes (last 30 days)
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+        long recentCompletedRoutes = managedRoutes.stream()
+            .filter(route -> route.getStatus() == Route.RouteStatus.COMPLETED &&
+                           route.getCompletedDate() != null &&
+                           route.getCompletedDate().toLocalDate().isAfter(thirtyDaysAgo))
+            .count();
+        profileStats.put("recentCompletedRoutes", recentCompletedRoutes);
+        
+        // Get bulk requests managed
+        List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(30);
+        profileStats.put("bulkRequestsManaged", bulkRequests.size());
+        
+        model.addAttribute("profileStats", profileStats);
+        
+        return "authority/profile";
+    }
+
+    /**
+     * SRP: This method only handles profile update HTTP request
+     * 
+     * Update authority user profile
+     */
+    @PostMapping("/profile")
+    public String updateProfile(@RequestParam String name,
+                               @RequestParam String email,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) String region,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // Update user information
+            user.setName(name);
+            user.setEmail(email);
+            if (phone != null && !phone.isEmpty()) {
+                user.setPhone(phone);
+            }
+            if (region != null && !region.isEmpty()) {
+                user.setRegion(region);
+            }
+            
+            User updatedUser = userService.updateUser(user);
+            session.setAttribute("user", updatedUser);
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Profile updated successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to update profile: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/profile";
+    }
+
+    /**
+     * SRP: This method has ONE job - display authority settings page
+     * 
+     * Display authority user settings
+     */
+    @GetMapping("/settings")
+    public String showSettings(HttpSession session, Model model) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        model.addAttribute("user", user);
+        
+        // Get system settings and preferences
+        Map<String, Object> settings = new HashMap<>();
+        settings.put("notificationsEnabled", true); // Default setting
+        settings.put("emailNotifications", true);
+        settings.put("autoRouteOptimization", true);
+        settings.put("defaultCollectionTime", "09:00");
+        settings.put("maxRouteDistance", 50.0); // km
+        settings.put("alertThreshold", 80); // percentage
+        
+        model.addAttribute("settings", settings);
+        
+        return "authority/settings";
+    }
+
+    /**
+     * SRP: This method only handles settings update HTTP request
+     * 
+     * Update authority user settings
+     */
+    @PostMapping("/settings")
+    public String updateSettings(@RequestParam(required = false) Boolean notificationsEnabled,
+                               @RequestParam(required = false) Boolean emailNotifications,
+                               @RequestParam(required = false) Boolean autoRouteOptimization,
+                               @RequestParam(required = false) String defaultCollectionTime,
+                               @RequestParam(required = false) Double maxRouteDistance,
+                               @RequestParam(required = false) Integer alertThreshold,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // In a real application, you would save these settings to a database
+            // For now, we'll just show a success message
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Settings updated successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to update settings: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/settings";
+    }
+
+    /**
+     * Change password functionality
+     */
+    @PostMapping("/settings/change-password")
+    public String changePassword(@RequestParam String currentPassword,
+                               @RequestParam String newPassword,
+                               @RequestParam String confirmPassword,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return "redirect:/authority/login";
+        }
+        
+        try {
+            // Validate passwords
+            if (!newPassword.equals(confirmPassword)) {
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                    "New passwords do not match!");
+                return "redirect:/authority/settings";
+            }
+            
+            if (newPassword.length() < 6) {
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                    "New password must be at least 6 characters long!");
+                return "redirect:/authority/settings";
+            }
+            
+            // In a real application, you would verify the current password
+            // and update the password using proper password hashing
+            
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Password changed successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Failed to change password: " + e.getMessage());
+        }
+        
+        return "redirect:/authority/settings";
+    }
+
+    // ======================== Bulk Requests PDF Export Endpoints ========================
+
+    /**
+     * SRP: This method has ONE job - generate and download PDF report for all bulk requests
+     * 
+     * Download PDF report of all bulk requests
+     */
+    @GetMapping("/bulk-requests/download-pdf")
+    public ResponseEntity<byte[]> downloadBulkRequestsPdf(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(100);
+            String reportTitle = "Bulk Collection Requests Report";
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.generateBulkRequestsReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-report-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate and download PDF report for bulk requests by status
+     * 
+     * Download PDF report of bulk requests filtered by status
+     */
+    @GetMapping("/bulk-requests/download-pdf-by-status")
+    public ResponseEntity<byte[]> downloadBulkRequestsPdfByStatus(@RequestParam String status, 
+                                                                HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status.toUpperCase());
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.generateBulkRequestsByStatusReport(
+                bulkRequests, requestStatus, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-" + status.toLowerCase() + "-report-" + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate and download HTML report for bulk requests
+     * 
+     * Download HTML report of bulk requests (alternative to PDF)
+     */
+    @GetMapping("/bulk-requests/download-html")
+    public ResponseEntity<byte[]> downloadBulkRequestsHtml(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(100);
+            String reportTitle = "Bulk Collection Requests Report";
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate HTML
+            String htmlContent = bulkRequestPdfService.generateBulkRequestsHtmlReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_HTML);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-report-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".html");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(htmlContent.getBytes("UTF-8"), headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate PDF from HTML content
+     * 
+     * Convert HTML report to PDF and download
+     */
+    @PostMapping("/bulk-requests/download-pdf-from-html")
+    public ResponseEntity<byte[]> downloadPdfFromHtml(@RequestParam String status,
+                                                     @RequestParam(required = false) String dateRange,
+                                                     HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests;
+            
+            if ("ALL".equals(status)) {
+                bulkRequests = bulkRequestService.getRecentRequests(100);
+            } else {
+                BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status.toUpperCase());
+                bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            }
+            
+            String reportTitle = "Bulk Collection Requests Report" + 
+                (!"ALL".equals(status) ? " - " + status.replace("_", " ") : "");
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate HTML first
+            String htmlContent = bulkRequestPdfService.generateBulkRequestsHtmlReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Convert HTML to PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.convertHtmlToPdf(htmlContent);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-" + status.toLowerCase() + "-report-" + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

@@ -6,6 +6,7 @@ import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.RouteBin;
 import com.sliit.smartbin.smartbin.model.User;
 import com.sliit.smartbin.smartbin.repository.BinRepository;
+import com.sliit.smartbin.smartbin.repository.BulkRequestRepository;
 import com.sliit.smartbin.smartbin.repository.CollectionRepository;
 import com.sliit.smartbin.smartbin.repository.RecyclingTransactionRepository;
 import com.sliit.smartbin.smartbin.repository.RouteBinRepository;
@@ -13,6 +14,7 @@ import com.sliit.smartbin.smartbin.repository.RouteRepository;
 import com.sliit.smartbin.smartbin.repository.UserRepository;
 import com.sliit.smartbin.smartbin.repository.WasteDisposalRepository;
 import com.sliit.smartbin.smartbin.repository.BinAssignmentRepository;
+import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,8 @@ public class DataInitializer implements CommandLineRunner {
     private final RecyclingTransactionRepository recyclingTransactionRepository;
     private final WasteDisposalRepository wasteDisposalRepository;
     private final BinAssignmentRepository binAssignmentRepository;
+    private final BulkRequestRepository bulkRequestRepository;
+    private final RegionAssignmentRepository regionAssignmentRepository;
 
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -43,7 +47,9 @@ public class DataInitializer implements CommandLineRunner {
                            RouteBinRepository routeBinRepository,
                            RecyclingTransactionRepository recyclingTransactionRepository,
                            WasteDisposalRepository wasteDisposalRepository,
-                           BinAssignmentRepository binAssignmentRepository) {
+                           BinAssignmentRepository binAssignmentRepository,
+                           BulkRequestRepository bulkRequestRepository,
+                           RegionAssignmentRepository regionAssignmentRepository) {
 
         this.userRepository = userRepository;
         this.binRepository = binRepository;
@@ -53,6 +59,8 @@ public class DataInitializer implements CommandLineRunner {
         this.recyclingTransactionRepository = recyclingTransactionRepository;
         this.wasteDisposalRepository = wasteDisposalRepository;
         this.binAssignmentRepository = binAssignmentRepository;
+        this.bulkRequestRepository = bulkRequestRepository;
+        this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
     @Override
@@ -62,6 +70,7 @@ public class DataInitializer implements CommandLineRunner {
         // Clear existing data to ensure fresh start
         System.out.println("Clearing existing data...");
         binAssignmentRepository.deleteAll(); // Delete bin assignments first (has FK to users)
+        regionAssignmentRepository.deleteAll(); // Delete region assignments (has FK to users)
         routeBinRepository.deleteAll();
         collectionRepository.deleteAll();
         routeRepository.deleteAll();
@@ -69,6 +78,9 @@ public class DataInitializer implements CommandLineRunner {
         // Delete new waste management tables
         wasteDisposalRepository.deleteAll();
         recyclingTransactionRepository.deleteAll();
+        
+        // Delete bulk requests before users (FK constraint)
+        bulkRequestRepository.deleteAll();
         
         binRepository.deleteAll();
         userRepository.deleteAll();
@@ -271,6 +283,12 @@ public class DataInitializer implements CommandLineRunner {
     
     private void createBin(String qrCode, String location, Double latitude, Double longitude, 
                           Bin.BinType binType, Bin.BinStatus status, Integer fillLevel, int hoursAgo) {
+        // Check if bin with this QR code already exists
+        if (binRepository.findByQrCode(qrCode).isPresent()) {
+            System.out.println("⚠ Skipped bin: " + qrCode + " already exists");
+            return;
+        }
+        
         Bin bin = new Bin();
         bin.setQrCode(qrCode);
         bin.setLocation(location);

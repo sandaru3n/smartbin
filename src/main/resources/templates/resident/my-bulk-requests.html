@@ -15,66 +15,161 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
-            color: #2c3e50;
-            padding: 2rem;
+            color: #202124;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo .material-icons {
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info span {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-logout:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem;
         }
 
         /* Header */
         .header {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
+            padding: 1.5rem 0;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 2rem;
         }
 
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
+        .header-left {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
         .header .material-icons {
-            font-size: 2.5rem;
-            color: #e91e63;
+            font-size: 2rem;
+            color: #34a853;
+        }
+
+        .back-link {
+            color: #5f6368;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: white;
+            border: 1px solid #dadce0;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .back-link .material-icons {
+            font-size: 1.25rem;
         }
 
         .new-request-btn {
-            background: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
-            color: #e91e63;
-            border: 2px solid #f8bbd9;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-size: 1rem;
+            background: #34a853;
+            color: white !important;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 24px;
+            font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .new-request-btn:hover {
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+            color: white !important;
+        }
+
+        .new-request-btn .material-icons {
+            font-size: 1.125rem;
+            color: white !important;
         }
 
         /* Filters */
@@ -86,7 +181,8 @@
             display: flex;
             gap: 1rem;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
         }
 
         .filter-group {
@@ -95,12 +191,31 @@
             gap: 0.5rem;
         }
 
+        .filter-group .material-icons {
+            color: #5f6368;
+            font-size: 1.25rem;
+        }
+
         .filter-group select {
             padding: 0.75rem 1rem;
-            border: 2px solid #e9ecef;
+            border: 1px solid #dadce0;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             cursor: pointer;
+            background: white;
+            color: #202124;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .filter-group select:hover {
+            border-color: #80868b;
         }
 
         /* Stats Cards */
@@ -115,16 +230,22 @@
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
             display: flex;
             align-items: center;
             gap: 1rem;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
         }
 
         .stat-icon {
             width: 60px;
             height: 60px;
-            border-radius: 12px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -136,15 +257,18 @@
         }
 
         .stat-content h3 {
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 0.75rem;
+            color: #5f6368;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-content p {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #202124;
+            margin-top: 0.25rem;
         }
 
         /* Requests Grid */
@@ -157,13 +281,13 @@
             background: white;
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
         }
 
         .request-card:hover {
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
         }
 
         .request-header {
@@ -174,33 +298,33 @@
         }
 
         .request-id {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #202124;
         }
 
         .request-date {
-            color: #666;
-            font-size: 0.9rem;
+            color: #5f6368;
+            font-size: 0.875rem;
             margin-top: 0.25rem;
         }
 
         .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
 
-        .status-PENDING { background: #fff3cd; color: #856404; }
-        .status-APPROVED { background: #d1ecf1; color: #0c5460; }
-        .status-PAYMENT_PENDING { background: #f8d7da; color: #721c24; }
-        .status-PAYMENT_COMPLETED { background: #d4edda; color: #155724; }
-        .status-COLLECTOR_ASSIGNED { background: #d1ecf1; color: #0c5460; }
-        .status-SCHEDULED { background: #cce5ff; color: #004085; }
-        .status-IN_PROGRESS { background: #fff3cd; color: #856404; }
-        .status-COMPLETED { background: #d4edda; color: #155724; }
-        .status-CANCELLED { background: #f8d7da; color: #721c24; }
+        .status-PENDING { background: #fef7e0; color: #b06000; }
+        .status-APPROVED { background: #e8f4f9; color: #0c5460; }
+        .status-PAYMENT_PENDING { background: #fce8e6; color: #c5221f; }
+        .status-PAYMENT_COMPLETED { background: #e6f4ea; color: #137333; }
+        .status-COLLECTOR_ASSIGNED { background: #e8f4f9; color: #0c5460; }
+        .status-SCHEDULED { background: #e8f0fe; color: #1967d2; }
+        .status-IN_PROGRESS { background: #fef7e0; color: #b06000; }
+        .status-COMPLETED { background: #e6f4ea; color: #137333; }
+        .status-CANCELLED { background: #fce8e6; color: #c5221f; }
 
         .request-details {
             display: grid;
@@ -218,80 +342,87 @@
         .detail-icon {
             width: 40px;
             height: 40px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            background: #e8f5e9;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .detail-icon .material-icons {
-            font-size: 1.2rem;
-            color: #e91e63;
+            font-size: 1.25rem;
+            color: #34a853;
         }
 
         .detail-content h4 {
-            font-size: 0.8rem;
-            color: #666;
+            font-size: 0.75rem;
+            color: #5f6368;
             font-weight: 500;
             margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .detail-content p {
-            font-size: 1rem;
-            color: #2c3e50;
-            font-weight: 600;
+            font-size: 0.875rem;
+            color: #202124;
+            font-weight: 500;
         }
 
         .request-actions {
             display: flex;
             gap: 1rem;
             padding-top: 1.5rem;
-            border-top: 1px solid #e9ecef;
+            border-top: 1px solid #e0e0e0;
         }
 
         .action-btn {
             padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            border-radius: 24px;
+            font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #e91e63 0%, #f48fb1 100%);
+            background: #34a853;
             color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #c2185b 0%, #e91e63 100%);
-            transform: translateY(-2px);
+            background: #2d904a;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: #5f6368;
             color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
+            background: #4a4f54;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
         }
 
         .btn-outline {
             background: white;
-            border: 2px solid #e9ecef;
-            color: #2c3e50;
+            border: 1px solid #dadce0;
+            color: #5f6368;
         }
 
         .btn-outline:hover {
-            border-color: #e91e63;
-            color: #e91e63;
+            border-color: #34a853;
+            color: #34a853;
+            background: #f8f9fa;
         }
 
         .empty-state {
@@ -299,38 +430,89 @@
             border-radius: 12px;
             padding: 4rem 2rem;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
         }
 
         .empty-state .material-icons {
             font-size: 5rem;
-            color: #e9ecef;
+            color: #80868b;
             margin-bottom: 1rem;
         }
 
         .empty-state h3 {
             font-size: 1.5rem;
-            color: #2c3e50;
+            color: #202124;
+            font-weight: 400;
             margin-bottom: 0.5rem;
         }
 
         .empty-state p {
-            color: #666;
+            color: #5f6368;
+            font-size: 0.875rem;
             margin-bottom: 2rem;
         }
 
+        .empty-state .new-request-btn {
+            display: inline-flex;
+            padding: 1rem 2.5rem;
+            font-size: 0.9375rem;
+            box-shadow: 0 2px 6px rgba(52, 168, 83, 0.3);
+        }
+
+        .empty-state .new-request-btn:hover {
+            box-shadow: 0 4px 12px rgba(52, 168, 83, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .empty-state .new-request-btn .material-icons {
+            font-size: 1.25rem;
+            color: white;
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
-            body {
+            .container {
                 padding: 1rem;
             }
 
-            .header h1 {
-                font-size: 1.5rem;
+            .navbar-content {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
             }
 
             .header-content {
                 flex-direction: column;
                 gap: 1rem;
+                align-items: stretch;
+            }
+
+            .header-left {
+                flex-direction: row;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .header h1 {
+                font-size: 1.375rem;
+            }
+
+            .new-request-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
             }
 
             .request-details {
@@ -341,17 +523,41 @@
                 flex-direction: column;
             }
         }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <span class="material-icons">delete_outline</span>
+                SmartBin
+            </div>
+            <div class="user-info">
+                <span th:text="${user.name}">User</span>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
         <!-- Header -->
         <div class="header">
             <div class="header-content">
-                <h1>
-                    <span class="material-icons">list_alt</span>
-                    My Bulk Collection Requests
-                </h1>
+                <div class="header-left">
+                    <a href="/resident/dashboard" class="back-link">
+                        <span class="material-icons">arrow_back</span>
+                    </a>
+                    <h1>
+                        <span class="material-icons">list_alt</span>
+                        My Bulk Collection Requests
+                    </h1>
+                </div>
                 <a href="/resident/bulk-request" class="new-request-btn">
                     <span class="material-icons">add</span>
                     New Request
@@ -362,8 +568,8 @@
         <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
-                    <span class="material-icons">pending</span>
+                <div class="stat-icon" style="background: #1a73e8;">
+                    <span class="material-icons">list_alt</span>
                 </div>
                 <div class="stat-content">
                     <h3>Total Requests</h3>
@@ -371,7 +577,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
+                <div class="stat-icon" style="background: #fbbc04;">
                     <span class="material-icons">hourglass_empty</span>
                 </div>
                 <div class="stat-content">
@@ -380,7 +586,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                <div class="stat-icon" style="background: #34a853;">
                     <span class="material-icons">check_circle</span>
                 </div>
                 <div class="stat-content">
@@ -389,7 +595,7 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);">
+                <div class="stat-icon" style="background: #ea4335;">
                     <span class="material-icons">payments</span>
                 </div>
                 <div class="stat-content">
@@ -568,9 +774,144 @@
 
         function proceedToPayment(button) {
             const requestId = button.getAttribute('data-request-id');
-            if (confirm('Proceed to payment?')) {
-                window.location.href = '/resident/bulk-request/' + requestId + '/payment';
+            
+            // Get request details first - use numeric ID endpoint
+            fetch('/resident/bulk-request/by-id/' + requestId + '/details')
+                .then(response => response.json())
+                .then(data => {
+                    // Show payment modal
+                    showPaymentModal(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load request details. Please try again.');
+                });
+        }
+        
+        function showPaymentModal(request) {
+            // Create modal HTML
+            const modalHTML = `
+                <div id="paymentModal" style="display: block; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+                    <div style="background: white; margin: 5% auto; padding: 0; border-radius: 16px; max-width: 500px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                        <div style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%); color: white; padding: 2rem; border-radius: 16px 16px 0 0;">
+                            <h2 style="margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+                                <span class="material-icons">payment</span>
+                                Complete Payment
+                            </h2>
+                            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Request ID: ${request.requestId}</p>
+                        </div>
+                        
+                        <div style="padding: 2rem;">
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
+                                <h3 style="margin: 0 0 0.5rem 0; color: #666; font-size: 1rem;">Amount to Pay</h3>
+                                <div style="font-size: 2.5rem; font-weight: 700; color: #27ae60;">LKR ${request.totalAmount.toFixed(2)}</div>
+                                <p style="margin: 0.5rem 0 0 0; color: #999; font-size: 0.9rem;">Category: ${request.category.displayName}</p>
+                            </div>
+                            
+                            <form id="paymentForm" onsubmit="return processPayment(event, ${request.id})">
+                                <div style="margin-bottom: 1.5rem;">
+                                    <label style="display: block; margin-bottom: 1rem; font-weight: 600; color: #2c3e50;">Select Payment Method</label>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer;">
+                                            <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked>
+                                            <span class="material-icons" style="color: #3498db;">credit_card</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600;">Credit/Debit Card</div>
+                                                <div style="font-size: 0.85rem; color: #666;">Visa, Mastercard</div>
+                                            </div>
+                                        </label>
+                                        
+                                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer;">
+                                            <input type="radio" name="paymentMethod" value="UPI">
+                                            <span class="material-icons" style="color: #27ae60;">smartphone</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600;">UPI</div>
+                                                <div style="font-size: 0.85rem; color: #666;">Google Pay, PhonePe, Paytm</div>
+                                            </div>
+                                        </label>
+                                        
+                                        <label style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 8px; cursor: pointer;">
+                                            <input type="radio" name="paymentMethod" value="NET_BANKING">
+                                            <span class="material-icons" style="color: #3498db;">account_balance</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600;">Net Banking</div>
+                                                <div style="font-size: 0.85rem; color: #666;">All major banks</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; gap: 1rem;">
+                                    <button type="button" onclick="closePaymentModal()" style="flex: 1; padding: 1rem; background: #e9ecef; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: #2c3e50;">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" style="flex: 1; padding: 1rem; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                        <span class="material-icons">lock</span>
+                                        Pay LKR ${request.totalAmount.toFixed(2)}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function closePaymentModal() {
+            const modal = document.getElementById('paymentModal');
+            if (modal) {
+                modal.remove();
             }
+        }
+        
+        function processPayment(event, requestId) {
+            event.preventDefault();
+            
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const paymentReference = 'PAY-' + Date.now();
+            
+            // Show loading
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="material-icons" style="animation: spin 1s linear infinite;">refresh</span> Processing...';
+            submitBtn.disabled = true;
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('paymentMethod', paymentMethod);
+            formData.append('paymentReference', paymentReference);
+            
+            // Submit payment
+            fetch('/resident/bulk-request/' + requestId + '/payment', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    return response.text();
+                }
+            })
+            .then(result => {
+                if (result) {
+                    alert('Payment successful! Your request is being processed.');
+                    closePaymentModal();
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Payment processing failed. Please try again.');
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+            });
+            
+            return false;
         }
 
         function cancelRequest(button) {

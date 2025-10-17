@@ -10,6 +10,26 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN BULK REQUEST SERVICE
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This service has ONE responsibility: Manage bulk waste collection requests.
+ *     Handles request creation, scheduling, collector assignment, payment, and status updates.
+ *     Doesn't handle bin management, regular waste disposal, or route optimization.
+ * 
+ * I - Interface Segregation Principle (ISP):
+ *     This interface provides only bulk request operations. Clients using this service
+ *     don't need to implement or depend on recycling, bin, or route management methods.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controllers and other high-level modules depend on this interface, not implementation.
+ *     Implementation can be swapped (e.g., different scheduling algorithm) without affecting clients.
+ * 
+ * O - Open/Closed Principle (OCP):
+ *     New request types or statuses can be added through enums/config without modifying interface.
+ *     New operations can be added as new methods without changing existing ones.
+ */
 public interface BulkRequestService {
     
     // Create new bulk request
@@ -85,4 +105,10 @@ public interface BulkRequestService {
     
     // Convert DTO to entity
     BulkRequest convertToEntity(BulkRequestDTO bulkRequestDTO, User user);
+    
+    // Confirm collector assignment
+    BulkRequestDTO confirmCollectorAssignment(Long requestId);
+    
+    // Schedule and notify pickup
+    BulkRequestDTO scheduleAndNotifyPickup(Long requestId, LocalDateTime scheduledDate, Long collectorId);
 }
