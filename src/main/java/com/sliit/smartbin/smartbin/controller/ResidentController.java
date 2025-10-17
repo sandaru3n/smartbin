@@ -16,14 +16,27 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * SOLID PRINCIPLES APPLIED IN RESIDENT CONTROLLER
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This controller has ONE responsibility: Handle HTTP requests for resident features.
+ *     Business logic is delegated to service classes.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controller depends on Service INTERFACES (abstractions), not concrete implementations.
+ *     Services are injected via constructor, allowing easy testing and flexibility.
+ */
 @Controller
 @RequestMapping("/resident")
 public class ResidentController {
 
+    // DIP: Depend on abstractions (Service interfaces) not concrete classes
     private final BinService binService;
     private final WasteDisposalService wasteDisposalService;
     private final RecyclingService recyclingService;
 
+    // DIP: Constructor injection for loose coupling and testability
     public ResidentController(BinService binService, 
                             WasteDisposalService wasteDisposalService,
                             RecyclingService recyclingService) {
@@ -32,6 +45,7 @@ public class ResidentController {
         this.recyclingService = recyclingService;
     }
 
+    // SRP: This method has ONE job - prepare and return the dashboard view
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -41,23 +55,21 @@ public class ResidentController {
         
         model.addAttribute("user", user);
         
-        // Get nearby bins for the resident
+        // SRP: Data fetching delegated to service layer, not handled in controller
+        // DIP: Using service interfaces instead of direct database access
         List<Bin> nearbyBins = binService.findNearbyBins(6.9271, 79.8612, 5.0); // Colombo coordinates
         model.addAttribute("nearbyBins", nearbyBins);
         
-        // Get bins with alerts
         List<Bin> alertedBins = binService.findAlertedBins();
         model.addAttribute("alertedBins", alertedBins);
         
-        // Get recycling points
         Double recyclingPoints = user.getRecyclingPoints() != null ? user.getRecyclingPoints() : 0.0;
         model.addAttribute("recyclingPoints", recyclingPoints);
         
-        // Get recent recycling transactions
+        // DIP: Controller doesn't know HOW data is fetched, just calls service methods
         List<RecyclingTransaction> recentTransactions = recyclingService.getUserTransactions(user);
         model.addAttribute("recentTransactions", recentTransactions.isEmpty() ? recentTransactions : recentTransactions.subList(0, Math.min(5, recentTransactions.size())));
         
-        // Get recent waste disposals
         List<WasteDisposal> recentDisposals = wasteDisposalService.getUserDisposals(user);
         model.addAttribute("recentDisposals", recentDisposals.isEmpty() ? recentDisposals : recentDisposals.subList(0, Math.min(5, recentDisposals.size())));
         
@@ -174,6 +186,8 @@ public class ResidentController {
         return "resident/scan-bin";
     }
     
+    // SRP: Method only handles HTTP request/response, business logic in service
+    // OCP: Method is closed for modification but open for extension (service can add new disposal types)
     @PostMapping("/submit-disposal")
     public String submitDisposal(@RequestParam String qrCode,
                                  @RequestParam Integer fillLevel,
@@ -186,6 +200,8 @@ public class ResidentController {
         }
         
         try {
+            // DIP: Controller calls service abstraction, doesn't know implementation details
+            // SRP: Disposal processing logic is in WasteDisposalService, not here
             WasteDisposal disposal = wasteDisposalService.submitDisposal(user, qrCode, fillLevel, notes);
             
             if (disposal.getStatus() == WasteDisposal.DisposalStatus.CONFIRMED) {
@@ -202,6 +218,8 @@ public class ResidentController {
     
     // Recycling endpoints
     
+    // ISP: This endpoint provides only recycling unit search functionality
+    // User doesn't need bin management or waste disposal features to find recycling units
     @GetMapping("/recycling-units")
     public String findRecyclingUnits(@RequestParam(required = false) Double latitude,
                                     @RequestParam(required = false) Double longitude,
@@ -216,6 +234,7 @@ public class ResidentController {
         double lat = latitude != null ? latitude : 6.9271;
         double lon = longitude != null ? longitude : 79.8612;
         
+        // DIP: Using RecyclingService interface for location-based queries
         List<RecyclingService.RecyclingUnitLocation> units = recyclingService.getNearbyRecyclingUnits(lat, lon, radius);
         
         model.addAttribute("user", user);
@@ -240,6 +259,8 @@ public class ResidentController {
         return "resident/recycle";
     }
     
+    // SRP: Controller handles HTTP, RecyclingService handles transaction processing
+    // OCP: New item types can be added in service without modifying this controller
     @PostMapping("/submit-recycling")
     public String submitRecycling(@RequestParam String unitQrCode,
                                   @RequestParam String itemType,
@@ -253,6 +274,8 @@ public class ResidentController {
         }
         
         try {
+            // DIP: Controller depends on RecyclingService interface, not implementation
+            // SRP: Point calculation, pricing, and validation are all in the service
             RecyclingTransaction transaction = recyclingService.processRecyclingTransaction(
                 user, unitQrCode, itemType, weight, quantity != null ? quantity : 1
             );

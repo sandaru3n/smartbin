@@ -6,8 +6,19 @@ import com.sliit.smartbin.smartbin.model.User;
 import java.util.List;
 
 /**
- * Service interface for managing recycling operations
- * Following Interface Segregation Principle - focused interface for recycling operations
+ * SOLID PRINCIPLES APPLIED IN RECYCLING SERVICE
+ * 
+ * S - Single Responsibility Principle (SRP):
+ *     This service has ONE responsibility: Handle ALL recycling-related operations.
+ *     It doesn't handle bin management, user authentication, or route optimization.
+ * 
+ * I - Interface Segregation Principle (ISP):
+ *     This interface only exposes recycling methods. Clients don't need to know about
+ *     bin management or waste disposal to use recycling features.
+ * 
+ * D - Dependency Inversion Principle (DIP):
+ *     Controllers depend on this interface, not the implementation.
+ *     Implementation can be changed without affecting controllers.
  */
 public interface RecyclingService {
     
