@@ -6,7 +6,6 @@ import com.sliit.smartbin.smartbin.model.Bin;
 import com.sliit.smartbin.smartbin.model.Route;
 import com.sliit.smartbin.smartbin.model.User;
 import com.sliit.smartbin.smartbin.model.BulkRequestStatus;
-import com.sliit.smartbin.smartbin.model.PaymentStatus;
 import com.sliit.smartbin.smartbin.service.BinService;
 import com.sliit.smartbin.smartbin.service.ReportService;
 import com.sliit.smartbin.smartbin.service.RouteService;
