@@ -708,6 +708,243 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Custom Modal Styles */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .custom-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content-custom {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-header-custom {
+            padding: 24px 24px 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-header-custom h2 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #202124;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header-custom .material-icons {
+            color: #1a73e8;
+            font-size: 24px;
+        }
+
+        .modal-body-custom {
+            padding: 24px;
+        }
+
+        .modal-body-custom p {
+            margin: 0 0 16px 0;
+            color: #5f6368;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-details {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .modal-details-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-details-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-details-label {
+            font-weight: 500;
+            color: #202124;
+            font-size: 14px;
+        }
+
+        .modal-details-value {
+            color: #5f6368;
+            font-size: 14px;
+        }
+
+        .modal-footer-custom {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-btn-cancel {
+            background: white;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #f8f9fa;
+            border-color: #5f6368;
+        }
+
+        .modal-btn-confirm {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+        }
+
+        .modal-btn .material-icons {
+            font-size: 18px;
+        }
+
+        /* Alert Modal Styles */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+        }
+
+        .alert-header {
+            padding: 24px 24px 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .alert-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #ea4335;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-header .material-icons {
+            color: #ea4335;
+            font-size: 24px;
+        }
+
+        .alert-body {
+            padding: 24px;
+        }
+
+        .alert-body p {
+            margin: 0;
+            color: #5f6368;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .alert-footer {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .alert-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background: #1a73e8;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .alert-btn:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -950,27 +1187,71 @@
             levelDisplay.textContent = this.value + '%';
         });
 
+        // Store form for submission
+        let collectionForm = null;
+
         // Form validation
         document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Always prevent default first
+            collectionForm = this;
+
             const wasteType = document.querySelector('input[name="wasteType"]:checked');
             const wasteLevel = document.getElementById('wasteLevel').value;
 
             if (!wasteType) {
-                e.preventDefault();
-                alert('Please select a waste type');
+                showAlert('Please select a waste type');
                 return;
             }
 
             if (!wasteLevel || wasteLevel < 0 || wasteLevel > 100) {
-                e.preventDefault();
-                alert('Please set a valid waste level');
+                showAlert('Please set a valid waste level');
                 return;
             }
 
-            // Show confirmation
-            const confirmed = confirm(`Confirm collection:\nWaste Type: ${wasteType.value}\nLevel: ${wasteLevel}%`);
-            if (!confirmed) {
-                e.preventDefault();
+            // Show confirmation modal
+            showConfirmModal(wasteType.value, wasteLevel);
+        });
+
+        // Custom Alert Modal Functions
+        function showAlert(message) {
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('alertModal').classList.add('show');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('alertModal').classList.remove('show');
+        }
+
+        // Custom Confirm Modal Functions
+        function showConfirmModal(wasteType, wasteLevel) {
+            const binQR = document.querySelector('.bin-header h2').textContent.trim();
+            document.getElementById('modalBinQR').textContent = binQR;
+            document.getElementById('modalWasteType').textContent = wasteType;
+            document.getElementById('modalWasteLevel').textContent = wasteLevel + '%';
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+        }
+
+        function confirmCollection() {
+            closeConfirmModal();
+            if (collectionForm) {
+                collectionForm.submit();
+            }
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const confirmModal = document.getElementById('confirmModal');
+            const alertModal = document.getElementById('alertModal');
+            
+            if (event.target === confirmModal) {
+                closeConfirmModal();
+            }
+            if (event.target === alertModal) {
+                closeAlertModal();
             }
         });
 
@@ -1053,5 +1334,62 @@
             }
         });
     </script>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header-custom">
+                <h2>
+                    <span class="material-icons">check_circle</span>
+                    Confirm Collection
+                </h2>
+            </div>
+            <div class="modal-body-custom">
+                <p>Please confirm the collection details before proceeding:</p>
+                <div class="modal-details">
+                    <div class="modal-details-row">
+                        <span class="modal-details-label">Bin QR Code:</span>
+                        <span class="modal-details-value" id="modalBinQR"></span>
+                    </div>
+                    <div class="modal-details-row">
+                        <span class="modal-details-label">Waste Type:</span>
+                        <span class="modal-details-value" id="modalWasteType"></span>
+                    </div>
+                    <div class="modal-details-row">
+                        <span class="modal-details-label">Waste Level:</span>
+                        <span class="modal-details-value" id="modalWasteLevel"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeConfirmModal()">
+                    <span class="material-icons">cancel</span>
+                    Cancel
+                </button>
+                <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmCollection()">
+                    <span class="material-icons">check_circle</span>
+                    Confirm Collection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="alert-modal">
+        <div class="alert-content">
+            <div class="alert-header">
+                <h2>
+                    <span class="material-icons">warning</span>
+                    Validation Error
+                </h2>
+            </div>
+            <div class="alert-body">
+                <p id="alertMessage"></p>
+            </div>
+            <div class="alert-footer">
+                <button type="button" class="alert-btn" onclick="closeAlertModal()">OK</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
