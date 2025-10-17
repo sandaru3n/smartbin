@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - SmartBin Authority</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
+            color: #202124;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Top Navigation Bar */
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            margin: 0;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-title {
+            color: #202124;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #5f6368;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .nav-link.active {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #5f6368;
+        }
+
+        .notification-icon {
+            font-size: 1.125rem;
+            color: #5f6368;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .notification-icon:hover {
+            background: rgba(95, 99, 104, 0.1);
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a73e8, #34a853);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e8eaed;
+        }
+
+        .dropdown-header h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-header p {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #202124;
+        }
+
+        .dropdown-item.logout {
+            color: #ea4335;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fce8e6;
+            color: #d33b2c;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 2rem;
+            font-weight: 400;
+            color: #202124;
+            margin: 0;
+        }
+
+        .page-title .material-icons {
+            font-size: 2rem;
+            color: #1a73e8;
+        }
+
+        .page-subtitle {
+            color: #5f6368;
+            font-size: 1rem;
+            margin-left: 3rem;
+        }
+
+        /* Settings Content */
+        .settings-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 800px;
+        }
+
+        /* Settings Cards */
+        .settings-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8eaed;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title .material-icons {
+            color: #1a73e8;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #202124;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #dadce0;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #1a73e8;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Setting Item */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-description {
+            font-size: 0.75rem;
+            color: #5f6368;
+        }
+
+        .setting-control {
+            margin-left: 1rem;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 4px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f3f4;
+        }
+
+        .btn-danger {
+            background: #ea4335;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d33b2c;
+            box-shadow: 0 2px 4px rgba(234, 67, 53, 0.3);
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            color: #137333;
+            border: 1px solid #34a853;
+        }
+
+        .alert-error {
+            background: #fce8e6;
+            color: #d33b2c;
+            border: 1px solid #ea4335;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #5f6368;
+        }
+
+        .modal-close:hover {
+            color: #202124;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .settings-container {
+                max-width: 100%;
+            }
+
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .page-subtitle {
+                margin-left: 0;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .setting-control {
+                margin-left: 0;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <header class="header">
+        <div class="header-inner">
+            <h1 class="nav-title">Settings</h1>
+            
+            <nav class="nav-links">
+                <a href="/authority/dashboard" class="nav-link">
+                    <span class="material-icons">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="/authority/manage-collectors" class="nav-link">
+                    <span class="material-icons">people</span>
+                    Manage Collectors
+                </a>
+                <a href="/authority/dispatch" class="nav-link">
+                    <span class="material-icons">local_shipping</span>
+                    Dispatch
+                </a>
+                <a href="/authority/reports" class="nav-link">
+                    <span class="material-icons">assessment</span>
+                    Reports
+                </a>
+                <a href="/authority/bulk-requests" class="nav-link">
+                    <span class="material-icons">delete_sweep</span>
+                    Bulk Requests
+                </a>
+            </nav>
+
+            <div class="user-info">
+                <span class="material-icons notification-icon">notifications</span>
+                <span th:text="${user.name}">Waste Manager</span>
+                
+                <div class="user-dropdown">
+                    <div class="user-avatar" onclick="toggleDropdown()">
+                        <span th:text="${user.name.substring(0,1)}">W</span>
+                    </div>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <div class="dropdown-header">
+                            <h3 th:text="${user.name}">Waste Manager</h3>
+                            <p th:text="${user.email}">waste@gmail.com</p>
+                        </div>
+                        <hr style="margin: 0; border: none; border-top: 1px solid #e8eaed;">
+                        <a href="/authority/dashboard" class="dropdown-item">
+                            <span class="material-icons">home</span>
+                            Dashboard
+                        </a>
+                        <a href="/authority/profile" class="dropdown-item">
+                            <span class="material-icons">person</span>
+                            My Profile
+                        </a>
+                        <a href="/authority/settings" class="dropdown-item">
+                            <span class="material-icons">settings</span>
+                            Settings
+                        </a>
+                        <a href="/logout" class="dropdown-item logout">
+                            <span class="material-icons">logout</span>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <span class="material-icons">settings</span>
+                <h1>Settings</h1>
+            </div>
+            <p class="page-subtitle">Manage your application preferences and system configuration</p>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span class="material-icons">check_circle</span>
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <span class="material-icons">error</span>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Settings Container -->
+        <div class="settings-container">
+            <!-- Notification Settings -->
+            <div class="settings-card">
+                <h2 class="card-title">
+                    <span class="material-icons">notifications</span>
+                    Notification Settings
+                </h2>
+
+                <form th:action="@{/authority/settings}" method="post">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Enable Notifications</div>
+                            <div class="setting-description">Receive notifications for important system events</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="notificationsEnabled" 
+                                       th:checked="${settings.notificationsEnabled}">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Email Notifications</div>
+                            <div class="setting-description">Receive notifications via email</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="emailNotifications" 
+                                       th:checked="${settings.emailNotifications}">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">save</span>
+                            Save Notification Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- System Settings -->
+            <div class="settings-card">
+                <h2 class="card-title">
+                    <span class="material-icons">tune</span>
+                    System Settings
+                </h2>
+
+                <form th:action="@{/authority/settings}" method="post">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Auto Route Optimization</div>
+                            <div class="setting-description">Automatically optimize routes for better efficiency</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="autoRouteOptimization" 
+                                       th:checked="${settings.autoRouteOptimization}">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="defaultCollectionTime" class="form-label">Default Collection Time</label>
+                        <input type="time" id="defaultCollectionTime" name="defaultCollectionTime" 
+                               class="form-input" th:value="${settings.defaultCollectionTime}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxRouteDistance" class="form-label">Maximum Route Distance (km)</label>
+                        <input type="number" id="maxRouteDistance" name="maxRouteDistance" 
+                               class="form-input" step="0.1" min="1" max="200"
+                               th:value="${settings.maxRouteDistance}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="alertThreshold" class="form-label">Bin Alert Threshold (%)</label>
+                        <input type="number" id="alertThreshold" name="alertThreshold" 
+                               class="form-input" min="1" max="100"
+                               th:value="${settings.alertThreshold}">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="material-icons">save</span>
+                            Save System Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="settings-card">
+                <h2 class="card-title">
+                    <span class="material-icons">security</span>
+                    Security Settings
+                </h2>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">Change Password</div>
+                        <div class="setting-description">Update your account password</div>
+                    </div>
+                    <div class="setting-control">
+                        <button type="button" class="btn btn-secondary" onclick="openPasswordModal()">
+                            <span class="material-icons">lock</span>
+                            Change Password
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">Account Information</div>
+                        <div class="setting-description">View and manage your account details</div>
+                    </div>
+                    <div class="setting-control">
+                        <a href="/authority/profile" class="btn btn-secondary">
+                            <span class="material-icons">person</span>
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Change Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Change Password</h3>
+                <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+            </div>
+
+            <form th:action="@{/authority/settings/change-password}" method="post">
+                <div class="form-group">
+                    <label for="currentPassword" class="form-label">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword" 
+                           class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword" class="form-label">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" 
+                           class="form-input" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" 
+                           class="form-input" required minlength="6">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons">lock</span>
+                        Change Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Dropdown toggle functionality
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userDropdown = event.target.closest('.user-dropdown');
+            
+            if (!userDropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Modal functions
+        function openPasswordModal() {
+            document.getElementById('passwordModal').classList.add('show');
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('show');
+            // Reset form
+            document.querySelector('#passwordModal form').reset();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('passwordModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closePasswordModal();
+            }
+        });
+
+        // Auto-hide success/error messages after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+
+        // Password form validation
+        document.querySelector('#passwordModal form').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('New passwords do not match.');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                e.preventDefault();
+                alert('New password must be at least 6 characters long.');
+                return;
+            }
+        });
+
+        // Form validation for system settings
+        document.querySelectorAll('form').forEach(form => {
+            if (form.action.includes('/authority/settings') && !form.action.includes('change-password')) {
+                form.addEventListener('submit', function(e) {
+                    const maxDistance = document.getElementById('maxRouteDistance');
+                    const alertThreshold = document.getElementById('alertThreshold');
+                    
+                    if (maxDistance && (maxDistance.value < 1 || maxDistance.value > 200)) {
+                        e.preventDefault();
+                        alert('Maximum route distance must be between 1 and 200 km.');
+                        return;
+                    }
+                    
+                    if (alertThreshold && (alertThreshold.value < 1 || alertThreshold.value > 100)) {
+                        e.preventDefault();
+                        alert('Alert threshold must be between 1 and 100%.');
+                        return;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
