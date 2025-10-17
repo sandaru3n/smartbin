@@ -15,6 +15,7 @@ import com.sliit.smartbin.smartbin.service.NotificationService;
 import com.sliit.smartbin.smartbin.service.BinAssignmentService;
 import com.sliit.smartbin.smartbin.service.CollectionService;
 import com.sliit.smartbin.smartbin.service.BulkRequestService;
+import com.sliit.smartbin.smartbin.service.BulkRequestPdfService;
 import com.sliit.smartbin.smartbin.model.BinAssignment;
 import com.sliit.smartbin.smartbin.model.RegionAssignment;
 import com.sliit.smartbin.smartbin.repository.RegionAssignmentRepository;
@@ -25,6 +26,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -64,6 +69,7 @@ public class AuthorityController {
     private final BinAssignmentService binAssignmentService;
     private final CollectionService collectionService;
     private final BulkRequestService bulkRequestService;
+    private final BulkRequestPdfService bulkRequestPdfService;
     private final RegionAssignmentRepository regionAssignmentRepository;
 
     // DIP: Constructor injection for loose coupling and easy testing/mocking
@@ -75,6 +81,7 @@ public class AuthorityController {
                                BinAssignmentService binAssignmentService,
                                CollectionService collectionService,
                                BulkRequestService bulkRequestService,
+                               BulkRequestPdfService bulkRequestPdfService,
                                RegionAssignmentRepository regionAssignmentRepository) {
         this.binService = binService;
         this.routeService = routeService;
@@ -84,6 +91,7 @@ public class AuthorityController {
         this.binAssignmentService = binAssignmentService;
         this.collectionService = collectionService;
         this.bulkRequestService = bulkRequestService;
+        this.bulkRequestPdfService = bulkRequestPdfService;
         this.regionAssignmentRepository = regionAssignmentRepository;
     }
 
@@ -1545,6 +1553,169 @@ public class AuthorityController {
         }
         
         return "redirect:/authority/settings";
+    }
+
+    // ======================== Bulk Requests PDF Export Endpoints ========================
+
+    /**
+     * SRP: This method has ONE job - generate and download PDF report for all bulk requests
+     * 
+     * Download PDF report of all bulk requests
+     */
+    @GetMapping("/bulk-requests/download-pdf")
+    public ResponseEntity<byte[]> downloadBulkRequestsPdf(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(100);
+            String reportTitle = "Bulk Collection Requests Report";
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.generateBulkRequestsReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-report-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate and download PDF report for bulk requests by status
+     * 
+     * Download PDF report of bulk requests filtered by status
+     */
+    @GetMapping("/bulk-requests/download-pdf-by-status")
+    public ResponseEntity<byte[]> downloadBulkRequestsPdfByStatus(@RequestParam String status, 
+                                                                HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status.toUpperCase());
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.generateBulkRequestsByStatusReport(
+                bulkRequests, requestStatus, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-" + status.toLowerCase() + "-report-" + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate and download HTML report for bulk requests
+     * 
+     * Download HTML report of bulk requests (alternative to PDF)
+     */
+    @GetMapping("/bulk-requests/download-html")
+    public ResponseEntity<byte[]> downloadBulkRequestsHtml(HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests = bulkRequestService.getRecentRequests(100);
+            String reportTitle = "Bulk Collection Requests Report";
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate HTML
+            String htmlContent = bulkRequestPdfService.generateBulkRequestsHtmlReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_HTML);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-report-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".html");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(htmlContent.getBytes("UTF-8"), headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * SRP: This method has ONE job - generate PDF from HTML content
+     * 
+     * Convert HTML report to PDF and download
+     */
+    @PostMapping("/bulk-requests/download-pdf-from-html")
+    public ResponseEntity<byte[]> downloadPdfFromHtml(@RequestParam String status,
+                                                     @RequestParam(required = false) String dateRange,
+                                                     HttpSession session) {
+        User user = validateAuthorityUser(session);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            List<BulkRequestDTO> bulkRequests;
+            
+            if ("ALL".equals(status)) {
+                bulkRequests = bulkRequestService.getRecentRequests(100);
+            } else {
+                BulkRequestStatus requestStatus = BulkRequestStatus.valueOf(status.toUpperCase());
+                bulkRequests = bulkRequestService.getBulkRequestsByStatus(requestStatus);
+            }
+            
+            String reportTitle = "Bulk Collection Requests Report" + 
+                (!"ALL".equals(status) ? " - " + status.replace("_", " ") : "");
+            String userInfo = user.getName() + " (" + user.getEmail() + ")";
+            
+            // Generate HTML first
+            String htmlContent = bulkRequestPdfService.generateBulkRequestsHtmlReport(
+                bulkRequests, reportTitle, userInfo);
+            
+            // Convert HTML to PDF
+            ByteArrayOutputStream pdfStream = bulkRequestPdfService.convertHtmlToPdf(htmlContent);
+            
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                "bulk-requests-" + status.toLowerCase() + "-report-" + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            return new ResponseEntity<>(pdfStream.toByteArray(), headers, HttpStatus.OK);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
 

@@ -328,6 +328,27 @@
             background: #229954;
         }
 
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .export-buttons .btn {
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            white-space: nowrap;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -724,6 +745,22 @@
                             <i class="fas fa-sync"></i> Reset Filters
                         </button>
                     </div>
+                    
+                    <!-- PDF Download Buttons -->
+                    <div class="filter-group" style="flex: 0 0 auto;">
+                        <label style="visibility: hidden;">Export</label>
+                        <div class="export-buttons">
+                            <button type="button" onclick="downloadAllPdf()" class="btn btn-success">
+                                <i class="fas fa-file-pdf"></i> Download PDF
+                            </button>
+                            <button type="button" onclick="downloadFilteredPdf()" class="btn btn-success">
+                                <i class="fas fa-file-pdf"></i> Download Filtered PDF
+                            </button>
+                            <button type="button" onclick="downloadHtmlReport()" class="btn btn-info">
+                                <i class="fas fa-file-code"></i> Download HTML
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1058,6 +1095,126 @@
                 }
                 event.stopPropagation();
             });
+        }
+
+        // PDF Download Functions
+        function downloadAllPdf() {
+            // Show loading indicator
+            showDownloadLoading();
+            
+            // Download all bulk requests as PDF
+            window.open('/authority/bulk-requests/download-pdf', '_blank');
+            
+            // Hide loading indicator after a delay
+            setTimeout(hideDownloadLoading, 2000);
+        }
+
+        function downloadFilteredPdf() {
+            // Get current filter status
+            const statusFilter = document.getElementById('statusFilter');
+            const selectedStatus = statusFilter.value || 'ALL';
+            
+            // Show loading indicator
+            showDownloadLoading();
+            
+            if (selectedStatus === '' || selectedStatus === 'ALL') {
+                // Download all requests
+                window.open('/authority/bulk-requests/download-pdf', '_blank');
+            } else {
+                // Download filtered requests
+                window.open(`/authority/bulk-requests/download-pdf-by-status?status=${selectedStatus}`, '_blank');
+            }
+            
+            // Hide loading indicator after a delay
+            setTimeout(hideDownloadLoading, 2000);
+        }
+
+        function downloadHtmlReport() {
+            // Show loading indicator
+            showDownloadLoading();
+            
+            // Download HTML report
+            window.open('/authority/bulk-requests/download-html', '_blank');
+            
+            // Hide loading indicator after a delay
+            setTimeout(hideDownloadLoading, 2000);
+        }
+
+        function showDownloadLoading() {
+            // Create loading overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'downloadLoading';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            `;
+            
+            const loadingDiv = document.createElement('div');
+            loadingDiv.style.cssText = `
+                background: white;
+                padding: 2rem;
+                border-radius: 8px;
+                text-align: center;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            `;
+            
+            loadingDiv.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #1a73e8;"></i>
+                </div>
+                <p style="margin: 0; color: #333;">Generating PDF Report...</p>
+                <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.875rem;">Please wait while we prepare your download</p>
+            `;
+            
+            overlay.appendChild(loadingDiv);
+            document.body.appendChild(overlay);
+        }
+
+        function hideDownloadLoading() {
+            const overlay = document.getElementById('downloadLoading');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+
+        // Enhanced download with status check
+        function downloadWithStatus() {
+            const statusFilter = document.getElementById('statusFilter');
+            const selectedStatus = statusFilter.value || 'ALL';
+            
+            // Create form for POST request
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/authority/bulk-requests/download-pdf-from-html';
+            form.style.display = 'none';
+            
+            const statusInput = document.createElement('input');
+            statusInput.type = 'hidden';
+            statusInput.name = 'status';
+            statusInput.value = selectedStatus;
+            
+            form.appendChild(statusInput);
+            document.body.appendChild(form);
+            
+            // Show loading
+            showDownloadLoading();
+            
+            // Submit form
+            form.submit();
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(form);
+                hideDownloadLoading();
+            }, 3000);
         }
     </script>
 </body>
